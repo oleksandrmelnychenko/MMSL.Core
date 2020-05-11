@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +11,6 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using MMSL.Actors;
@@ -42,7 +43,8 @@ using MMSL.Services.IdentityServices.Contracts;
 using Newtonsoft.Json.Serialization;
 using Serilog;
 using Serilog.Formatting.Json;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
+using IWebHostEnvironment = Microsoft.AspNetCore.Hosting.IWebHostEnvironment;
 namespace MMSL.Server.Core
 {
     public class Startup
@@ -51,11 +53,11 @@ namespace MMSL.Server.Core
 
         public IContainer ApplicationContainer { get; private set; }
 
-        private readonly IHostingEnvironment _environment;
+        private readonly IWebHostEnvironment _environment;
 
         private ActorSystem _actorSystem;
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             IConfigurationBuilder builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath);
@@ -80,7 +82,13 @@ namespace MMSL.Server.Core
 
             services.AddResponseCompression();
 
-            services.AddCors();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    t => t.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
 
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
 
@@ -151,9 +159,10 @@ namespace MMSL.Server.Core
             return new AutofacServiceProvider(this.ApplicationContainer);
         }
 
-        public void Configure(IApplicationBuilder app, MMSLDbContext ctx, IHostingEnvironment env, IGlobalExceptionFactory globalExceptionFactory)
+        public void Configure(IApplicationBuilder app, MMSLDbContext ctx, IWebHostEnvironment env, IGlobalExceptionFactory globalExceptionFactory)
         {
-            IApplicationLifetime appLifetime = app.ApplicationServices.GetRequiredService<IApplicationLifetime>();
+            IHostApplicationLifetime appLifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+
 
             LoggerConfiguration logger = new LoggerConfiguration();
             logger.Enrich.FromLogContext().MinimumLevel.Information().WriteTo.File
@@ -165,7 +174,7 @@ namespace MMSL.Server.Core
 
             app.UseResponseCompression();
 
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+            app.UseCors();
 
             var webSocketOptions = new WebSocketOptions()
             {
@@ -195,7 +204,7 @@ namespace MMSL.Server.Core
                         IExceptionHandlerFeature error = context.Features.Get<IExceptionHandlerFeature>();
                         IGlobalExceptionHandler globalExceptionHandler = globalExceptionFactory.New();
 
-                        await globalExceptionHandler.HandleException(context, error, _environment.IsDevelopment());
+                        await globalExceptionHandler.HandleException(context, error, true);
                     });
             });
 
@@ -207,17 +216,7 @@ namespace MMSL.Server.Core
         {
             string connectionString;
 
-#if DEBUG
             connectionString = Configuration.GetConnectionString(ConnectionStringNames.DefaultConnection);
-#elif LOCAL
-            connectionString = Configuration.GetConnectionString(ConnectionStringNames.DefaultConnection);
-#elif RELEASE
-           connectionString = Configuration.GetConnectionString(ConnectionStringNames.ProductionConnection);
-#elif STAGING
-           connectionString = Configuration.GetConnectionString(ConnectionStringNames.StagingProductionConnection);
-#elif PREPRODUCTION
-             connectionString = Configuration.GetConnectionString(ConnectionStringNames.PreProductionConnection);
-#endif
 
             services.AddDbContext<MMSLDbContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped(p => new MMSLDbContext(p.GetService<DbContextOptions<MMSLDbContext>>()));
