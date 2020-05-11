@@ -98,6 +98,8 @@ namespace MMSL.Server.Core
 
             services.AddMvc(options =>
             {
+                options.EnableEndpointRouting = false;
+                
                 options.CacheProfiles.Add(CacheControlProfiles.Default,
                     new CacheProfile()
                     {
@@ -170,6 +172,8 @@ namespace MMSL.Server.Core
 
             Log.Logger = logger.CreateLogger();
 
+            app.UseRouting();
+
             ConfigureLocalization(app);
 
             app.UseResponseCompression();
@@ -195,7 +199,10 @@ namespace MMSL.Server.Core
                 .UseResponseCompression();
 
             app.UseAuthentication();
-
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
             app.UseExceptionHandler(builder =>
             {
                 builder.Run(
