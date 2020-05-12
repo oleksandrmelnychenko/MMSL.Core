@@ -19,7 +19,7 @@ namespace MMSL.Domain.Repositories.BankDetails {
         public List<BankDetail> GetAll() {
             var bankDetails =_connection.Query<BankDetail>(
                 "SELECT *" +
-                "FROM BankDetails" +
+                "FROM BankDetails " +
                 "WHERE IsDeleted = 0").ToList();
             return bankDetails;
         }
