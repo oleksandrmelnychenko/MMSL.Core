@@ -3,11 +3,11 @@
 namespace MMSL.Domain.Repositories.Dealer.Contracts {
     public interface IDealerAccountRepository {
 
-        DealerAccount GetAddress(long dealerAccountId);
+        DealerAccount GetDealerAccount(long dealerAccountId);
 
-        long AddAddress(DealerAccount dealerAccount);
+        long AddDealerAccount(DealerAccount dealerAccount);
 
-        void UpdateAddress(DealerAccount dealerAccount);
+        void UpdateDealerAccount(DealerAccount dealerAccount);
 
     }
 }

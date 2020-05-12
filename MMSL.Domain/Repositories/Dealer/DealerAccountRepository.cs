@@ -14,7 +14,7 @@ namespace MMSL.Domain.Repositories.Dealer {
             _connection = connection;
         }
 
-        public long AddAddress(DealerAccount dealerAccount) =>
+        public long AddDealerAccount(DealerAccount dealerAccount) =>
             _connection.QuerySingleOrDefault<long>(
                 "INSERT INTO [DealerAccount] " +
                 "([IsDeleted],[Name],[Description],[CompanyName],[Email],[AlternateEmail],[PhoneNumber]," +
@@ -25,7 +25,7 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "@UseBillingAsShipping,@ShippingAddressId); " +
                 "SELECT SCOPE_IDENTITY()", dealerAccount);
 
-        public DealerAccount GetAddress(long dealerAccountId) =>
+        public DealerAccount GetDealerAccount(long dealerAccountId) =>
             _connection.Query<DealerAccount, Address, Address, DealerAccount>(
                 "SELECT [DealerAccount].*, Billing.*, Shipping.* " +
                 "FROM[DealerAccount] " +
@@ -43,7 +43,7 @@ namespace MMSL.Domain.Repositories.Dealer {
                 new { Id = dealerAccountId })
             .SingleOrDefault();
 
-        public void UpdateAddress(DealerAccount dealerAccount) =>
+        public void UpdateDealerAccount(DealerAccount dealerAccount) =>
             _connection.Query<DealerAccount>("UPDATE [DealerAccount]" +
                 "SET [IsDeleted]=@IsDeleted,[Created]=@Created,[LastModified]=getutcdate()," +
                 "[Name]=@Name,[Description]=@Description,[CompanyName]=@CompanyName,[Email]=@Email," +
