@@ -57,7 +57,7 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
         [HttpPost]
         [AllowAnonymous]
         [AssignActionRoute(StoreSegments.NEW_STORE)]
-        public async Task<IActionResult> NewBankDetail([FromBody] NewStoreDataContract newStoreDataContract) {
+        public async Task<IActionResult> NewStore([FromBody] NewStoreDataContract newStoreDataContract) {
             try {
                 if (newStoreDataContract == null) throw new ArgumentNullException("NewUserDataContract");
 

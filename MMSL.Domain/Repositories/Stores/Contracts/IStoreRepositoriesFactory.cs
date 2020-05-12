@@ -5,6 +5,6 @@ using System.Text;
 
 namespace MMSL.Domain.Repositories.Stores.Contracts {
     public interface IStoreRepositoriesFactory {
-        IStoreRepository NewBankDetailRepository(IDbConnection connection);
+        IStoreRepository NewStoreRepository(IDbConnection connection);
     }
 }

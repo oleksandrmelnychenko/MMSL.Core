@@ -3,7 +3,7 @@ using System.Data;
 
 namespace MMSL.Domain.Repositories.Stores {
     public class StoreRepositoriesFactory : IStoreRepositoriesFactory {
-        public IStoreRepository NewBankDetailRepository(IDbConnection connection)
+        public IStoreRepository NewStoreRepository(IDbConnection connection)
             => new StoreRepository(connection);
     }
 }
