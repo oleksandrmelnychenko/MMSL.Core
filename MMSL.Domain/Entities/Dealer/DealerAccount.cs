@@ -24,10 +24,14 @@ namespace MMSL.Domain.Entities.Dealer {
         public int PaymentType { get; set; }
         
         public bool IsCreditAllowed { get; set; }
+        
+        public bool? BillingAddressId { get; set; }
 
         public Address BillingAddress { get; set; }
 
         public bool UseBillingAsShipping { get; set; }
+
+        public bool? ShippingAddressId { get; set; }
 
         public Address ShippingAddress { get; set; }
     }
