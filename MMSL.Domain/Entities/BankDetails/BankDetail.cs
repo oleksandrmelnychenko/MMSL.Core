@@ -6,7 +6,7 @@ namespace MMSL.Domain.Entities.BankDetails {
         public string Name { get; set; }
 
         [Required]
-        public int AccountNo { get; set; }
+        public long AccountNo { get; set; }
 
         [Required]
         public string Address { get; set; }
@@ -18,6 +18,6 @@ namespace MMSL.Domain.Entities.BankDetails {
         public string Iban { get; set; }
 
         [Required]
-        public int VatNumber { get; set; }
+        public string VatNumber { get; set; }
     }
 }
