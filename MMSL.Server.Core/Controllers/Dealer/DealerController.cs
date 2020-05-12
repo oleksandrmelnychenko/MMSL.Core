@@ -38,7 +38,7 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
         [HttpGet]
         [AssignActionRoute(DealerSegments.GET_DEALER)]
-        public async Task<IActionResult> GetAllDealer([FromQuery]long dealerAccountId) {
+        public async Task<IActionResult> GetDealer([FromQuery]long dealerAccountId) {
             try {
                 return Ok(SuccessResponseBody(await _dealerAccountService.GetDealerAccount(dealerAccountId), Localizer["Dealers account"]));
             } catch (Exception exc) {
@@ -75,7 +75,7 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
         [HttpPut]
         [AssignActionRoute(DealerSegments.UPDATE_DEALER)]
-        public async Task<IActionResult> UpdateDealerAccount([FromQuery]DealerAccount dealerAccount) {
+        public async Task<IActionResult> UpdateDealerAccount([FromBody]DealerAccount dealerAccount) {
             try {
                 await _dealerAccountService.UpdateDealerAccount(dealerAccount);
 

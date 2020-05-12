@@ -51,7 +51,7 @@ namespace MMSL.Domain.Repositories.Dealer {
         public void UpdateDealerAccount(DealerAccount dealerAccount) =>
             _connection.Query<DealerAccount>("UPDATE [DealerAccount]" +
                 "SET [IsDeleted]=@IsDeleted,[Created]=@Created,[LastModified]=getutcdate()," +
-                "[Name]=@Name,[Description]=@Description,[CompanyName]=@CompanyName,[Email]=@Email," +
+                "[CompanyName]=@CompanyName,[Email]=@Email," +
                 "[AlternateEmail]=@AlternateEmail,[PhoneNumber]=@PhoneNumber,[TaxNumber]=@TaxNumber," +
                 "[IsVatApplicable]=@IsVatApplicable,[Currency]=@Currency,[PaymentType]=@PaymentType," +
                 "[IsCreditAllowed]=@IsCreditAllowed," +
