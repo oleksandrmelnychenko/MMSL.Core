@@ -213,10 +213,13 @@ namespace MMSL.Server.Core
                 .UseResponseCompression();
 
             app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
             app.UseExceptionHandler(builder =>
             {
                 builder.Run(
