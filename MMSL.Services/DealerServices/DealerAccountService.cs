@@ -83,15 +83,19 @@ namespace MMSL.Services.DealerServices {
                 }
             });
 
-        public Task DeleteDealerAccount(DealerAccount dealerAccount) =>
+        public Task DeleteDealerAccount(long dealerAccountId) =>
             Task.Run(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
+                    IDealerAccountRepository dealerrepository = _dealerRepositoriesFactory.NewDealerAccountRepository(connection);
+
+                    DealerAccount dealerAccount = dealerrepository.GetDealerAccount(dealerAccountId);
+
+                    if (dealerAccount == null)
+                        throw new System.Exception("Dealer not found");
 
                     dealerAccount.IsDeleted = true;
 
-                    _dealerRepositoriesFactory
-                        .NewDealerAccountRepository(connection)
-                        .UpdateDealerAccount(dealerAccount);
+                    dealerrepository.UpdateDealerAccount(dealerAccount);
                 }
             });
     }

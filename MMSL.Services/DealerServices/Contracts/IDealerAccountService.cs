@@ -13,7 +13,6 @@ namespace MMSL.Services.DealerServices.Contracts {
 
         Task UpdateDealerAccount(DealerAccount dealerAccount);
 
-        Task DeleteDealerAccount(DealerAccount dealerAccount);
-
+        Task DeleteDealerAccount(long dealerAccountId);
     }
 }

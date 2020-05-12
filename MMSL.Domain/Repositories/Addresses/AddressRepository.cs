@@ -38,7 +38,7 @@ namespace MMSL.Domain.Repositories.Addresses {
                 "[Country] = @Country, " +
                 "[ZipCode] = @ZipCode, " +
                 "LastModified = getutcdate() " +
-                "WHERE[Address].Id = @Id;" +
+                "WHERE [Address].Id = @Id;" +
                 "SELECT SCOPE_IDENTITY()",
                 address);
     }
