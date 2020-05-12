@@ -2,6 +2,7 @@
 using MMSL.Domain.Entities.Addresses;
 using MMSL.Domain.Entities.Dealer;
 using MMSL.Domain.Repositories.Dealer.Contracts;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
@@ -24,6 +25,10 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "@TaxNumber,@IsVatApplicable,@Currency,@PaymentType,@IsCreditAllowed,@BillingAddressId," +
                 "@UseBillingAsShipping,@ShippingAddressId); " +
                 "SELECT SCOPE_IDENTITY()", dealerAccount);
+        
+        public List<DealerAccount> GetDealerAccounts() =>
+            _connection.Query<DealerAccount>("SELECT * FROM[DealerAccount] ")
+                .ToList();
 
         public DealerAccount GetDealerAccount(long dealerAccountId) =>
             _connection.Query<DealerAccount, Address, Address, DealerAccount>(
