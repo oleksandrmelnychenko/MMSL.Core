@@ -35,9 +35,13 @@ using MMSL.Databases;
 using MMSL.Domain.DataSourceAdapters.SQL;
 using MMSL.Domain.DataSourceAdapters.SQL.Contracts;
 using MMSL.Domain.DbConnectionFactory;
+using MMSL.Domain.Repositories.BankDetails;
+using MMSL.Domain.Repositories.BankDetails.Contracts;
 using MMSL.Domain.Repositories.Identity;
 using MMSL.Domain.Repositories.Identity.Contracts;
 using MMSL.Server.Core.Localization;
+using MMSL.Services.BankDetailsServices;
+using MMSL.Services.BankDetailsServices.Contracts;
 using MMSL.Services.IdentityServices;
 using MMSL.Services.IdentityServices.Contracts;
 using Newtonsoft.Json.Serialization;
@@ -136,10 +140,11 @@ namespace MMSL.Server.Core
             builder.RegisterType<IdentityRepository>().As<IIdentityRepository>();
             builder.RegisterType<IdentityRolesRepository>().As<IIdentityRolesRepository>();
             builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
-
+            builder.RegisterType<BankDetailRepositoriesFactory>().As<IBankDetailRepositoriesFactory>();
 
             builder.RegisterType<UserIdentityService>().As<IUserIdentityService>();
             builder.RegisterType<AccountService>().As<IAccountService>();
+            builder.RegisterType<BankDetailsService>().As<IBankDetailsService>();
 
             builder.RegisterType<DbConnectionFactory>().As<IDbConnectionFactory>();
             builder.RegisterType<SqlDbContext>().As<ISqlDbContext>();
