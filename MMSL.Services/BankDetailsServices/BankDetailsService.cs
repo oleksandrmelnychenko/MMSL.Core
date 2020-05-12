@@ -1,4 +1,5 @@
-﻿using MMSL.Domain.DbConnectionFactory;
+﻿using MMSL.Domain.DataContracts;
+using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.BankDetails;
 using MMSL.Domain.Repositories.BankDetails.Contracts;
 using MMSL.Services.BankDetailsServices.Contracts;
@@ -29,5 +30,9 @@ namespace MMSL.Services.BankDetailsServices {
                     return bankDetails;
                 }
             });
+
+        public Task<BankDetail> NewBankDetail(NewBankDetailDataContract newBankDetailDataContract) {
+            throw new NotImplementedException();
+        }
     }
 }
