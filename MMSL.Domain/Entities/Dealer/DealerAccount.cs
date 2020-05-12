@@ -1,4 +1,6 @@
 ﻿using MMSL.Domain.Entities.Addresses;
+using MMSL.Domain.Entities.Stores;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace MMSL.Domain.Entities.Dealer {
@@ -34,5 +36,7 @@ namespace MMSL.Domain.Entities.Dealer {
         public long? ShippingAddressId { get; set; }
 
         public Address ShippingAddress { get; set; }
+
+        public ICollection<Store> Stores { get; set; }
     }
 }

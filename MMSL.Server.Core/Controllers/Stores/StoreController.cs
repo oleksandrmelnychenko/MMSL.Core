@@ -6,8 +6,8 @@ using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Domain.DataContracts;
-using MMSL.Domain.Entities.BankDetails;
-using MMSL.Services.BankDetailsServices.Contracts;
+using MMSL.Domain.Entities.Stores;
+using MMSL.Services.StoreServices.Contracts;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -17,10 +17,10 @@ using System.Threading.Tasks;
 
 namespace MMSL.Server.Core.Controllers.BankDetails {
     //[AssignControllerLocalizedRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.BankDetails)]
-    [AssignControllerRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.BankDetails)]
-    public class BankDetailsController : WebApiControllerBase {
+    [AssignControllerRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Stores)]
+    public class StoreController : WebApiControllerBase {
 
-        private readonly IBankDetailsService _bankDetailsService;
+        private readonly IStoreService _bankDetailsService;
 
         /// <summary>
         ///     ctor().
@@ -28,20 +28,20 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
         /// <param name="bankDetailsService"></param>
         /// <param name="responseFactory"></param>
         /// <param name="localizer"></param>
-        public BankDetailsController(
-            IBankDetailsService bankDetailsService,
+        public StoreController(
+            IStoreService bankDetailsService,
             IResponseFactory responseFactory,
-            IStringLocalizer<BankDetailsController> localizer) : base(responseFactory, localizer) {
+            IStringLocalizer<StoreController> localizer) : base(responseFactory, localizer) {
 
             _bankDetailsService = bankDetailsService;
         }
 
         [HttpGet]
-        [AllowAnonymous]
-        [AssignActionRoute(BankDetailsSegments.GET_BANK_DETAILS)]
+        [Authorize]
+        [AssignActionRoute(StoreSegments.GET_STORES)]
         public async Task<IActionResult> GetAll() {
             try {
-                List<BankDetail> bankDetails = await _bankDetailsService.GetAllBankDetailsAsync();
+                List<Store> bankDetails = await _bankDetailsService.GetAllStoresAsync();
 
                 return Ok(SuccessResponseBody(bankDetails, Localizer["Successfully completed"]));
             }
@@ -56,14 +56,14 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
 
         [HttpPost]
         [AllowAnonymous]
-        [AssignActionRoute(BankDetailsSegments.NEW_BANK_DETAIL)]
-        public async Task<IActionResult> NewBankDetail([FromBody] NewBankDetailDataContract newBankDetailDataContract) {
+        [AssignActionRoute(StoreSegments.NEW_STORE)]
+        public async Task<IActionResult> NewBankDetail([FromBody] NewStoreDataContract newStoreDataContract) {
             try {
-                if (newBankDetailDataContract == null) throw new ArgumentNullException("NewUserDataContract");
+                if (newStoreDataContract == null) throw new ArgumentNullException("NewUserDataContract");
 
-                BankDetail bankDetail = await _bankDetailsService.NewBankDetail(newBankDetailDataContract);
+                Store store = await _bankDetailsService.NewStore(newStoreDataContract);
 
-                return Ok(SuccessResponseBody(bankDetail, Localizer["New bankDetail has been created successfully"]));
+                return Ok(SuccessResponseBody(store, Localizer["New store has been created successfully"]));
             }
             catch (InvalidIdentityException exc) {
                 return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));

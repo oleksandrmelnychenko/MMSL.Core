@@ -2,7 +2,7 @@
 using MMSL.Databases.TableMaps;
 using MMSL.Databases.TableMaps.BankDetails;
 using MMSL.Databases.TableMaps.Identity;
-using MMSL.Domain.Entities.BankDetails;
+using MMSL.Domain.Entities.Stores;
 using MMSL.Domain.Entities.Addresses;
 using MMSL.Domain.Entities.Dealer;
 using MMSL.Domain.Entities.Identity;
@@ -19,7 +19,7 @@ namespace MMSL.Databases {
 
         public DbSet<Address> Addresses { get; set; }
 
-        public DbSet<BankDetail> BankDetails { get; set; }
+        public DbSet<Store> Stores { get; set; }
 
         public MMSLDbContext(
             DbContextOptions<MMSLDbContext> options) : base(options) { }
@@ -32,7 +32,7 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new UserIdentityMap());
             modelBuilder.AddConfiguration(new DealerAccountMap());
             modelBuilder.AddConfiguration(new AddressMap());
-            modelBuilder.AddConfiguration(new BankDetailMap());
+            modelBuilder.AddConfiguration(new StoreMap());
         }
     }
 }

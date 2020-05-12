@@ -37,15 +37,15 @@ using MMSL.Domain.DataSourceAdapters.SQL.Contracts;
 using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Repositories.Addresses;
 using MMSL.Domain.Repositories.Addresses.Contracts;
-using MMSL.Domain.Repositories.BankDetails;
-using MMSL.Domain.Repositories.BankDetails.Contracts;
+using MMSL.Domain.Repositories.Stores;
+using MMSL.Domain.Repositories.Stores.Contracts;
 using MMSL.Domain.Repositories.Dealer;
 using MMSL.Domain.Repositories.Dealer.Contracts;
 using MMSL.Domain.Repositories.Identity;
 using MMSL.Domain.Repositories.Identity.Contracts;
 using MMSL.Server.Core.Localization;
 using MMSL.Services.BankDetailsServices;
-using MMSL.Services.BankDetailsServices.Contracts;
+using MMSL.Services.StoreServices.Contracts;
 using MMSL.Services.DealerServices;
 using MMSL.Services.DealerServices.Contracts;
 using MMSL.Services.IdentityServices;
@@ -148,11 +148,11 @@ namespace MMSL.Server.Core
             builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
             builder.RegisterType<AddressRepositoriesFactory>().As<IAddressRepositoriesFactory>();
             builder.RegisterType<DealerRepositoriesFactory>().As<IDealerRepositoriesFactory>();
-            builder.RegisterType<BankDetailRepositoriesFactory>().As<IBankDetailRepositoriesFactory>();
+            builder.RegisterType<StoreRepositoriesFactory>().As<IStoreRepositoriesFactory>();
 
             builder.RegisterType<UserIdentityService>().As<IUserIdentityService>();
             builder.RegisterType<AccountService>().As<IAccountService>();
-            builder.RegisterType<BankDetailsService>().As<IBankDetailsService>();
+            builder.RegisterType<StoreService>().As<IStoreService>();
             builder.RegisterType<DealerAccountService>().As<IDealerAccountService>();
 
             builder.RegisterType<DbConnectionFactory>().As<IDbConnectionFactory>();
