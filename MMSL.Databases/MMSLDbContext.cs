@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MMSL.Common;
 using MMSL.Databases.TableMaps;
 using MMSL.Databases.TableMaps.Identity;
+using MMSL.Domain.Entities.Addresses;
+using MMSL.Domain.Entities.Dealer;
 using MMSL.Domain.Entities.Identity;
 
 namespace MMSL.Databases {
@@ -9,6 +10,8 @@ namespace MMSL.Databases {
         public MMSLDbContext() { }
 
         public DbSet<UserIdentity> UserIdentities { get; set; }
+        public DbSet<DealerAccount> DealerAccounts { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
         public MMSLDbContext(
             DbContextOptions<MMSLDbContext> options) : base(options) { }
