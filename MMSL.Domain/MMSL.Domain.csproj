@@ -14,9 +14,4 @@
     <ProjectReference Include="..\MMSL.Common\MMSL.Common.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\Dealer\" />
-    <Folder Include="Repositories\Addresses\" />
-  </ItemGroup>
-
 </Project>
