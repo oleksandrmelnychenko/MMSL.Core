@@ -25,13 +25,13 @@ namespace MMSL.Domain.Entities.Dealer {
         
         public bool IsCreditAllowed { get; set; }
         
-        public bool? BillingAddressId { get; set; }
+        public long? BillingAddressId { get; set; }
 
         public Address BillingAddress { get; set; }
 
         public bool UseBillingAsShipping { get; set; }
 
-        public bool? ShippingAddressId { get; set; }
+        public long? ShippingAddressId { get; set; }
 
         public Address ShippingAddress { get; set; }
     }
