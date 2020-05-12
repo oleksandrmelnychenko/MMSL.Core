@@ -1,16 +1,20 @@
 ﻿using MMSL.Domain.Entities.Addresses;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace MMSL.Domain.Entities.Dealer {
-    public class DealerAccount : EntityBaseNamed {
+    public class DealerAccount : EntityBase {
 
         [Required]
         public string CompanyName { get; set; }
 
         [Required]
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
         [Required]
+        [DataType(DataType.EmailAddress)]
         public string AlternateEmail { get; set; }
 
         public string PhoneNumber { get; set; }
@@ -22,9 +26,9 @@ namespace MMSL.Domain.Entities.Dealer {
         public int Currency { get; set; }
 
         public int PaymentType { get; set; }
-        
+
         public bool IsCreditAllowed { get; set; }
-        
+
         public long? BillingAddressId { get; set; }
 
         public Address BillingAddress { get; set; }
@@ -34,5 +38,6 @@ namespace MMSL.Domain.Entities.Dealer {
         public long? ShippingAddressId { get; set; }
 
         public Address ShippingAddress { get; set; }
+
     }
 }

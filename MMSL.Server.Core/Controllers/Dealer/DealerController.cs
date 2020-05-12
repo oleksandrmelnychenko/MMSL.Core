@@ -38,7 +38,7 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
         [HttpGet]
         [AssignActionRoute(DealerSegments.GET_DEALER)]
-        public async Task<IActionResult> GetAllDealer(long dealerAccountId) {
+        public async Task<IActionResult> GetAllDealer([FromQuery]long dealerAccountId) {
             try {
                 return Ok(SuccessResponseBody(await _dealerAccountService.GetDealerAccount(dealerAccountId), Localizer["Dealers account"]));
             } catch (Exception exc) {
@@ -49,8 +49,10 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
         [HttpPost]
         [AssignActionRoute(DealerSegments.ADD_DEALER)]
-        public async Task<IActionResult> AddDealerAccount(DealerAccount dealerAccount) {
+        public async Task<IActionResult> AddDealerAccount([FromBody] DealerAccount dealerAccount) {
             try {
+                if (dealerAccount == null) throw new ArgumentNullException("dealerAccount");
+
                 return Ok(SuccessResponseBody(await _dealerAccountService.AddDealerAccount(dealerAccount), Localizer["Dealer account successfully created"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
@@ -60,11 +62,11 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
         [HttpDelete]
         [AssignActionRoute(DealerSegments.DELETE_DEALER)]
-        public async Task<IActionResult> DeleteDealerAccount(DealerAccount dealerAccount) {
+        public async Task<IActionResult> DeleteDealerAccount([FromQuery]long dealerAccountId) {
             try {
-                await _dealerAccountService.DeleteDealerAccount(dealerAccount);
+                await _dealerAccountService.DeleteDealerAccount(dealerAccountId);
 
-                return Ok(SuccessResponseBody(dealerAccount, Localizer["Dealer account successfully deleted"]));
+                return Ok(SuccessResponseBody(dealerAccountId, Localizer["Dealer account successfully deleted"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
@@ -73,7 +75,7 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
         [HttpPut]
         [AssignActionRoute(DealerSegments.UPDATE_DEALER)]
-        public async Task<IActionResult> UpdateDealerAccount(DealerAccount dealerAccount) {
+        public async Task<IActionResult> UpdateDealerAccount([FromQuery]DealerAccount dealerAccount) {
             try {
                 await _dealerAccountService.UpdateDealerAccount(dealerAccount);
 

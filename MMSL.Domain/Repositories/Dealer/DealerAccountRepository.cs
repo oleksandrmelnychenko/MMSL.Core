@@ -18,10 +18,10 @@ namespace MMSL.Domain.Repositories.Dealer {
         public long AddDealerAccount(DealerAccount dealerAccount) =>
             _connection.QuerySingleOrDefault<long>(
                 "INSERT INTO [DealerAccount] " +
-                "([IsDeleted],[Name],[Description],[CompanyName],[Email],[AlternateEmail],[PhoneNumber]," +
+                "([IsDeleted],[CompanyName],[Email],[AlternateEmail],[PhoneNumber]," +
                 "[TaxNumber],[IsVatApplicable],[Currency],[PaymentType],[IsCreditAllowed],[BillingAddressId]," +
                 "[UseBillingAsShipping],[ShippingAddressId]) " +
-                "VALUES (0,@Name,@Description,@CompanyName,@Email,@AlternateEmail,@PhoneNumber," +
+                "VALUES (0,@CompanyName,@Email,@AlternateEmail,@PhoneNumber," +
                 "@TaxNumber,@IsVatApplicable,@Currency,@PaymentType,@IsCreditAllowed,@BillingAddressId," +
                 "@UseBillingAsShipping,@ShippingAddressId); " +
                 "SELECT SCOPE_IDENTITY()", dealerAccount);
@@ -35,9 +35,9 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "SELECT [DealerAccount].*, Billing.*, Shipping.* " +
                 "FROM[DealerAccount] " +
                 "LEFT JOIN[Address] AS Billing " +
-                "ON Billing.Id = [DealerAccount].BillingAddressId AND Billing.Id " +
+                "ON Billing.Id = [DealerAccount].BillingAddressId AND [DealerAccount].BillingAddressId IS NOT NULL " +
                 "LEFT JOIN[Address] AS Shipping " +
-                "ON Shipping.Id = [DealerAccount].BillingAddressId " +
+                "ON Shipping.Id = [DealerAccount].BillingAddressId AND [DealerAccount].ShippingAddressId IS NOT NULL " +
                 "WHERE[DealerAccount].Id = @Id",
                 (dealerAccount, billingAddress, shippingAddress) => {
                     dealerAccount.BillingAddress = billingAddress;
