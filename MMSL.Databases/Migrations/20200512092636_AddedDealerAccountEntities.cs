@@ -8,13 +8,13 @@ namespace MMSL.Databases.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Addresses",
+                name: "Address",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: true, defaultValueSql: "getutcdate()"),
                     LastModified = table.Column<DateTime>(nullable: true),
                     AddressLine1 = table.Column<string>(nullable: true),
                     AddressLine2 = table.Column<string>(nullable: true),
@@ -25,17 +25,38 @@ namespace MMSL.Databases.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Addresses", x => x.Id);
+                    table.PrimaryKey("PK_Address", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DealerAccounts",
+                name: "BankDetails",
                 columns: table => new
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    Created = table.Column<DateTime>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: true, defaultValueSql: "getutcdate()"),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
+                    AccountNo = table.Column<int>(nullable: false),
+                    Address = table.Column<string>(nullable: false),
+                    SwiftBic = table.Column<string>(nullable: false),
+                    Iban = table.Column<string>(nullable: false),
+                    VatNumber = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BankDetails", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DealerAccount",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: true, defaultValueSql: "getutcdate()"),
                     LastModified = table.Column<DateTime>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
@@ -54,39 +75,42 @@ namespace MMSL.Databases.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DealerAccounts", x => x.Id);
+                    table.PrimaryKey("PK_DealerAccount", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DealerAccounts_Addresses_BillingAddressId",
+                        name: "FK_DealerAccount_Address_BillingAddressId",
                         column: x => x.BillingAddressId,
-                        principalTable: "Addresses",
+                        principalTable: "Address",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DealerAccounts_Addresses_ShippingAddressId",
+                        name: "FK_DealerAccount_Address_ShippingAddressId",
                         column: x => x.ShippingAddressId,
-                        principalTable: "Addresses",
+                        principalTable: "Address",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_DealerAccounts_BillingAddressId",
-                table: "DealerAccounts",
+                name: "IX_DealerAccount_BillingAddressId",
+                table: "DealerAccount",
                 column: "BillingAddressId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DealerAccounts_ShippingAddressId",
-                table: "DealerAccounts",
+                name: "IX_DealerAccount_ShippingAddressId",
+                table: "DealerAccount",
                 column: "ShippingAddressId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DealerAccounts");
+                name: "BankDetails");
 
             migrationBuilder.DropTable(
-                name: "Addresses");
+                name: "DealerAccount");
+
+            migrationBuilder.DropTable(
+                name: "Address");
         }
     }
 }

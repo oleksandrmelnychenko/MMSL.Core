@@ -6,13 +6,17 @@ using MMSL.Domain.Entities.BankDetails;
 using MMSL.Domain.Entities.Addresses;
 using MMSL.Domain.Entities.Dealer;
 using MMSL.Domain.Entities.Identity;
+using MMSL.Databases.TableMaps.Dealer;
+using MMSL.Databases.TableMaps.Addresses;
 
 namespace MMSL.Databases {
     public class MMSLDbContext : DbContext {
         public MMSLDbContext() { }
 
         public DbSet<UserIdentity> UserIdentities { get; set; }
+
         public DbSet<DealerAccount> DealerAccounts { get; set; }
+
         public DbSet<Address> Addresses { get; set; }
 
         public DbSet<BankDetail> BankDetails { get; set; }
@@ -26,6 +30,8 @@ namespace MMSL.Databases {
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             modelBuilder.AddConfiguration(new UserIdentityMap());
+            modelBuilder.AddConfiguration(new DealerAccountMap());
+            modelBuilder.AddConfiguration(new AddressMap());
             modelBuilder.AddConfiguration(new BankDetailMap());
         }
     }
