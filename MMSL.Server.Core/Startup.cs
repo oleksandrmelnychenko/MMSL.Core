@@ -186,13 +186,13 @@ namespace MMSL.Server.Core
 
             Log.Logger = logger.CreateLogger();
 
+            app.UseCors("CorsPolicy");
+
             app.UseRouting();
 
             ConfigureLocalization(app);
 
             app.UseResponseCompression();
-
-            app.UseCors();
 
             var webSocketOptions = new WebSocketOptions()
             {
