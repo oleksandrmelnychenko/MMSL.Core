@@ -79,6 +79,8 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
             try {
                 if (newStoreDataContract == null) throw new ArgumentNullException("NewStoreDataContract");
 
+                if (newStoreDataContract.DealerAccountId == default(long)) throw new ArgumentNullException("NewStoreDataContract");
+
                 Store store = await _storeService.NewStoreAsync(newStoreDataContract);
 
                 return Ok(SuccessResponseBody(store, Localizer["New store has been created successfully"]));
