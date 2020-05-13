@@ -4,6 +4,8 @@
 
         public const string Stores = "stores";
 
+        public const string StoreCustomers = "store/customers";
+
         public const string Dealer = "dealer/accounts";
     }
 }
