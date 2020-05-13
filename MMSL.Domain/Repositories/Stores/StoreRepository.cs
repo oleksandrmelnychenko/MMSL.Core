@@ -27,19 +27,25 @@ namespace MMSL.Domain.Repositories.Stores {
 
         public List<Store> GetAllByDealerAccountId(long dealerAccountId) =>
             _connection.Query<Store>(
-                "SELECT * " +
+                "SELECT [Stores].* " +
                 "FROM [Stores] " +
-                "WHERE [Stores].DealerAccountId = @Id AND [Stores].IsDeleted = 0",
+                "LEFT JOIN [StoreMapDealerAccounts] ON [StoreMapDealerAccounts].StoreId = [Stores].Id " +
+                "WHERE [StoreMapDealerAccounts].DealerAccountId = @Id AND [Stores].IsDeleted = 0",
                 new { Id = dealerAccountId }).ToList();
 
-        public Store NewStore(Store store) =>
+        public Store NewStore(Store store, long dealerAccountId) =>
             _connection.Query<Store, Address, Store>(
                "INSERT INTO [Stores] (IsDeleted,[Name],[ContactEmail],[BillingEmail],[DealerAccountId],[AddressId]) " +
                "VALUES(0,@Name,@ContactEmail,@BillingEmail,@DealerAccountId,@AddressId) " +
+
+               "DECLARE @NewStoreId bigint = SCOPE_IDENTITY()" +
+               "INSERT INTO [StoreMapDealerAccounts] (IsDeleted,[DealerAccountId],[StoreId])" +
+               "VALUES(0,@DealerAccountId,@NewStoreId) " +
+
                "SELECT [Stores].*, [Address].* " +
                "FROM [Stores] " +
                "LEFT JOIN [Address] ON [Address].Id = [Stores].AddressId " +
-               "WHERE [Stores].Id = (SELECT SCOPE_IDENTITY()) ",
+               "WHERE [Stores].Id = @NewStoreId",
                (store, address) => {
                    store.Address = address;
                    return store;
@@ -47,7 +53,7 @@ namespace MMSL.Domain.Repositories.Stores {
                new {
                    Name = store.Name,
                    AddressId = store.AddressId,
-                   DealerAccountId = store.DealerAccountId,
+                   DealerAccountId = dealerAccountId,
                    ContactEmail = store.ContactEmail,
                    BillingEmail = store.BillingEmail
                }
@@ -58,7 +64,7 @@ namespace MMSL.Domain.Repositories.Stores {
                 "UPDATE [Stores]" +
                 "SET [IsDeleted]=@IsDeleted,[Created]=@Created,[LastModified]=getutcdate()," +
                 "[Name]=@Name,[Description]=@Description," +
-                "[DealerAccountId]=@DealerAccountId,[AddressId]=@AddressId,[ContactEmail]=@ContactEmail," +
+                "[AddressId]=@AddressId,[ContactEmail]=@ContactEmail," +
                 "[BillingEmail]=@BillingEmail " +
                 "WHERE [Stores].Id=@Id;",
                 store);

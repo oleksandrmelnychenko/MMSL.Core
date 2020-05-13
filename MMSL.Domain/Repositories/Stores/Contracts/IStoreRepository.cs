@@ -7,7 +7,7 @@ namespace MMSL.Domain.Repositories.Stores.Contracts {
     public interface IStoreRepository {
         List<Store> GetAll();
 
-        Store NewStore(Store store);
+        Store NewStore(Store store, long dealerAccountId);
 
         void UpdateStore(Store store);
 

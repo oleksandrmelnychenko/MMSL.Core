@@ -71,12 +71,12 @@ namespace MMSL.Services.BankDetailsServices {
                      Store newStore = new Store {
                          Name = newStoreDataContract.Name,
                          AddressId = addressId,
-                         DealerAccountId = newStoreDataContract.DealerAccountId,
                          BillingEmail = newStoreDataContract.BillingEmail,
                          ContactEmail = newStoreDataContract.ContactEmail
                      };
 
-                     store = storeRepository.NewStore(newStore);
+                     store = storeRepository.NewStore(newStore, newStoreDataContract.DealerAccountId);
+
                      return store;
                  }
              });
