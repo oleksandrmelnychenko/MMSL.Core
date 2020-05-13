@@ -26,17 +26,24 @@ namespace MMSL.Domain.Repositories.Stores {
         }
 
         public List<Store> GetAllByDealerAccountId(long dealerAccountId) =>
-            _connection.Query<Store>(
-                "SELECT [Stores].* " +
+            _connection.Query<Store,Address, Store>(
+                "SELECT [Stores].*, [Address].* " +
                 "FROM [Stores] " +
                 "LEFT JOIN [StoreMapDealerAccounts] ON [StoreMapDealerAccounts].StoreId = [Stores].Id " +
+                "LEFT JOIN [Address] ON [Address].Id = [Stores].AddressId " +
                 "WHERE [StoreMapDealerAccounts].DealerAccountId = @Id AND [Stores].IsDeleted = 0",
+                (store, address) => {
+                    if (store != null) {
+                        store.Address = address;
+                    }
+                    return store;
+                },
                 new { Id = dealerAccountId }).ToList();
 
         public Store NewStore(Store store, long dealerAccountId) =>
             _connection.Query<Store, Address, Store>(
-               "INSERT INTO [Stores] (IsDeleted,[Name],[ContactEmail],[BillingEmail],[DealerAccountId],[AddressId]) " +
-               "VALUES(0,@Name,@ContactEmail,@BillingEmail,@DealerAccountId,@AddressId) " +
+               "INSERT INTO [Stores] (IsDeleted,[Name],[ContactEmail],[BillingEmail],[AddressId]) " +
+               "VALUES(0,@Name,@ContactEmail,@BillingEmail,@AddressId) " +
 
                "DECLARE @NewStoreId bigint = SCOPE_IDENTITY()" +
                "INSERT INTO [StoreMapDealerAccounts] (IsDeleted,[DealerAccountId],[StoreId])" +
