@@ -1,11 +1,11 @@
 ﻿using MMSL.Domain.Entities.Dealer;
-using System.Collections.Generic;
+using MMSL.Domain.EntityHelpers;
 using System.Threading.Tasks;
 
 namespace MMSL.Services.DealerServices.Contracts {
     public interface IDealerAccountService {
 
-        Task<List<DealerAccount>> GetDealerAccounts();
+        Task<PaginatingResult<DealerAccount>> GetDealerAccounts(int pageNumber, int limit, string searchPhrase);
 
         Task<DealerAccount> GetDealerAccount(long dealerAccountId);
 

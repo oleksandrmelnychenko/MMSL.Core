@@ -1,1 +1,2 @@
 {"Timestamp":"2020-05-12T20:07:37.7910915+03:00","Level":"Error","MessageTemplate":"Ambiguous column name 'ID'."}
+{"Timestamp":"2020-05-13T13:06:31.4084162+03:00","Level":"Error","MessageTemplate":"Method not found: 'System.Collections.Generic.List`1<MMSL.Domain.Entities.Dealer.DealerAccount> MMSL.Domain.Repositories.Dealer.Contracts.IDealerAccountRepository.GetDealerAccounts(Int32, Int32, System.String)'."}

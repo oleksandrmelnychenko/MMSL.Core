@@ -1,9 +1,9 @@
 ﻿using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Dealer;
+using MMSL.Domain.EntityHelpers;
 using MMSL.Domain.Repositories.Addresses.Contracts;
 using MMSL.Domain.Repositories.Dealer.Contracts;
 using MMSL.Services.DealerServices.Contracts;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MMSL.Services.DealerServices {
@@ -21,12 +21,12 @@ namespace MMSL.Services.DealerServices {
             _addressRepositoriesFactory = addressRepositoriesFactory;
         }
 
-        public Task<List<DealerAccount>> GetDealerAccounts() =>
+        public Task<PaginatingResult<DealerAccount>> GetDealerAccounts(int pageNumber, int limit, string searchPhrase) =>
             Task.Run(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     return _dealerRepositoriesFactory
                         .NewDealerAccountRepository(connection)
-                        .GetDealerAccounts();
+                        .GetDealerAccounts(pageNumber, limit, searchPhrase);
                 }
             });
 

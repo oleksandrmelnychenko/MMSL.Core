@@ -1,10 +1,10 @@
 ﻿using MMSL.Domain.Entities.Dealer;
-using System.Collections.Generic;
+using MMSL.Domain.EntityHelpers;
 
 namespace MMSL.Domain.Repositories.Dealer.Contracts {
     public interface IDealerAccountRepository {
 
-        List<DealerAccount> GetDealerAccounts();
+        PaginatingResult<DealerAccount> GetDealerAccounts(int pageNumber, int limit, string searchPhrase);
 
         DealerAccount GetDealerAccount(long dealerAccountId);
 

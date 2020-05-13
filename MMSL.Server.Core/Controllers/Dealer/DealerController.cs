@@ -27,9 +27,13 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
         [HttpGet]
         [AssignActionRoute(DealerSegments.GET_ALL_DEALERS)]
-        public async Task<IActionResult> GetAllDealers() {
+        public async Task<IActionResult> GetAllDealers(
+            [FromQuery]int pageNumber,
+            [FromQuery]int limit,
+            [FromQuery]string searchPhrase
+            ) {
             try {
-                return Ok(SuccessResponseBody(await _dealerAccountService.GetDealerAccounts(), Localizer["All dealers"]));
+                return Ok(SuccessResponseBody(await _dealerAccountService.GetDealerAccounts(pageNumber, limit, searchPhrase), Localizer["All dealers"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
