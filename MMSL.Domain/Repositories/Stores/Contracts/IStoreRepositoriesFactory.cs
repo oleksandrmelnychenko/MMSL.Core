@@ -6,5 +6,7 @@ using System.Text;
 namespace MMSL.Domain.Repositories.Stores.Contracts {
     public interface IStoreRepositoriesFactory {
         IStoreRepository NewStoreRepository(IDbConnection connection);
+
+        IStoreCustomerRepository NewStoreCustomerRepository(IDbConnection connection);
     }
 }

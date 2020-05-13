@@ -55,6 +55,9 @@ using Serilog;
 using Serilog.Formatting.Json;
 using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
 using IWebHostEnvironment = Microsoft.AspNetCore.Hosting.IWebHostEnvironment;
+using MMSL.Services.StoreCustomerServices.Contracts;
+using MMSL.Services.StoreCustomerServices;
+
 namespace MMSL.Server.Core
 {
     public class Startup
@@ -145,19 +148,20 @@ namespace MMSL.Server.Core
             builder.RegisterType<ResponseFactory>().As<IResponseFactory>();
             builder.RegisterType<IdentityRepository>().As<IIdentityRepository>();
             builder.RegisterType<IdentityRolesRepository>().As<IIdentityRolesRepository>();
-            builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
-            builder.RegisterType<AddressRepositoriesFactory>().As<IAddressRepositoriesFactory>();
-            builder.RegisterType<DealerRepositoriesFactory>().As<IDealerRepositoriesFactory>();
             builder.RegisterType<StoreRepositoriesFactory>().As<IStoreRepositoriesFactory>();
+            builder.RegisterType<DealerRepositoriesFactory>().As<IDealerRepositoriesFactory>();
+            builder.RegisterType<AddressRepositoriesFactory>().As<IAddressRepositoriesFactory>();
+            builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
 
-            builder.RegisterType<UserIdentityService>().As<IUserIdentityService>();
-            builder.RegisterType<AccountService>().As<IAccountService>();
             builder.RegisterType<StoreService>().As<IStoreService>();
+            builder.RegisterType<AccountService>().As<IAccountService>();
+            builder.RegisterType<UserIdentityService>().As<IUserIdentityService>();
             builder.RegisterType<DealerAccountService>().As<IDealerAccountService>();
+            builder.RegisterType<StoreCustomerService>().As<IStoreCustomerService>();        
 
-            builder.RegisterType<DbConnectionFactory>().As<IDbConnectionFactory>();
             builder.RegisterType<SqlDbContext>().As<ISqlDbContext>();
             builder.RegisterType<SqlContextFactory>().As<ISqlContextFactory>();
+            builder.RegisterType<DbConnectionFactory>().As<IDbConnectionFactory>();
 
             builder.RegisterType<MasterActor>();
 

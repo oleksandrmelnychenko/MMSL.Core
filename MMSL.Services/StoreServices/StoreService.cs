@@ -59,7 +59,7 @@ namespace MMSL.Services.BankDetailsServices {
 
                  if (!MMSL.Common.Helpers.Validator.IsEmailValid(newStoreDataContract.ContactEmail))
                      UserExceptionCreator<InvalidIdentityException>.Create(
-                         IdentityValidationMessages.EMAIL_INVALID, null).Throw();
+                         IdentityValidationMessages.EMAIL_INVALID, null).Throw();               
 
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                      Store store = null;
