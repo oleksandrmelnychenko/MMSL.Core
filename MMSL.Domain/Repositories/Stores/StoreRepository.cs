@@ -45,6 +45,15 @@ namespace MMSL.Domain.Repositories.Stores {
                    BillingEmail = store.BillingEmail
                }
            ).SingleOrDefault();
-        
+
+        public void UpdateStore(Store store) =>
+             _connection.Query<Store>(
+                "UPDATE [Stores]" +
+                "SET [IsDeleted]=@IsDeleted,[Created]=@Created,[LastModified]=getutcdate()," +
+                "[Name]=@Name,[Description]=@Description," +
+                "[DealerAccountId]=@DealerAccountId,[AddressId]=@AddressId,[ContactEmail]=@ContactEmail," +
+                "[BillingEmail]=@BillingEmail " +
+                "WHERE [Stores].Id=@Id;",
+                store);
     }
 }

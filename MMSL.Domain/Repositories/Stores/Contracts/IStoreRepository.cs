@@ -8,5 +8,7 @@ namespace MMSL.Domain.Repositories.Stores.Contracts {
         List<Store> GetAll();
 
         Store NewStore(Store store);
+
+        void UpdateStore(Store store);
     }
 }

@@ -41,7 +41,7 @@ namespace MMSL.Services.BankDetailsServices {
                 }
             });
 
-        public Task<Store> NewStore(NewStoreDataContract newStoreDataContract) =>
+        public Task<Store> NewStoreAsync(NewStoreDataContract newStoreDataContract) =>
              Task.Run(() => {
                  if (!MMSL.Common.Helpers.Validator.IsEmailValid(newStoreDataContract.BillingEmail))
                      UserExceptionCreator<InvalidIdentityException>.Create(
@@ -70,5 +70,25 @@ namespace MMSL.Services.BankDetailsServices {
                      return store;
                  }
              });
+
+        public Task UpdateStoreAsync(Store store) =>
+              Task.Run(() => {
+                  using (var connection = _connectionFactory.NewSqlConnection()) {
+                      IAddressRepository addressRepository = _addressRepositoriesFactory.NewAddressRepository(connection);
+                      IStoreRepository storeRepository = _storeRepositoriesFactory.NewStoreRepository(connection);
+
+                      if (store.Address != null) {
+                          if (store.Address.IsNew()) {
+                              long addressId = addressRepository.AddAddress(store.Address);
+                              store.AddressId = addressId;
+                              store.Address.Id = addressId;
+                          } else {
+                              addressRepository.UpdateAddress(store.Address);
+                          }
+                      }
+
+                      storeRepository.UpdateStore(store);
+                  }
+              });
     }
 }
