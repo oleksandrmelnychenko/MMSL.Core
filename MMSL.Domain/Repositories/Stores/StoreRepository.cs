@@ -25,6 +25,13 @@ namespace MMSL.Domain.Repositories.Stores {
             return stores;
         }
 
+        public List<Store> GetAllByDealerAccountId(long dealerAccountId) =>
+            _connection.Query<Store>(
+                "SELECT * " +
+                "FROM [Stores] " +
+                "WHERE [Stores].DealerAccountId = @Id AND [Stores].IsDeleted = 0",
+                new { Id = dealerAccountId }).ToList();
+
         public Store NewStore(Store store) =>
             _connection.Query<Store, Address, Store>(
                "INSERT INTO [Stores] (IsDeleted,[Name],[ContactEmail],[BillingEmail],[DealerAccountId],[AddressId]) " +
@@ -45,6 +52,30 @@ namespace MMSL.Domain.Repositories.Stores {
                    BillingEmail = store.BillingEmail
                }
            ).SingleOrDefault();
-        
+
+        public void UpdateStore(Store store) =>
+             _connection.Query<Store>(
+                "UPDATE [Stores]" +
+                "SET [IsDeleted]=@IsDeleted,[Created]=@Created,[LastModified]=getutcdate()," +
+                "[Name]=@Name,[Description]=@Description," +
+                "[DealerAccountId]=@DealerAccountId,[AddressId]=@AddressId,[ContactEmail]=@ContactEmail," +
+                "[BillingEmail]=@BillingEmail " +
+                "WHERE [Stores].Id=@Id;",
+                store);
+
+        public Store GetStoreById(long storeId) =>
+             _connection.Query<Store, Address, Store>(
+               "SELECT [Stores].*, [Address].* " +
+               "FROM [Stores] " +
+               "LEFT JOIN [Address] ON [Address].Id = [Stores].AddressId " +
+               "WHERE [Stores].Id = @Id ",
+               (store, address) => {
+                   store.Address = address;
+                   return store;
+               },
+               new {
+                   Id = storeId
+               }
+           ).SingleOrDefault();
     }
 }

@@ -16,11 +16,11 @@ using System.Net;
 using System.Threading.Tasks;
 
 namespace MMSL.Server.Core.Controllers.BankDetails {
-    //[AssignControllerLocalizedRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.BankDetails)]
+    [AssignControllerLocalizedRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Stores)]
     [AssignControllerRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Stores)]
     public class StoreController : WebApiControllerBase {
 
-        private readonly IStoreService _bankDetailsService;
+        private readonly IStoreService _storeService;
 
         /// <summary>
         ///     ctor().
@@ -29,11 +29,11 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
         /// <param name="responseFactory"></param>
         /// <param name="localizer"></param>
         public StoreController(
-            IStoreService bankDetailsService,
+            IStoreService storeService,
             IResponseFactory responseFactory,
             IStringLocalizer<StoreController> localizer) : base(responseFactory, localizer) {
 
-            _bankDetailsService = bankDetailsService;
+            _storeService = storeService;
         }
 
         [HttpGet]
@@ -41,9 +41,27 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
         [AssignActionRoute(StoreSegments.GET_STORES)]
         public async Task<IActionResult> GetAll() {
             try {
-                List<Store> bankDetails = await _bankDetailsService.GetAllStoresAsync();
+                List<Store> stores = await _storeService.GetAllStoresAsync();
 
-                return Ok(SuccessResponseBody(bankDetails, Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(stores, Localizer["Successfully completed"]));
+            }
+            catch (InvalidIdentityException exc) {
+                return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        [AssignActionRoute(StoreSegments.GET_DEALER_STORES)]
+        public async Task<IActionResult> GetAllByDealer([FromQuery]long dealerAccountId) {
+            try {
+                List<Store> stores = await _storeService.GetAllByDealerStoresAsync(dealerAccountId);
+
+                return Ok(SuccessResponseBody(stores, Localizer["Successfully completed"]));
             }
             catch (InvalidIdentityException exc) {
                 return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));
@@ -55,18 +73,50 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize]
         [AssignActionRoute(StoreSegments.NEW_STORE)]
         public async Task<IActionResult> NewStore([FromBody] NewStoreDataContract newStoreDataContract) {
             try {
-                if (newStoreDataContract == null) throw new ArgumentNullException("NewUserDataContract");
+                if (newStoreDataContract == null) throw new ArgumentNullException("NewStoreDataContract");
 
-                Store store = await _bankDetailsService.NewStore(newStoreDataContract);
+                Store store = await _storeService.NewStoreAsync(newStoreDataContract);
 
                 return Ok(SuccessResponseBody(store, Localizer["New store has been created successfully"]));
             }
             catch (InvalidIdentityException exc) {
                 return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpPut]
+        [Authorize]
+        [AssignActionRoute(StoreSegments.UPDATE_STORE)]
+        public async Task<IActionResult> UpdateStore([FromBody]Store store) {
+            try {
+                if (store == null) throw new ArgumentNullException("UpdateStore");
+
+                await _storeService.UpdateStoreAsync(store);
+
+                return Ok(SuccessResponseBody(store, Localizer["Store successfully updated"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [AssignActionRoute(StoreSegments.DELETE_STORE)]
+        public async Task<IActionResult> DeleteStore([FromQuery]long storeId) {
+            try {
+                await _storeService.DeleteStoreAsunc(storeId);
+
+                return Ok(SuccessResponseBody(storeId, Localizer["Store successfully deleted"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);

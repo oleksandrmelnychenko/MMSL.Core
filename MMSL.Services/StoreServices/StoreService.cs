@@ -34,14 +34,24 @@ namespace MMSL.Services.BankDetailsServices {
         public Task<List<Store>> GetAllStoresAsync() =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
-                    List<Store> bankDetails = null;
+                    List<Store> stores = null;
                     IStoreRepository bankDetailRepository = _storeRepositoriesFactory.NewStoreRepository(connection);
-                    bankDetails = bankDetailRepository.GetAll();
-                    return bankDetails;
+                    stores = bankDetailRepository.GetAll();
+                    return stores;
                 }
             });
 
-        public Task<Store> NewStore(NewStoreDataContract newStoreDataContract) =>
+        public Task<List<Store>> GetAllByDealerStoresAsync(long dealerAccountId) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    List<Store> stores = null;
+                    IStoreRepository storeRepository = _storeRepositoriesFactory.NewStoreRepository(connection);
+                    stores = storeRepository.GetAllByDealerAccountId(dealerAccountId);
+                    return stores;
+                }
+            });
+
+        public Task<Store> NewStoreAsync(NewStoreDataContract newStoreDataContract) =>
              Task.Run(() => {
                  if (!MMSL.Common.Helpers.Validator.IsEmailValid(newStoreDataContract.BillingEmail))
                      UserExceptionCreator<InvalidIdentityException>.Create(
@@ -68,6 +78,42 @@ namespace MMSL.Services.BankDetailsServices {
 
                      store = storeRepository.NewStore(newStore);
                      return store;
+                 }
+             });
+
+        public Task UpdateStoreAsync(Store store) =>
+              Task.Run(() => {
+                  using (var connection = _connectionFactory.NewSqlConnection()) {
+                      IAddressRepository addressRepository = _addressRepositoriesFactory.NewAddressRepository(connection);
+                      IStoreRepository storeRepository = _storeRepositoriesFactory.NewStoreRepository(connection);
+
+                      if (store.Address != null) {
+                          if (store.Address.IsNew()) {
+                              long addressId = addressRepository.AddAddress(store.Address);
+                              store.AddressId = addressId;
+                              store.Address.Id = addressId;
+                          } else {
+                              addressRepository.UpdateAddress(store.Address);
+                          }
+                      }
+
+                      storeRepository.UpdateStore(store);
+                  }
+              });
+
+        public Task DeleteStoreAsunc(long storeId)=>
+             Task.Run(() => {
+                 using (var connection = _connectionFactory.NewSqlConnection()) {
+                     IStoreRepository storeRepository = _storeRepositoriesFactory.NewStoreRepository(connection);
+
+                     Store store = storeRepository.GetStoreById(storeId);
+
+                     if (store == null)
+                         throw new System.Exception("Store not found");
+
+                     store.IsDeleted = true;
+
+                     storeRepository.UpdateStore(store);
                  }
              });
     }
