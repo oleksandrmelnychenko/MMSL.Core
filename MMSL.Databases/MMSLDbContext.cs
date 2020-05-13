@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MMSL.Databases.TableMaps;
-using MMSL.Databases.TableMaps.BankDetails;
 using MMSL.Databases.TableMaps.Identity;
 using MMSL.Domain.Entities.Stores;
 using MMSL.Domain.Entities.Addresses;
@@ -8,6 +7,7 @@ using MMSL.Domain.Entities.Dealer;
 using MMSL.Domain.Entities.Identity;
 using MMSL.Databases.TableMaps.Dealer;
 using MMSL.Databases.TableMaps.Addresses;
+using MMSL.Databases.TableMaps.Stores;
 
 namespace MMSL.Databases {
     public class MMSLDbContext : DbContext {
@@ -21,6 +21,8 @@ namespace MMSL.Databases {
 
         public DbSet<Store> Stores { get; set; }
 
+        public DbSet<StoreMapDealerAccount> StoreDealerAccounts { get; set; }
+
         public MMSLDbContext(
             DbContextOptions<MMSLDbContext> options) : base(options) { }
 
@@ -33,6 +35,7 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new DealerAccountMap());
             modelBuilder.AddConfiguration(new AddressMap());
             modelBuilder.AddConfiguration(new StoreMap());
+            modelBuilder.AddConfiguration(new StoreDealerAccountMap());
         }
     }
 }
