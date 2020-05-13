@@ -16,7 +16,7 @@ using System.Net;
 using System.Threading.Tasks;
 
 namespace MMSL.Server.Core.Controllers.BankDetails {
-    //[AssignControllerLocalizedRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.BankDetails)]
+    [AssignControllerLocalizedRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Stores)]
     [AssignControllerRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Stores)]
     public class StoreController : WebApiControllerBase {
 
@@ -41,9 +41,27 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
         [AssignActionRoute(StoreSegments.GET_STORES)]
         public async Task<IActionResult> GetAll() {
             try {
-                List<Store> bankDetails = await _storeService.GetAllStoresAsync();
+                List<Store> stores = await _storeService.GetAllStoresAsync();
 
-                return Ok(SuccessResponseBody(bankDetails, Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(stores, Localizer["Successfully completed"]));
+            }
+            catch (InvalidIdentityException exc) {
+                return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        [AssignActionRoute(StoreSegments.GET_DEALER_STORES)]
+        public async Task<IActionResult> GetAllByDealer([FromQuery]long dealerAccountId) {
+            try {
+                List<Store> stores = await _storeService.GetAllByDealerStoresAsync(dealerAccountId);
+
+                return Ok(SuccessResponseBody(stores, Localizer["Successfully completed"]));
             }
             catch (InvalidIdentityException exc) {
                 return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));
@@ -84,6 +102,21 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
                 await _storeService.UpdateStoreAsync(store);
 
                 return Ok(SuccessResponseBody(store, Localizer["Store successfully updated"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [AssignActionRoute(StoreSegments.DELETE_STORE)]
+        public async Task<IActionResult> DeleteStore([FromQuery]long storeId) {
+            try {
+                await _storeService.DeleteStoreAsunc(storeId);
+
+                return Ok(SuccessResponseBody(storeId, Localizer["Store successfully deleted"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);
