@@ -1,4 +1,6 @@
-﻿using MMSL.Domain.DbConnectionFactory;
+﻿using MMSL.Common.Exceptions.UserExceptions;
+using MMSL.Domain.DataContracts;
+using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Options;
 using MMSL.Domain.Repositories.Options.Contracts;
 using MMSL.Services.OptionServices.Contracts;
@@ -34,5 +36,52 @@ namespace MMSL.Services.OptionServices {
                     return optionGroups;
                 }
             });
+
+        public Task<OptionGroup> NewOptionGroupAsync(NewOptionGroupDataContract newOptionGroupDataContract) =>
+             Task.Run(() => {
+                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                     IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
+
+                     OptionGroup optionGroup = new OptionGroup {
+                         Name = newOptionGroupDataContract.Name
+                     };
+
+                     optionGroup = optionGroupRepository.NewOptionGroup(optionGroup);
+
+                     return optionGroup;
+                 }
+             });
+
+        public Task UpdateOptionGroupAsync(OptionGroup optionGroup) =>
+             Task.Run(() => {
+                 using (var connection = _connectionFactory.NewSqlConnection()) {
+                     IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
+
+                     OptionGroup existed = optionGroupRepository.GetById(optionGroup.Id);
+
+                     if (existed != null) {
+                         int rowAffected = optionGroupRepository.UpdateOptionGroup(optionGroup);
+                     } else {
+                         UserExceptionCreator<NotFoundValueException>.Create(NotFoundValueException.VALUE_NOT_FOUND).Throw();
+                     }
+                 }
+             });
+
+        public Task DeleteOptionGroupAsunc(long optionGroupId) =>
+              Task.Run(() => {
+                  using (var connection = _connectionFactory.NewSqlConnection()) {
+                      IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
+
+                      OptionGroup existed = optionGroupRepository.GetById(optionGroupId);
+
+                      if (existed != null) {
+                          existed.IsDeleted = true;
+                          optionGroupRepository.UpdateOptionGroup(existed);
+                      } else {
+                          UserExceptionCreator<NotFoundValueException>.Create(NotFoundValueException.VALUE_NOT_FOUND).Throw();
+                      }                      
+                  }
+              });
+
     }
 }

@@ -24,5 +24,29 @@ namespace MMSL.Domain.Repositories.Options {
             _connection.Query<OptionGroup>(
                 "SELECT * " +
                 "FROM [OptionGroups]").ToList();
+
+        public OptionGroup GetById(long id) =>
+            _connection.Query<OptionGroup>(
+                "SELECT * " +
+                "FROM OptionGroups " +
+                "WHERE Id = @Id",
+                new { Id = id }).SingleOrDefault();
+
+        public OptionGroup NewOptionGroup(OptionGroup optionGroup) =>
+            _connection.Query<OptionGroup>(
+                "INSERT INTO[OptionGroups](IsDeleted,[Name]) " +
+                "VALUES(0,@Name) " +
+                "SELECT[OptionGroups].* " +
+                "FROM [OptionGroups] " +
+                "WHERE [OptionGroups].Id = SCOPE_IDENTITY()", optionGroup)
+            .SingleOrDefault();
+
+        public int UpdateOptionGroup(OptionGroup optionGroup) =>
+            _connection.Execute(
+                "UPDATE OptionGroups " +
+                "SET IsDeleted = @IsDeleted, Name=@Name, " +
+                "LastModified = getutcdate() " +
+                "WHERE [OptionGroups].Id = @Id;"
+                , optionGroup);
     }
 }

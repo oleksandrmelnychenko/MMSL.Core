@@ -1,8 +1,5 @@
 ﻿using MMSL.Domain.Entities.Addresses;
 using MMSL.Domain.Entities.Dealer;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MMSL.Domain.DataContracts {
     public class NewStoreDataContract {

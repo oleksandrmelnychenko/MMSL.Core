@@ -1,3 +1,13 @@
 {"Timestamp":"2020-05-12T20:07:37.7910915+03:00","Level":"Error","MessageTemplate":"Ambiguous column name 'ID'."}
 {"Timestamp":"2020-05-13T13:06:31.4084162+03:00","Level":"Error","MessageTemplate":"Method not found: 'System.Collections.Generic.List`1<MMSL.Domain.Entities.Dealer.DealerAccount> MMSL.Domain.Repositories.Dealer.Contracts.IDealerAccountRepository.GetDealerAccounts(Int32, Int32, System.String)'."}
 {"Timestamp":"2020-05-13T16:02:38.5398882+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'NewStoreDataContract')"}
+{"Timestamp":"2020-05-14T16:27:49.6178701+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
+{"Timestamp":"2020-05-14T16:28:11.0566374+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
+{"Timestamp":"2020-05-14T16:28:43.7849800+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
+{"Timestamp":"2020-05-14T16:30:52.7335524+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'NewOptionGroupDataContract')"}
+{"Timestamp":"2020-05-14T18:16:31.6605049+03:00","Level":"Error","MessageTemplate":"value not found"}
+{"Timestamp":"2020-05-14T18:32:23.0290671+03:00","Level":"Error","MessageTemplate":"Exception of type 'MMSL.Common.Exceptions.UserExceptions.NotFoundValueException' was thrown."}
+{"Timestamp":"2020-05-14T18:36:03.2611754+03:00","Level":"Error","MessageTemplate":"value not found"}
+{"Timestamp":"2020-05-14T18:44:21.9399838+03:00","Level":"Error","MessageTemplate":"value not found"}
+{"Timestamp":"2020-05-14T18:45:05.8964424+03:00","Level":"Error","MessageTemplate":"value not found"}
+{"Timestamp":"2020-05-14T19:01:21.0396118+03:00","Level":"Error","MessageTemplate":"value not found"}
