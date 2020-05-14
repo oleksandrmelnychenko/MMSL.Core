@@ -4,14 +4,16 @@ using MMSL.Databases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MMSL.Databases.Migrations
 {
     [DbContext(typeof(MMSLDbContext))]
-    partial class MMSLDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200514143733_AddedNameToDealerAccountEntity")]
+    partial class AddedNameToDealerAccountEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,36 +63,6 @@ namespace MMSL.Databases.Migrations
                     b.ToTable("Address");
                 });
 
-            modelBuilder.Entity("MMSL.Domain.Entities.CurrencyTypes.CurrencyType", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("Id")
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime?>("Created")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getutcdate()");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CurrencyTypes");
-                });
-
             modelBuilder.Entity("MMSL.Domain.Entities.Dealer.DealerAccount", b =>
                 {
                     b.Property<long>("Id")
@@ -115,8 +87,8 @@ namespace MMSL.Databases.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getutcdate()");
 
-                    b.Property<long?>("CurrencyTypeId")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Currency")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -138,8 +110,8 @@ namespace MMSL.Databases.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long?>("PaymentTypeId")
-                        .HasColumnType("bigint");
+                    b.Property<int>("PaymentType")
+                        .HasColumnType("int");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
@@ -156,10 +128,6 @@ namespace MMSL.Databases.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BillingAddressId");
-
-                    b.HasIndex("CurrencyTypeId");
-
-                    b.HasIndex("PaymentTypeId");
 
                     b.HasIndex("ShippingAddressId");
 
@@ -352,36 +320,6 @@ namespace MMSL.Databases.Migrations
                     b.ToTable("OptionUnits");
                 });
 
-            modelBuilder.Entity("MMSL.Domain.Entities.PaymentTypes.PaymentType", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("Id")
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime?>("Created")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("getutcdate()");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PaymentTypes");
-                });
-
             modelBuilder.Entity("MMSL.Domain.Entities.StoreCustomers.StoreCustomer", b =>
                 {
                     b.Property<long>("Id")
@@ -524,14 +462,6 @@ namespace MMSL.Databases.Migrations
                     b.HasOne("MMSL.Domain.Entities.Addresses.Address", "BillingAddress")
                         .WithMany()
                         .HasForeignKey("BillingAddressId");
-
-                    b.HasOne("MMSL.Domain.Entities.CurrencyTypes.CurrencyType", "CurrencyType")
-                        .WithMany()
-                        .HasForeignKey("CurrencyTypeId");
-
-                    b.HasOne("MMSL.Domain.Entities.PaymentTypes.PaymentType", "PaymentType")
-                        .WithMany()
-                        .HasForeignKey("PaymentTypeId");
 
                     b.HasOne("MMSL.Domain.Entities.Addresses.Address", "ShippingAddress")
                         .WithMany()

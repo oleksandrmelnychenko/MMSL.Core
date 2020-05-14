@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using MMSL.Common.Exceptions.DealerExceptions;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
@@ -58,6 +59,8 @@ namespace MMSL.Server.Core.Controllers.Dealer {
                 if (dealerAccount == null) throw new ArgumentNullException("dealerAccount");
 
                 return Ok(SuccessResponseBody(await _dealerAccountService.AddDealerAccount(dealerAccount), Localizer["Dealer account successfully created"]));
+            } catch (InvalidDealerModelException dealerExc) {
+                return BadRequest(ErrorResponseBody(dealerExc.Message, HttpStatusCode.BadRequest));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
@@ -71,6 +74,8 @@ namespace MMSL.Server.Core.Controllers.Dealer {
                 await _dealerAccountService.DeleteDealerAccount(dealerAccountId);
 
                 return Ok(SuccessResponseBody(dealerAccountId, Localizer["Dealer account successfully deleted"]));
+            } catch (DealerNotFoundException dealerExc) {
+                return BadRequest(ErrorResponseBody(dealerExc.Message, HttpStatusCode.NotFound));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
@@ -81,9 +86,13 @@ namespace MMSL.Server.Core.Controllers.Dealer {
         [AssignActionRoute(DealerSegments.UPDATE_DEALER)]
         public async Task<IActionResult> UpdateDealerAccount([FromBody]DealerAccount dealerAccount) {
             try {
+                if (dealerAccount == null) throw new ArgumentNullException("dealerAccount");
+
                 await _dealerAccountService.UpdateDealerAccount(dealerAccount);
 
                 return Ok(SuccessResponseBody(dealerAccount, Localizer["Dealer account successfully updated"]));
+            } catch (InvalidDealerModelException dealerExc) {
+                return BadRequest(ErrorResponseBody(dealerExc.Message, HttpStatusCode.BadRequest));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

@@ -46,16 +46,18 @@ namespace MMSL.Services.OptionServices {
                 }
             });
 
-        public Task UpdateOptionUnit(OptionUnit optionUnit) =>
+        public Task<OptionUnit> UpdateOptionUnit(OptionUnit optionUnit) =>
             Task.Factory.StartNew(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     _optionRepositoriesFactory
                         .NewOptionUnitRepository(connection)
                         .UpdateOptionUnit(optionUnit);
+
+                    return optionUnit;
                 }
             });
 
-        public Task DeleteOptionUnit(long optionUnitId) =>
+        public Task<OptionUnit> DeleteOptionUnit(long optionUnitId) =>
             Task.Factory.StartNew(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IOptionUnitRepository repository = _optionRepositoriesFactory.NewOptionUnitRepository(connection);
@@ -63,6 +65,8 @@ namespace MMSL.Services.OptionServices {
                     OptionUnit optionUnit = repository.GetOptionUnit(optionUnitId);
 
                     repository.UpdateOptionUnit(optionUnit);
+
+                    return optionUnit;
                 }
             });
     }

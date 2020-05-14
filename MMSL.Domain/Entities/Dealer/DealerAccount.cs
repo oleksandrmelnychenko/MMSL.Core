@@ -1,10 +1,16 @@
 ﻿using MMSL.Domain.Entities.Addresses;
+using MMSL.Domain.Entities.CurrencyTypes;
+using MMSL.Domain.Entities.PaymentTypes;
 using MMSL.Domain.Entities.Stores;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace MMSL.Domain.Entities.Dealer {
     public class DealerAccount : EntityBase {
+
+
+        [Required]
+        public string Name { get; set; }
 
         [Required]
         public string CompanyName { get; set; }
@@ -23,10 +29,6 @@ namespace MMSL.Domain.Entities.Dealer {
 
         public bool IsVatApplicable { get; set; }
 
-        public int Currency { get; set; }
-
-        public int PaymentType { get; set; }
-
         public bool IsCreditAllowed { get; set; }
 
         public long? BillingAddressId { get; set; }
@@ -38,6 +40,14 @@ namespace MMSL.Domain.Entities.Dealer {
         public long? ShippingAddressId { get; set; }
 
         public Address ShippingAddress { get; set; }
+
+        public long? CurrencyTypeId { get; set; }
+
+        public CurrencyType CurrencyType { get; set; }
+
+        public long? PaymentTypeId { get; set; }
+
+        public PaymentType PaymentType { get; set; }
 
         public ICollection<StoreMapDealerAccount> StoreMapDealerAccounts { get; set; }
     }
