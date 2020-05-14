@@ -20,10 +20,10 @@ namespace MMSL.Domain.Repositories.Dealer {
             _connection.QuerySingleOrDefault<long>(
                 "INSERT INTO [DealerAccount] " +
                 "([IsDeleted],[CompanyName],[Name],[Email],[AlternateEmail],[PhoneNumber]," +
-                "[TaxNumber],[IsVatApplicable],[Currency],[PaymentType],[IsCreditAllowed],[BillingAddressId]," +
+                "[TaxNumber],[IsVatApplicable],[CurrencyTypeId],[PaymentTypeId],[IsCreditAllowed],[BillingAddressId]," +
                 "[UseBillingAsShipping],[ShippingAddressId]) " +
                 "VALUES (0,@CompanyName,@Name,@Email,@AlternateEmail,@PhoneNumber," +
-                "@TaxNumber,@IsVatApplicable,@Currency,@PaymentType,@IsCreditAllowed,@BillingAddressId," +
+                "@TaxNumber,@IsVatApplicable,@CurrencyTypeId,@PaymentTypeId,@IsCreditAllowed,@BillingAddressId," +
                 "@UseBillingAsShipping,@ShippingAddressId); " +
                 "SELECT SCOPE_IDENTITY()", dealerAccount);
 
@@ -95,10 +95,16 @@ namespace MMSL.Domain.Repositories.Dealer {
 
         public void UpdateDealerAccount(DealerAccount dealerAccount) =>
             _connection.Query<DealerAccount>("UPDATE [DealerAccount]" +
-                "SET [IsDeleted]=@IsDeleted,[Created]=@Created,[LastModified]=getutcdate()," +
-                "[Name]=@Name,[CompanyName]=@CompanyName,[Email]=@Email," +
-                "[AlternateEmail]=@AlternateEmail,[PhoneNumber]=@PhoneNumber,[TaxNumber]=@TaxNumber," +
-                "[IsVatApplicable]=@IsVatApplicable,[Currency]=@Currency,[PaymentType]=@PaymentType," +
+                "SET [IsDeleted]=@IsDeleted,[LastModified]=getutcdate()," +
+                "[Name]=@Name," +
+                "[CompanyName]=@CompanyName," +
+                "[Email]=@Email," +
+                "[AlternateEmail]=@AlternateEmail," +
+                "[PhoneNumber]=@PhoneNumber," +
+                "[TaxNumber]=@TaxNumber," +
+                "[IsVatApplicable]=@IsVatApplicable," +
+                "[CurrencyTypeId]=@CurrencyTypeId," +
+                "[PaymentTypeId]=@PaymentTypeId," +
                 "[IsCreditAllowed]=@IsCreditAllowed," +
                 "[BillingAddressId]=@BillingAddressId," +
                 "[UseBillingAsShipping]=@UseBillingAsShipping," +
