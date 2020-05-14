@@ -1,5 +1,6 @@
 ﻿using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.StoreCustomers;
+using MMSL.Domain.EntityHelpers;
 using MMSL.Domain.Repositories.Addresses.Contracts;
 using MMSL.Domain.Repositories.Stores.Contracts;
 using MMSL.Services.StoreCustomerServices.Contracts;
@@ -77,12 +78,12 @@ namespace MMSL.Services.StoreCustomerServices {
                 }
             });
 
-        public Task<List<StoreCustomer>> GetCustomersByStoreAsync(long storeId) =>
+        public Task<PaginatingResult<StoreCustomer>> GetCustomersByStoreAsync(long storeId, int pageNumber, int limit, string searchPhrase) =>
             Task.Run(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     return _storeRepositoriesFactory
                         .NewStoreCustomerRepository(connection)
-                        .GetStoreCustomers(storeId);
+                        .GetStoreCustomers(storeId, pageNumber, limit, searchPhrase);
                 }
             });
 

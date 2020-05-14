@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using MMSL.Domain.Entities.Addresses;
 using MMSL.Domain.Entities.StoreCustomers;
+using MMSL.Domain.EntityHelpers;
 using MMSL.Domain.Repositories.Stores.Contracts;
 using System;
 using System.Collections.Generic;
@@ -48,15 +49,51 @@ namespace MMSL.Domain.Repositories.Stores {
                 })
             .SingleOrDefault();
 
-        public List<StoreCustomer> GetStoreCustomers(long storeId) =>
-            _connection.Query<StoreCustomer>(
-                "SELECT [StoreCustomers].* " +
+        public PaginatingResult<StoreCustomer> GetStoreCustomers(long storeId, int pageNumber, int limit, string searchPhrase) {
+            PaginatingResult<StoreCustomer> result = new PaginatingResult<StoreCustomer>();
+
+            PagerIdParams pager = new PagerIdParams(storeId, pageNumber, limit, searchPhrase);
+
+            string query = ";WITH [Paginated_StoreCustomer_CTE] AS ( " +
+                "SELECT [StoreCustomers].Id, ROW_NUMBER() OVER(ORDER BY [StoreCustomers].UserName) AS [RowNumber] " +
                 "FROM [StoreCustomers] " +
-                "WHERE [StoreCustomers].[StoreId] = @Id AND [StoreCustomers].[IsDeleted] = 0",
-                new {
-                    Id = storeId
-                })
-            .ToList();
+                "WHERE [StoreCustomers].IsDeleted = 0";
+
+            if (!string.IsNullOrEmpty(searchPhrase)) {
+                query += "AND (" +
+                    "PATINDEX('%' + @SearchTerm + '%', [StoreCustomers].UserName) > 0 " +
+                    "OR PATINDEX('%' + @SearchTerm + '%', [DealerAccount].CustomerName) > 0 " +
+                    ")";
+            }
+
+            query += ") " +
+                "SELECT [Paginated_StoreCustomer_CTE].RowNumber, [StoreCustomers].* " +
+                "FROM [StoreCustomers] " +
+                "LEFT JOIN [Paginated_StoreCustomer_CTE] ON [Paginated_StoreCustomer_CTE].Id = [StoreCustomers].Id " +
+                "WHERE [StoreCustomers].IsDeleted = 0 " +
+                "AND [Paginated_StoreCustomer_CTE].RowNumber > @Offset " +
+                "AND [Paginated_StoreCustomer_CTE].RowNumber <= @Offset + @Limit " +
+                "ORDER BY [Paginated_StoreCustomer_CTE].RowNumber";
+
+            result.Entities = _connection.Query<StoreCustomer>(query, pager)
+                .ToList();
+
+            string paginatingDetailQuery = "SELECT TOP(1) " +
+                "[PageSize]= @Limit," +
+                "[PageNumber] = (@Offset / @Limit) + 1, " +
+                "[TotalItems] = COUNT(DISTINCT [StoreCustomers].Id), " +
+                "[PagesCount] = CEILING(CONVERT(float, COUNT(DISTINCT[StoreCustomers].Id)) / @Limit) " +
+                "FROM [StoreCustomers] " +
+                "WHERE [StoreCustomers].[IsDeleted] = 0 " +
+                "AND (" +
+                "PATINDEX('%' + @SearchTerm + '%', [StoreCustomers].UserName) > 0 " +
+                "OR PATINDEX('%' + @SearchTerm + '%', [StoreCustomers].CustomerName) > 0 " +
+                ")";
+
+            result.PaginationInfo = _connection.QuerySingle<PaginationInfo>(paginatingDetailQuery, pager);
+
+            return result;
+        }
 
         public void UpdateStoreCustomer(StoreCustomer storeCustomer) =>
             _connection.Query<StoreCustomer>("UPDATE [StoreCustomers] " +

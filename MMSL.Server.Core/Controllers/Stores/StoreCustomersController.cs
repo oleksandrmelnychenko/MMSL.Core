@@ -28,9 +28,13 @@ namespace MMSL.Server.Core.Controllers.Stores {
 
         [HttpGet]
         [AssignActionRoute(StoreCustomerSegments.GET_ALL_STORE_CUSTOMER)]
-        public async Task<IActionResult> GetAll([FromQuery]long storeId) {
+        public async Task<IActionResult> GetAll(
+            [FromQuery]long storeId,
+            [FromQuery]int pageNumber,
+            [FromQuery]int limit,
+            [FromQuery]string searchPhrase) {
             try {
-                return Ok(SuccessResponseBody(await _storeCustomerService.GetCustomersByStoreAsync(storeId), Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(await _storeCustomerService.GetCustomersByStoreAsync(storeId, pageNumber, limit, searchPhrase), Localizer["Successfully completed"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
