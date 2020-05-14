@@ -10,6 +10,8 @@ using MMSL.Databases.TableMaps.Addresses;
 using MMSL.Databases.TableMaps.Stores;
 using MMSL.Domain.Entities.StoreCustomers;
 using MMSL.Databases.TableMaps.StoreCustomers;
+using MMSL.Domain.Entities.Options;
+using MMSL.Databases.TableMaps.Options;
 
 namespace MMSL.Databases {
     public class MMSLDbContext : DbContext {
@@ -27,6 +29,8 @@ namespace MMSL.Databases {
 
         public DbSet<StoreCustomer> StoreCustomers { get; set; }
 
+        public DbSet<OptionUnit> OptionUnits { get; set; }
+
         public MMSLDbContext(
             DbContextOptions<MMSLDbContext> options) : base(options) { }
 
@@ -41,6 +45,7 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new StoreMap());
             modelBuilder.AddConfiguration(new StoreDealerAccountMap());
             modelBuilder.AddConfiguration(new StoreCustomersMap());
+            modelBuilder.AddConfiguration(new OptionUnitMap());
         }
     }
 }
