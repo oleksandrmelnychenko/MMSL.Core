@@ -1,0 +1,14 @@
+﻿using MMSL.Domain.Entities.Options;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace MMSL.Services.OptionServices.Contracts {
+    public interface IOptionUnitService {
+        Task<List<OptionUnit>> GetOptionUnitsByGroupIdAsync(long optionGroupId);
+        Task<OptionUnit> GetOptionUnitByIdAsync(long optionUnitId);
+        Task<OptionUnit> AddOptionUnit(OptionUnit optionUnit);
+        Task UpdateOptionUnit(OptionUnit optionUnit);
+        Task DeleteOptionUnit(long optionUnitId);
+
+    }
+}
