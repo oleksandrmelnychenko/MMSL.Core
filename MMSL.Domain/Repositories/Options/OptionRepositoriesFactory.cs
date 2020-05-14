@@ -1,9 +1,10 @@
 ﻿using MMSL.Domain.Repositories.Options.Contracts;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Data;
 
 namespace MMSL.Domain.Repositories.Options {
     public class OptionRepositoriesFactory : IOptionRepositoriesFactory {
+        public IOptionUnitRepository NewOptionUnitRepository(IDbConnection connection) =>
+            new OptionUnitRepository(connection);
     }
 }
