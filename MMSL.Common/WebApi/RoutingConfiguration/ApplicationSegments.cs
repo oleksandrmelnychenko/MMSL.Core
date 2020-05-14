@@ -7,5 +7,7 @@
         public const string StoreCustomers = "store/customers";
 
         public const string Dealer = "dealer/accounts";
+
+        public const string Options = "options";
     }
 }
