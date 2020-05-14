@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace MMSL.Common.Exceptions {
-    public abstract class HarvesterExceptionBase : Exception, IException {
+    public abstract class MMSLExceptionBase : Exception, IException {
         public string GetUserMessageException { get; private set; }
 
         public object Body { get; private set; }

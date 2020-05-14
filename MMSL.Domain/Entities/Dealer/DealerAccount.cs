@@ -6,6 +6,10 @@ using System.ComponentModel.DataAnnotations;
 namespace MMSL.Domain.Entities.Dealer {
     public class DealerAccount : EntityBase {
 
+
+        [Required]
+        public string Name { get; set; }
+
         [Required]
         public string CompanyName { get; set; }
 

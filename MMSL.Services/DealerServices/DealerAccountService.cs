@@ -1,4 +1,7 @@
-﻿using MMSL.Domain.DbConnectionFactory;
+﻿using MMSL.Common.Exceptions;
+using MMSL.Common.Exceptions.DealerExceptions;
+using MMSL.Common.Helpers;
+using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Dealer;
 using MMSL.Domain.EntityHelpers;
 using MMSL.Domain.Repositories.Addresses.Contracts;
@@ -41,6 +44,8 @@ namespace MMSL.Services.DealerServices {
 
         public Task<long> AddDealerAccount(DealerAccount dealerAccount) =>
             Task.Run(() => {
+                ValidateDealerAccount(dealerAccount);
+
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IAddressRepository addressRepository = _addressRepositoriesFactory.NewAddressRepository(connection);
 
@@ -60,6 +65,8 @@ namespace MMSL.Services.DealerServices {
 
         public Task UpdateDealerAccount(DealerAccount dealerAccount) =>
             Task.Run(() => {
+                ValidateDealerAccount(dealerAccount);
+
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IAddressRepository addressRepository = _addressRepositoriesFactory.NewAddressRepository(connection);
 
@@ -91,12 +98,39 @@ namespace MMSL.Services.DealerServices {
                     DealerAccount dealerAccount = dealerrepository.GetDealerAccount(dealerAccountId);
 
                     if (dealerAccount == null)
-                        throw new System.Exception("Dealer not found");
+                        ExceptionCreator<DealerNotFoundException>.Create("Dealer not found")
+                            .Throw();
 
                     dealerAccount.IsDeleted = true;
 
                     dealerrepository.UpdateDealerAccount(dealerAccount);
                 }
             });
+
+        private void ValidateDealerAccount(DealerAccount dealerAccount) {
+            if (string.IsNullOrEmpty(dealerAccount.Email))
+                ExceptionCreator<InvalidDealerModelException>.Create("Email is required")
+                    .Throw();
+
+            if (Validator.IsEmailValid(dealerAccount.Email))
+                ExceptionCreator<InvalidDealerModelException>.Create("Dealer email is invalid")
+                    .Throw();
+
+            if (string.IsNullOrEmpty(dealerAccount.AlternateEmail))
+                ExceptionCreator<InvalidDealerModelException>.Create("Alternate email is required")
+                    .Throw();
+
+            if (Validator.IsEmailValid(dealerAccount.AlternateEmail))
+                ExceptionCreator<InvalidDealerModelException>.Create("Dealer alternate email is invalid")
+                    .Throw();
+
+            if (string.IsNullOrEmpty(dealerAccount.CompanyName))
+                ExceptionCreator<InvalidDealerModelException>.Create("Company name is required")
+                    .Throw();
+
+            if (string.IsNullOrEmpty(dealerAccount.Name))
+                ExceptionCreator<InvalidDealerModelException>.Create("Dealer name is required")
+                    .Throw();
+        }
     }
 }
