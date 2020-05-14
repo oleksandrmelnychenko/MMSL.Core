@@ -57,6 +57,10 @@ using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
 using IWebHostEnvironment = Microsoft.AspNetCore.Hosting.IWebHostEnvironment;
 using MMSL.Services.StoreCustomerServices.Contracts;
 using MMSL.Services.StoreCustomerServices;
+using MMSL.Services.OptionServices;
+using MMSL.Services.OptionServices.Contracts;
+using MMSL.Domain.Repositories.Options;
+using MMSL.Domain.Repositories.Options.Contracts;
 
 namespace MMSL.Server.Core
 {
@@ -152,12 +156,14 @@ namespace MMSL.Server.Core
             builder.RegisterType<DealerRepositoriesFactory>().As<IDealerRepositoriesFactory>();
             builder.RegisterType<AddressRepositoriesFactory>().As<IAddressRepositoriesFactory>();
             builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
+            builder.RegisterType<OptionRepositoriesFactory>().As<IOptionRepositoriesFactory>();
 
             builder.RegisterType<StoreService>().As<IStoreService>();
             builder.RegisterType<AccountService>().As<IAccountService>();
             builder.RegisterType<UserIdentityService>().As<IUserIdentityService>();
             builder.RegisterType<DealerAccountService>().As<IDealerAccountService>();
-            builder.RegisterType<StoreCustomerService>().As<IStoreCustomerService>();        
+            builder.RegisterType<StoreCustomerService>().As<IStoreCustomerService>();
+            builder.RegisterType<OptionUnitService>().As<IOptionUnitService>();
 
             builder.RegisterType<SqlDbContext>().As<ISqlDbContext>();
             builder.RegisterType<SqlContextFactory>().As<ISqlContextFactory>();
