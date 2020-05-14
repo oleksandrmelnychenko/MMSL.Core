@@ -154,16 +154,17 @@ namespace MMSL.Server.Core
             builder.RegisterType<IdentityRolesRepository>().As<IIdentityRolesRepository>();
             builder.RegisterType<StoreRepositoriesFactory>().As<IStoreRepositoriesFactory>();
             builder.RegisterType<DealerRepositoriesFactory>().As<IDealerRepositoriesFactory>();
+            builder.RegisterType<OptionRepositoriesFactory>().As<IOptionRepositoriesFactory>();
             builder.RegisterType<AddressRepositoriesFactory>().As<IAddressRepositoriesFactory>();
             builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
-            builder.RegisterType<OptionRepositoriesFactory>().As<IOptionRepositoriesFactory>();
 
             builder.RegisterType<StoreService>().As<IStoreService>();
             builder.RegisterType<AccountService>().As<IAccountService>();
+            builder.RegisterType<OptionUnitService>().As<IOptionUnitService>();
+            builder.RegisterType<OptionGroupService>().As<IOptionGroupService>();            
             builder.RegisterType<UserIdentityService>().As<IUserIdentityService>();
             builder.RegisterType<DealerAccountService>().As<IDealerAccountService>();
             builder.RegisterType<StoreCustomerService>().As<IStoreCustomerService>();
-            builder.RegisterType<OptionUnitService>().As<IOptionUnitService>();
 
             builder.RegisterType<SqlDbContext>().As<ISqlDbContext>();
             builder.RegisterType<SqlContextFactory>().As<ISqlContextFactory>();

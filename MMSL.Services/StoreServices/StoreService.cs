@@ -35,8 +35,8 @@ namespace MMSL.Services.BankDetailsServices {
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     List<Store> stores = null;
-                    IStoreRepository bankDetailRepository = _storeRepositoriesFactory.NewStoreRepository(connection);
-                    stores = bankDetailRepository.GetAll();
+                    IStoreRepository storeRepository = _storeRepositoriesFactory.NewStoreRepository(connection);
+                    stores = storeRepository.GetAll();
                     return stores;
                 }
             });
