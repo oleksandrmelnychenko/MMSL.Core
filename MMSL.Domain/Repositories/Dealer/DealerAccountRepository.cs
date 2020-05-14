@@ -19,10 +19,10 @@ namespace MMSL.Domain.Repositories.Dealer {
         public long AddDealerAccount(DealerAccount dealerAccount) =>
             _connection.QuerySingleOrDefault<long>(
                 "INSERT INTO [DealerAccount] " +
-                "([IsDeleted],[CompanyName],[Email],[AlternateEmail],[PhoneNumber]," +
+                "([IsDeleted],[CompanyName],[Name],[Email],[AlternateEmail],[PhoneNumber]," +
                 "[TaxNumber],[IsVatApplicable],[Currency],[PaymentType],[IsCreditAllowed],[BillingAddressId]," +
                 "[UseBillingAsShipping],[ShippingAddressId]) " +
-                "VALUES (0,@CompanyName,@Email,@AlternateEmail,@PhoneNumber," +
+                "VALUES (0,@CompanyName,@Name,@Email,@AlternateEmail,@PhoneNumber," +
                 "@TaxNumber,@IsVatApplicable,@Currency,@PaymentType,@IsCreditAllowed,@BillingAddressId," +
                 "@UseBillingAsShipping,@ShippingAddressId); " +
                 "SELECT SCOPE_IDENTITY()", dealerAccount);
@@ -96,7 +96,7 @@ namespace MMSL.Domain.Repositories.Dealer {
         public void UpdateDealerAccount(DealerAccount dealerAccount) =>
             _connection.Query<DealerAccount>("UPDATE [DealerAccount]" +
                 "SET [IsDeleted]=@IsDeleted,[Created]=@Created,[LastModified]=getutcdate()," +
-                "[CompanyName]=@CompanyName,[Email]=@Email," +
+                "[Name]=@Name,[CompanyName]=@CompanyName,[Email]=@Email," +
                 "[AlternateEmail]=@AlternateEmail,[PhoneNumber]=@PhoneNumber,[TaxNumber]=@TaxNumber," +
                 "[IsVatApplicable]=@IsVatApplicable,[Currency]=@Currency,[PaymentType]=@PaymentType," +
                 "[IsCreditAllowed]=@IsCreditAllowed," +
