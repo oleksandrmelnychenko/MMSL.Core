@@ -81,6 +81,8 @@ namespace MMSL.Server.Core.Controllers.Dealer {
         [AssignActionRoute(DealerSegments.UPDATE_DEALER)]
         public async Task<IActionResult> UpdateDealerAccount([FromBody]DealerAccount dealerAccount) {
             try {
+                if (dealerAccount == null) throw new ArgumentNullException("dealerAccount");
+
                 await _dealerAccountService.UpdateDealerAccount(dealerAccount);
 
                 return Ok(SuccessResponseBody(dealerAccount, Localizer["Dealer account successfully updated"]));
