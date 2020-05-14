@@ -16,4 +16,8 @@
     <ProjectReference Include="..\MMSL.Domain\MMSL.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="OptionServices\Contracts\" />
+  </ItemGroup>
+
 </Project>
