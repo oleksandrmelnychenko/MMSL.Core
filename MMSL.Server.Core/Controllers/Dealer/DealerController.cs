@@ -30,11 +30,13 @@ namespace MMSL.Server.Core.Controllers.Dealer {
         [AssignActionRoute(DealerSegments.GET_ALL_DEALERS)]
         public async Task<IActionResult> GetAllDealers(
             [FromQuery]int pageNumber,
+            [FromQuery]DateTime? from,
+            [FromQuery]DateTime? to,
             [FromQuery]int limit,
             [FromQuery]string searchPhrase
             ) {
             try {
-                return Ok(SuccessResponseBody(await _dealerAccountService.GetDealerAccounts(pageNumber, limit, searchPhrase), Localizer["All dealers"]));
+                return Ok(SuccessResponseBody(await _dealerAccountService.GetDealerAccounts(pageNumber, limit, searchPhrase, from, to), Localizer["All dealers"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

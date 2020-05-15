@@ -3,6 +3,7 @@ using MMSL.Domain.Entities.Addresses;
 using MMSL.Domain.Entities.Dealer;
 using MMSL.Domain.EntityHelpers;
 using MMSL.Domain.Repositories.Dealer.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -27,11 +28,19 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "@UseBillingAsShipping,@ShippingAddressId); " +
                 "SELECT SCOPE_IDENTITY()", dealerAccount);
 
-        public PaginatingResult<DealerAccount> GetDealerAccounts(int pageNumber, int limit, string searchPhrase) {
+        public PaginatingResult<DealerAccount> GetDealerAccounts(int pageNumber, int limit, string searchPhrase, DateTime? from, DateTime? to) {
 
             PaginatingResult<DealerAccount> result = new PaginatingResult<DealerAccount>();
 
             PagerParams pager = new PagerParams(pageNumber, limit, searchPhrase);
+
+            string paginatingDetailQuery = "SELECT TOP(1) " +
+                "[PageSize]= @Limit," +
+                "[PageNumber] = (@Offset / @Limit) + 1, " +
+                "[TotalItems] = COUNT(DISTINCT [DealerAccount].Id), " +
+                "[PagesCount] = CEILING(CONVERT(float, COUNT(DISTINCT[DealerAccount].Id)) / @Limit) " +
+                "FROM [DealerAccount] " +
+                "WHERE [DealerAccount].[IsDeleted] = 0 ";
 
             string query = ";WITH [Paginated_Dealers_CTE] AS ( " +
                 "SELECT [DealerAccount].Id, ROW_NUMBER() OVER(ORDER BY [DealerAccount].CompanyName) AS [RowNumber] " +
@@ -39,11 +48,29 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "WHERE [DealerAccount].IsDeleted = 0 ";
 
             if (!string.IsNullOrEmpty(searchPhrase)) {
+                paginatingDetailQuery += "AND (" +
+                    "PATINDEX('%' + @SearchTerm + '%', [DealerAccount].CompanyName) > 0 " +
+                    "OR PATINDEX('%' + @SearchTerm + '%', [DealerAccount].Email) > 0 " +
+                    "OR PATINDEX('%' + @SearchTerm + '%', [DealerAccount].PhoneNumber) > 0 " +
+                    ")";
+
                 query += "AND (" +
                     "PATINDEX('%' + @SearchTerm + '%', [DealerAccount].CompanyName) > 0 " +
                     "OR PATINDEX('%' + @SearchTerm + '%', [DealerAccount].Email) > 0 " +
                     "OR PATINDEX('%' + @SearchTerm + '%', [DealerAccount].PhoneNumber) > 0 " +
                     ")";
+            }
+
+            if (from.HasValue) {
+                paginatingDetailQuery += "AND [Created] >= Convert(datetime, @From)";
+
+                query += "AND [Created] >= Convert(datetime, @From)";
+            }
+
+            if (to.HasValue) {
+                paginatingDetailQuery += "AND [Created] <= Convert(datetime, @To)";
+
+                query += "AND [Created] <= Convert(datetime, @To)";
             }
 
             query += ") SELECT [Paginated_Dealers_CTE].RowNumber, [DealerAccount].* " +
@@ -54,23 +81,24 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "AND [Paginated_Dealers_CTE].RowNumber <= @Offset + @Limit " +
                 "ORDER BY [Paginated_Dealers_CTE].RowNumber";
 
-            result.Entities = _connection.Query<DealerAccount>(query, pager)
+            result.Entities = _connection.Query<DealerAccount>(query,
+                new {
+                    pager.Offset,
+                    pager.Limit,
+                    pager.SearchTerm,
+                    From = from,
+                    To = to
+                })
                 .ToList();
 
-            string paginatingDetailQuery = "SELECT TOP(1) " +
-                "[PageSize]= @Limit," +
-                "[PageNumber] = (@Offset / @Limit) + 1, " +
-                "[TotalItems] = COUNT(DISTINCT [DealerAccount].Id), " +
-                "[PagesCount] = CEILING(CONVERT(float, COUNT(DISTINCT[DealerAccount].Id)) / @Limit) " +
-                "FROM [DealerAccount] " +
-                "WHERE [DealerAccount].[IsDeleted] = 0 " +
-                "AND (" +
-                "PATINDEX('%' + @SearchTerm + '%', [DealerAccount].CompanyName) > 0 " +
-                "OR PATINDEX('%' + @SearchTerm + '%', [DealerAccount].Email) > 0 " +
-                "OR PATINDEX('%' + @SearchTerm + '%', [DealerAccount].PhoneNumber) > 0 " +
-                ")";
-
-            result.PaginationInfo = _connection.QuerySingle<PaginationInfo>(paginatingDetailQuery, pager);
+            result.PaginationInfo = _connection.QuerySingle<PaginationInfo>(paginatingDetailQuery,
+                new {
+                    pager.Offset,
+                    pager.Limit,
+                    pager.SearchTerm,
+                    From = from,
+                    To = to
+                });
 
             return result;
         }
