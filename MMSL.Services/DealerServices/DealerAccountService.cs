@@ -112,7 +112,7 @@ namespace MMSL.Services.DealerServices {
                 ExceptionCreator<InvalidDealerModelException>.Create("Email is required")
                     .Throw();
 
-            if (Validator.IsEmailValid(dealerAccount.Email))
+            if (!Validator.IsEmailValid(dealerAccount.Email))
                 ExceptionCreator<InvalidDealerModelException>.Create("Dealer email is invalid")
                     .Throw();
 
@@ -120,7 +120,7 @@ namespace MMSL.Services.DealerServices {
                 ExceptionCreator<InvalidDealerModelException>.Create("Alternate email is required")
                     .Throw();
 
-            if (Validator.IsEmailValid(dealerAccount.AlternateEmail))
+            if (!Validator.IsEmailValid(dealerAccount.AlternateEmail))
                 ExceptionCreator<InvalidDealerModelException>.Create("Dealer alternate email is invalid")
                     .Throw();
 
