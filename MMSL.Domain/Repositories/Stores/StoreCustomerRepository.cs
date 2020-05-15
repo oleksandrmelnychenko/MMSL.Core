@@ -49,15 +49,19 @@ namespace MMSL.Domain.Repositories.Stores {
                 })
             .SingleOrDefault();
 
-        public PaginatingResult<StoreCustomer> GetStoreCustomers(long storeId, int pageNumber, int limit, string searchPhrase) {
+        public PaginatingResult<StoreCustomer> GetStoreCustomers(long? storeId, int pageNumber, int limit, string searchPhrase) {
             PaginatingResult<StoreCustomer> result = new PaginatingResult<StoreCustomer>();
 
-            PagerIdParams pager = new PagerIdParams(storeId, pageNumber, limit, searchPhrase);
+            PagerIdParams pager = new PagerIdParams(storeId.HasValue ? storeId.Value : 0, pageNumber, limit, searchPhrase);
 
             string query = ";WITH [Paginated_StoreCustomer_CTE] AS ( " +
                 "SELECT [StoreCustomers].Id, ROW_NUMBER() OVER(ORDER BY [StoreCustomers].UserName) AS [RowNumber] " +
                 "FROM [StoreCustomers] " +
                 "WHERE [StoreCustomers].IsDeleted = 0";
+
+            if (storeId.HasValue) {
+                query += "AND [StoreId] = @Id ";
+            }
 
             if (!string.IsNullOrEmpty(searchPhrase)) {
                 query += "AND (" +
@@ -84,7 +88,13 @@ namespace MMSL.Domain.Repositories.Stores {
                 "[TotalItems] = COUNT(DISTINCT [StoreCustomers].Id), " +
                 "[PagesCount] = CEILING(CONVERT(float, COUNT(DISTINCT[StoreCustomers].Id)) / @Limit) " +
                 "FROM [StoreCustomers] " +
-                "WHERE [StoreCustomers].[IsDeleted] = 0 " +
+                "WHERE [StoreCustomers].[IsDeleted] = 0 ";
+
+            if (storeId.HasValue) {
+                query += "AND [StoreId] = @Id ";
+            }
+
+            paginatingDetailQuery +=
                 "AND (" +
                 "PATINDEX('%' + @SearchTerm + '%', [StoreCustomers].UserName) > 0 " +
                 "OR PATINDEX('%' + @SearchTerm + '%', [StoreCustomers].CustomerName) > 0 " +

@@ -29,7 +29,7 @@ namespace MMSL.Server.Core.Controllers.Stores {
         [HttpGet]
         [AssignActionRoute(StoreCustomerSegments.GET_ALL_STORE_CUSTOMER)]
         public async Task<IActionResult> GetAll(
-            [FromQuery]long storeId,
+            [FromQuery]long? storeId,
             [FromQuery]int pageNumber,
             [FromQuery]int limit,
             [FromQuery]string searchPhrase) {
