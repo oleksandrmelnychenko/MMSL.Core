@@ -65,6 +65,7 @@ using MMSL.Services.Types;
 using MMSL.Services.Types.Contracts;
 using MMSL.Domain.Repositories.Types;
 using MMSL.Domain.Repositories.Types.Contracts;
+using Microsoft.OpenApi.Models;
 
 namespace MMSL.Server.Core
 {
@@ -144,6 +145,30 @@ namespace MMSL.Server.Core
                 t => new SqlDbContext(new MMSLDbContext(t.GetService<DbContextOptions<MMSLDbContext>>())), ServiceLifetime.Transient)
             );
 
+#if DEBUG
+            services.AddSwaggerGen(c => {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MMSL API", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert JWT with Bearer into field",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        }, new string[] { }
+                    }
+                });
+            });
+#endif
+
             ContainerBuilder builder = new ContainerBuilder();
 
             builder.Populate(services);
@@ -204,6 +229,15 @@ namespace MMSL.Server.Core
                 (new JsonFormatter(), "logs\\devInfo.json");
 
             Log.Logger = logger.CreateLogger();
+
+#if DEBUG
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MMSL API V1");
+                c.RoutePrefix = string.Empty;
+            });
+#endif
 
             app.UseCors("CorsPolicy");
 

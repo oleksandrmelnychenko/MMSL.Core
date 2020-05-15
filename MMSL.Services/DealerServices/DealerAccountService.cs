@@ -50,11 +50,11 @@ namespace MMSL.Services.DealerServices {
                     IAddressRepository addressRepository = _addressRepositoriesFactory.NewAddressRepository(connection);
 
                     if (dealerAccount.BillingAddress != null) {
-                        dealerAccount.BillingAddressId = addressRepository.AddAddress(dealerAccount.BillingAddress);
+                        dealerAccount.BillingAddressId = dealerAccount.BillingAddress.Id = addressRepository.AddAddress(dealerAccount.BillingAddress);
                     }
 
                     if (dealerAccount.ShippingAddress != null) {
-                        dealerAccount.ShippingAddressId = addressRepository.AddAddress(dealerAccount.ShippingAddress);
+                        dealerAccount.ShippingAddressId = dealerAccount.ShippingAddress.Id = addressRepository.AddAddress(dealerAccount.ShippingAddress);
                     }
 
                     return _dealerRepositoriesFactory
@@ -71,17 +71,25 @@ namespace MMSL.Services.DealerServices {
                     IAddressRepository addressRepository = _addressRepositoriesFactory.NewAddressRepository(connection);
 
                     if (dealerAccount.BillingAddress != null) {
-                        addressRepository.UpdateAddress(dealerAccount.BillingAddress);
+                        if (dealerAccount.BillingAddress.IsNew()) {
+                            dealerAccount.BillingAddressId = addressRepository.AddAddress(dealerAccount.BillingAddress);
+                        } else {
+                            addressRepository.UpdateAddress(dealerAccount.BillingAddress);
+                        }
                     }
 
                     if (dealerAccount.ShippingAddress != null) {
-                        if (dealerAccount.UseBillingAsShipping) {
-                            dealerAccount.ShippingAddressId = dealerAccount.BillingAddressId;
+                        if (dealerAccount.ShippingAddress.IsNew()) {
+                            dealerAccount.ShippingAddressId = addressRepository.AddAddress(dealerAccount.ShippingAddress);
+                        } else {
+                            if (dealerAccount.UseBillingAsShipping) {
+                                dealerAccount.ShippingAddressId = dealerAccount.BillingAddressId;
 
-                            dealerAccount.ShippingAddress.IsDeleted = true;
+                                dealerAccount.ShippingAddress.IsDeleted = true;
+                            }
+
+                            addressRepository.UpdateAddress(dealerAccount.ShippingAddress);
                         }
-
-                        addressRepository.UpdateAddress(dealerAccount.ShippingAddress);
                     }
 
                     _dealerRepositoriesFactory
