@@ -61,6 +61,10 @@ using MMSL.Services.OptionServices;
 using MMSL.Services.OptionServices.Contracts;
 using MMSL.Domain.Repositories.Options;
 using MMSL.Domain.Repositories.Options.Contracts;
+using MMSL.Services.Types;
+using MMSL.Services.Types.Contracts;
+using MMSL.Domain.Repositories.Types;
+using MMSL.Domain.Repositories.Types.Contracts;
 
 namespace MMSL.Server.Core
 {
@@ -157,6 +161,7 @@ namespace MMSL.Server.Core
             builder.RegisterType<OptionRepositoriesFactory>().As<IOptionRepositoriesFactory>();
             builder.RegisterType<AddressRepositoriesFactory>().As<IAddressRepositoriesFactory>();
             builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
+            builder.RegisterType<TypesRepositoriesFactory>().As<ITypesRepositoriesFactory>();
 
             builder.RegisterType<StoreService>().As<IStoreService>();
             builder.RegisterType<AccountService>().As<IAccountService>();
@@ -165,6 +170,9 @@ namespace MMSL.Server.Core
             builder.RegisterType<UserIdentityService>().As<IUserIdentityService>();
             builder.RegisterType<DealerAccountService>().As<IDealerAccountService>();
             builder.RegisterType<StoreCustomerService>().As<IStoreCustomerService>();
+            builder.RegisterType<CurrencyTypeService>().As<ICurrencyTypeService>();
+            builder.RegisterType<PaymentTypeService>().As<IPaymentTypeService>();
+
 
             builder.RegisterType<SqlDbContext>().As<ISqlDbContext>();
             builder.RegisterType<SqlContextFactory>().As<ISqlContextFactory>();
