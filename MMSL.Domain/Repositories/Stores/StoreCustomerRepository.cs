@@ -66,7 +66,7 @@ namespace MMSL.Domain.Repositories.Stores {
             if (!string.IsNullOrEmpty(searchPhrase)) {
                 query += "AND (" +
                     "PATINDEX('%' + @SearchTerm + '%', [StoreCustomers].UserName) > 0 " +
-                    "OR PATINDEX('%' + @SearchTerm + '%', [DealerAccount].CustomerName) > 0 " +
+                    "OR PATINDEX('%' + @SearchTerm + '%', [StoreCustomers].CustomerName) > 0 " +
                     ")";
             }
 
