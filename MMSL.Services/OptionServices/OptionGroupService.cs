@@ -30,11 +30,9 @@ namespace MMSL.Services.OptionServices {
         public Task<List<OptionGroup>> GetOptionGroupsAsync() =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {                   
-                    IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
-
-                    //optionGroups = optionGroupRepository.GetAllMapped();
+                    IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);                   
                     
-                    return optionGroupRepository.GetAll(); ;
+                    return optionGroupRepository.GetAllMapped(); ;
                 }
             });
 
