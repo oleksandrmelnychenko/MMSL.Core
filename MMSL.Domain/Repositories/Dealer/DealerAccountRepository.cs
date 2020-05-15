@@ -48,29 +48,29 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "WHERE [DealerAccount].IsDeleted = 0 ";
 
             if (!string.IsNullOrEmpty(searchPhrase)) {
-                paginatingDetailQuery += "AND (" +
+                string searchPart = "AND (" +
                     "PATINDEX('%' + @SearchTerm + '%', [DealerAccount].CompanyName) > 0 " +
                     "OR PATINDEX('%' + @SearchTerm + '%', [DealerAccount].Email) > 0 " +
                     "OR PATINDEX('%' + @SearchTerm + '%', [DealerAccount].PhoneNumber) > 0 " +
                     ")";
 
-                query += "AND (" +
-                    "PATINDEX('%' + @SearchTerm + '%', [DealerAccount].CompanyName) > 0 " +
-                    "OR PATINDEX('%' + @SearchTerm + '%', [DealerAccount].Email) > 0 " +
-                    "OR PATINDEX('%' + @SearchTerm + '%', [DealerAccount].PhoneNumber) > 0 " +
-                    ")";
+                paginatingDetailQuery += searchPart;
+                query += searchPart;
+
             }
 
             if (from.HasValue) {
-                paginatingDetailQuery += "AND [Created] >= Convert(datetime, @From)";
+                string dateFromFilterPart = "AND [Created] >= Convert(datetime, @From)";
 
-                query += "AND [Created] >= Convert(datetime, @From)";
+                paginatingDetailQuery += dateFromFilterPart;
+                query += dateFromFilterPart;
             }
 
             if (to.HasValue) {
-                paginatingDetailQuery += "AND [Created] <= Convert(datetime, @To)";
+                string dateToFilterPart = "AND [Created] <= Convert(datetime, @To)";
 
-                query += "AND [Created] <= Convert(datetime, @To)";
+                paginatingDetailQuery += dateToFilterPart;
+                query += dateToFilterPart;
             }
 
             query += ") SELECT [Paginated_Dealers_CTE].RowNumber, [DealerAccount].* " +
