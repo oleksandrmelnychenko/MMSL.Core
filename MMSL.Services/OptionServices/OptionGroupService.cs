@@ -29,11 +29,12 @@ namespace MMSL.Services.OptionServices {
 
         public Task<List<OptionGroup>> GetOptionGroupsAsync() =>
             Task.Run(() => {
-                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
-                    List<OptionGroup> optionGroups = null;
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {                   
                     IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
-                    optionGroups = optionGroupRepository.GetAll();
-                    return optionGroups;
+
+                    //optionGroups = optionGroupRepository.GetAllMapped();
+                    
+                    return optionGroupRepository.GetAll(); ;
                 }
             });
 
