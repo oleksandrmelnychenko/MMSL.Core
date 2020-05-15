@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using MMSL.Domain.Entities.Addresses;
 using MMSL.Domain.Entities.StoreCustomers;
+using MMSL.Domain.Entities.Stores;
 using MMSL.Domain.EntityHelpers;
 using MMSL.Domain.Repositories.Stores.Contracts;
 using System;
@@ -71,16 +72,22 @@ namespace MMSL.Domain.Repositories.Stores {
             }
 
             query += ") " +
-                "SELECT [Paginated_StoreCustomer_CTE].RowNumber, [StoreCustomers].* " +
+                "SELECT [Paginated_StoreCustomer_CTE].RowNumber, [StoreCustomers].*, [Stores].* " +
                 "FROM [StoreCustomers] " +
                 "LEFT JOIN [Paginated_StoreCustomer_CTE] ON [Paginated_StoreCustomer_CTE].Id = [StoreCustomers].Id " +
+                "LEFT JOIN [Stores] ON [Stores].Id = [StoreCustomers].StoreId " +
                 "WHERE [StoreCustomers].IsDeleted = 0 " +
                 "AND [Paginated_StoreCustomer_CTE].RowNumber > @Offset " +
                 "AND [Paginated_StoreCustomer_CTE].RowNumber <= @Offset + @Limit " +
                 "ORDER BY [Paginated_StoreCustomer_CTE].RowNumber";
 
-            result.Entities = _connection.Query<StoreCustomer>(query, pager)
-                .ToList();
+            result.Entities = _connection.Query<StoreCustomer, Store, StoreCustomer>(
+                query,
+                (storeCustomer, store) => {
+                    storeCustomer.Store = store;
+                    return storeCustomer;
+                },
+                pager).ToList();
 
             string paginatingDetailQuery = "SELECT TOP(1) " +
                 "[PageSize]= @Limit," +
