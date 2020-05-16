@@ -31,7 +31,8 @@ namespace MMSL.Domain.Repositories.Options {
         public List<OptionUnit> GetOptionUnitsByGroup(long optionGroupId) =>
             _connection.Query<OptionUnit>(
                 "SELECT * FROM [OptionUnits] " +
-                "WHERE [OptionUnits].[OptionGroupId] = @GroupId",
+                "WHERE [OptionUnits].[OptionGroupId] = @GroupId " +
+                "AND [OptionUnits].IsDeleted = 0 ",
                 new {
                     GroupId = optionGroupId
                 }).ToList();

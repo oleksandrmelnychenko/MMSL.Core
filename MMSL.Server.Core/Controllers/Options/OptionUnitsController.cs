@@ -16,11 +16,11 @@ namespace MMSL.Server.Core.Controllers.Options {
     [Authorize]
     [AssignControllerLocalizedRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Options)]
     [AssignControllerRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Options)]
-    public class OptionUnitsControllers : WebApiControllerBase {
+    public class OptionUnitsController : WebApiControllerBase {
 
         private IOptionUnitService _optionUnitService;
 
-        public OptionUnitsControllers(IOptionUnitService optionUnitService, IResponseFactory responseFactory, IStringLocalizer<OptionUnitsControllers> localizer)
+        public OptionUnitsController(IOptionUnitService optionUnitService, IResponseFactory responseFactory, IStringLocalizer<OptionUnitsController> localizer)
             : base(responseFactory, localizer) {
             _optionUnitService = optionUnitService;
         }
