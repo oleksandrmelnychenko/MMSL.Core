@@ -57,9 +57,9 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
         [HttpGet]
         [Authorize]
         [AssignActionRoute(StoreSegments.GET_DEALER_STORES)]
-        public async Task<IActionResult> GetAllByDealer([FromQuery]long dealerAccountId) {
+        public async Task<IActionResult> GetAllByDealer([FromQuery]long dealerAccountId, [FromQuery]string searchPhrase) {
             try {
-                List<Store> stores = await _storeService.GetAllByDealerStoresAsync(dealerAccountId);
+                List<Store> stores = await _storeService.GetAllByDealerStoresAsync(dealerAccountId, searchPhrase);
 
                 return Ok(SuccessResponseBody(stores, Localizer["Successfully completed"]));
             }

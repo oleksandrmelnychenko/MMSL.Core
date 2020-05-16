@@ -14,6 +14,7 @@ namespace MMSL.Services.StoreServices.Contracts {
         Task UpdateStoreAsync(Store store);
 
         Task DeleteStoreAsunc(long storeId);
-        Task<List<Store>> GetAllByDealerStoresAsync(long dealerAccountId);
+
+        Task<List<Store>> GetAllByDealerStoresAsync(long dealerAccountId, string searchPhrase);
     }
 }

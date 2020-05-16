@@ -13,6 +13,6 @@ namespace MMSL.Domain.Repositories.Stores.Contracts {
 
         Store GetStoreById(long storeId);
 
-        List<Store> GetAllByDealerAccountId(long dealerAccountId);
+        List<Store> GetAllByDealerAccountId(long dealerAccountId, string searchPhrase);
     }
 }

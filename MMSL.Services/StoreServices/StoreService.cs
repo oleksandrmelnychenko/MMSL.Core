@@ -41,12 +41,12 @@ namespace MMSL.Services.BankDetailsServices {
                 }
             });
 
-        public Task<List<Store>> GetAllByDealerStoresAsync(long dealerAccountId) =>
+        public Task<List<Store>> GetAllByDealerStoresAsync(long dealerAccountId, string searchPhrase) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     List<Store> stores = null;
                     IStoreRepository storeRepository = _storeRepositoriesFactory.NewStoreRepository(connection);
-                    stores = storeRepository.GetAllByDealerAccountId(dealerAccountId);
+                    stores = storeRepository.GetAllByDealerAccountId(dealerAccountId, searchPhrase);
                     return stores;
                 }
             });

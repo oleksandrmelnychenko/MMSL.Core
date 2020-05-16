@@ -21,25 +21,29 @@ namespace MMSL.Domain.Repositories.Stores {
             List<Store> stores = _connection.Query<Store>(
                 "SELECT *" +
                 "FROM Stores " +
-                "WHERE IsDeleted = 0 AND PATINDEX('%' + " + (string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase) + " + '%', [Stores].Name) > 0",
-                new { SearchTerm = searchPhrase }).ToList();
+                "WHERE IsDeleted = 0 AND PATINDEX('%' + @SearchTerm + '%', [Stores].Name) > 0",
+                new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase }).ToList();
             return stores;
         }
 
-        public List<Store> GetAllByDealerAccountId(long dealerAccountId) =>
+        public List<Store> GetAllByDealerAccountId(long dealerAccountId, string searchPhrase) =>
             _connection.Query<Store, Address, Store>(
                 "SELECT [Stores].*, [Address].* " +
                 "FROM [Stores] " +
                 "LEFT JOIN [StoreMapDealerAccounts] ON [StoreMapDealerAccounts].StoreId = [Stores].Id " +
                 "LEFT JOIN [Address] ON [Address].Id = [Stores].AddressId " +
-                "WHERE [StoreMapDealerAccounts].DealerAccountId = @Id AND [Stores].IsDeleted = 0",
+                "WHERE [StoreMapDealerAccounts].DealerAccountId = @Id AND [Stores].IsDeleted = 0" +
+                "AND PATINDEX('%' + @SearchTerm + '%', [Stores].Name) > 0",
                 (store, address) => {
                     if (store != null) {
                         store.Address = address;
                     }
                     return store;
                 },
-                new { Id = dealerAccountId }).ToList();
+                new {
+                    Id = dealerAccountId,
+                    SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase
+                }).ToList();
 
         public Store NewStore(Store store, long dealerAccountId) =>
             _connection.Query<Store, Address, Store>(
