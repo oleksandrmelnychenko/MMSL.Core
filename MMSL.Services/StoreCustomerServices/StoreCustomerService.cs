@@ -78,12 +78,12 @@ namespace MMSL.Services.StoreCustomerServices {
                 }
             });
 
-        public Task<PaginatingResult<StoreCustomer>> GetCustomersByStoreAsync(long? storeId, int pageNumber, int limit, string searchPhrase) =>
+        public Task<PaginatingResult<StoreCustomer>> GetCustomersByStoreAsync(int pageNumber, int limit, string searchPhrase, string storeName, long? storeId = null) =>
             Task.Run(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     return _storeRepositoriesFactory
                         .NewStoreCustomerRepository(connection)
-                        .GetStoreCustomers(storeId, pageNumber, limit, searchPhrase);
+                        .GetStoreCustomers(pageNumber, limit, searchPhrase, storeName, storeId);
                 }
             });
 

@@ -50,25 +50,54 @@ namespace MMSL.Domain.Repositories.Stores {
                 })
             .SingleOrDefault();
 
-        public PaginatingResult<StoreCustomer> GetStoreCustomers(long? storeId, int pageNumber, int limit, string searchPhrase) {
+        public PaginatingResult<StoreCustomer> GetStoreCustomers(int pageNumber, int limit, string searchPhrase, string storeName, long? storeId = null) {
             PaginatingResult<StoreCustomer> result = new PaginatingResult<StoreCustomer>();
 
-            PagerIdParams pager = new PagerIdParams(storeId.HasValue ? storeId.Value : 0, pageNumber, limit, searchPhrase);
+            PagerIdParams pagerModel = new PagerIdParams(storeId.HasValue ? storeId.Value : 0, pageNumber, limit, searchPhrase);
+
+            var queryParams = new {
+                pagerModel.Id,
+                pagerModel.Limit,
+                pagerModel.Offset,
+                pagerModel.SearchTerm,
+                StoreName = storeName
+            };
+
+            string paginatingDetailQuery = "SELECT TOP(1) " +
+               "[PageSize]= @Limit," +
+               "[PageNumber] = (@Offset / @Limit) + 1, " +
+               "[TotalItems] = COUNT(DISTINCT [StoreCustomers].Id), " +
+               "[PagesCount] = CEILING(CONVERT(float, COUNT(DISTINCT[StoreCustomers].Id)) / @Limit) " +
+               "FROM [StoreCustomers] " +
+               "LEFT JOIN [Stores] ON [Stores].Id = [StoreCustomers].StoreId " +
+               "WHERE [StoreCustomers].[IsDeleted] = 0 ";
 
             string query = ";WITH [Paginated_StoreCustomer_CTE] AS ( " +
                 "SELECT [StoreCustomers].Id, ROW_NUMBER() OVER(ORDER BY [StoreCustomers].UserName) AS [RowNumber] " +
                 "FROM [StoreCustomers] " +
+                "LEFT JOIN [Stores] ON [Stores].Id = [StoreCustomers].StoreId " +
                 "WHERE [StoreCustomers].IsDeleted = 0";
 
             if (storeId.HasValue) {
-                query += "AND [StoreId] = @Id ";
+                string storeIdQueryPart = "AND [StoreId] = @Id ";
+
+                paginatingDetailQuery += storeIdQueryPart;
+                query += storeIdQueryPart;
+            } else if (!string.IsNullOrEmpty(storeName)) {
+                string searchByStorePart = "AND PATINDEX('%' + @StoreName + '%', [Stores].[Name]) > 0 ";
+
+                paginatingDetailQuery += searchByStorePart;
+                query += searchByStorePart;
             }
 
             if (!string.IsNullOrEmpty(searchPhrase)) {
-                query += "AND (" +
+                string searchQueryPart = "AND (" +
                     "PATINDEX('%' + @SearchTerm + '%', [StoreCustomers].UserName) > 0 " +
                     "OR PATINDEX('%' + @SearchTerm + '%', [StoreCustomers].CustomerName) > 0 " +
                     ")";
+
+                paginatingDetailQuery += searchQueryPart;
+                query += searchQueryPart;
             }
 
             query += ") " +
@@ -87,27 +116,9 @@ namespace MMSL.Domain.Repositories.Stores {
                     storeCustomer.Store = store;
                     return storeCustomer;
                 },
-                pager).ToList();
+                queryParams).ToList();
 
-            string paginatingDetailQuery = "SELECT TOP(1) " +
-                "[PageSize]= @Limit," +
-                "[PageNumber] = (@Offset / @Limit) + 1, " +
-                "[TotalItems] = COUNT(DISTINCT [StoreCustomers].Id), " +
-                "[PagesCount] = CEILING(CONVERT(float, COUNT(DISTINCT[StoreCustomers].Id)) / @Limit) " +
-                "FROM [StoreCustomers] " +
-                "WHERE [StoreCustomers].[IsDeleted] = 0 ";
-
-            if (storeId.HasValue) {
-                query += "AND [StoreId] = @Id ";
-            }
-
-            paginatingDetailQuery +=
-                "AND (" +
-                "PATINDEX('%' + @SearchTerm + '%', [StoreCustomers].UserName) > 0 " +
-                "OR PATINDEX('%' + @SearchTerm + '%', [StoreCustomers].CustomerName) > 0 " +
-                ")";
-
-            result.PaginationInfo = _connection.QuerySingle<PaginationInfo>(paginatingDetailQuery, pager);
+            result.PaginationInfo = _connection.QuerySingle<PaginationInfo>(paginatingDetailQuery, queryParams);
 
             return result;
         }

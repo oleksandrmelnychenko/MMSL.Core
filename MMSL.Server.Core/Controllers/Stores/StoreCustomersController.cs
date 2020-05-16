@@ -32,9 +32,10 @@ namespace MMSL.Server.Core.Controllers.Stores {
             [FromQuery]long? storeId,
             [FromQuery]int pageNumber,
             [FromQuery]int limit,
-            [FromQuery]string searchPhrase) {
+            [FromQuery]string searchPhrase,
+            [FromQuery]string storeName) {
             try {
-                return Ok(SuccessResponseBody(await _storeCustomerService.GetCustomersByStoreAsync(storeId, pageNumber, limit, searchPhrase), Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(await _storeCustomerService.GetCustomersByStoreAsync(pageNumber, limit, searchPhrase, storeName, storeId), Localizer["Successfully completed"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
