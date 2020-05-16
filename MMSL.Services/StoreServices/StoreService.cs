@@ -31,12 +31,12 @@ namespace MMSL.Services.BankDetailsServices {
             _addressRepositoriesFactory = addressRepositoriesFactory;
         }
 
-        public Task<List<Store>> GetAllStoresAsync() =>
+        public Task<List<Store>> GetAllStoresAsync(string searchPhrase) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     List<Store> stores = null;
                     IStoreRepository storeRepository = _storeRepositoriesFactory.NewStoreRepository(connection);
-                    stores = storeRepository.GetAll();
+                    stores = storeRepository.GetAll(searchPhrase);
                     return stores;
                 }
             });

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MMSL.Services.StoreServices.Contracts {
     public interface IStoreService {
-        Task<List<Store>> GetAllStoresAsync();
+        Task<List<Store>> GetAllStoresAsync(string searchPhrase);
 
         Task<Store> NewStoreAsync(NewStoreDataContract newStoreDataContract);
 

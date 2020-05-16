@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MMSL.Domain.Repositories.Stores.Contracts {
     public interface IStoreRepository {
-        List<Store> GetAll();
+        List<Store> GetAll(string searchPhrase);
 
         Store NewStore(Store store, long dealerAccountId);
 

@@ -17,16 +17,17 @@ namespace MMSL.Domain.Repositories.Stores {
             _connection = connection;
         }
 
-        public List<Store> GetAll() {
+        public List<Store> GetAll(string searchPhrase) {
             List<Store> stores = _connection.Query<Store>(
                 "SELECT *" +
                 "FROM Stores " +
-                "WHERE IsDeleted = 0").ToList();
+                "WHERE IsDeleted = 0 AND PATINDEX('%' + " + (string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase) + " + '%', [Stores].Name) > 0",
+                new { SearchTerm = searchPhrase }).ToList();
             return stores;
         }
 
         public List<Store> GetAllByDealerAccountId(long dealerAccountId) =>
-            _connection.Query<Store,Address, Store>(
+            _connection.Query<Store, Address, Store>(
                 "SELECT [Stores].*, [Address].* " +
                 "FROM [Stores] " +
                 "LEFT JOIN [StoreMapDealerAccounts] ON [StoreMapDealerAccounts].StoreId = [Stores].Id " +
