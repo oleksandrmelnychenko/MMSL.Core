@@ -5,6 +5,7 @@ using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.Types;
+using MMSL.Domain.DataContracts.Types;
 using MMSL.Domain.Entities.CurrencyTypes;
 using MMSL.Services.Types.Contracts;
 using Serilog;
@@ -38,7 +39,7 @@ namespace MMSL.Server.Core.Controllers.Types {
 
         [HttpPost]
         [AssignActionRoute(CurrencyTypeSegments.ADD_CURRENCY_TYPE)]
-        public async Task<IActionResult> AddOptionUnit([FromBody]CurrencyType currencyType) {
+        public async Task<IActionResult> Add([FromBody]CurrencyTypeDataContract currencyType) {
             try {
                 return Ok(SuccessResponseBody(await _currencyTypeService.AddCurrencyTypeAsync(currencyType), Localizer["Successfully created"]));
             } catch (Exception exc) {
@@ -49,7 +50,7 @@ namespace MMSL.Server.Core.Controllers.Types {
 
         [HttpPut]
         [AssignActionRoute(CurrencyTypeSegments.UPDATE_CURRENCY_TYPE)]
-        public async Task<IActionResult> UpdateOptionUnit([FromBody]CurrencyType currencyType) {
+        public async Task<IActionResult> Update([FromBody]CurrencyTypeDataContract currencyType) {
             try {
                 return Ok(SuccessResponseBody(await _currencyTypeService.UpdateCurrencyTypeAsync(currencyType), Localizer["Successfully updated"]));
             } catch (Exception exc) {
@@ -60,7 +61,7 @@ namespace MMSL.Server.Core.Controllers.Types {
 
         [HttpDelete]
         [AssignActionRoute(CurrencyTypeSegments.DELETE_CURRENCY_TYPE)]
-        public async Task<IActionResult> DeleteOptionUnit([FromQuery]long currencyTypeId) {
+        public async Task<IActionResult> Delete([FromQuery]long currencyTypeId) {
             try {
                 return Ok(SuccessResponseBody(await _currencyTypeService.DeleteCurrencyTypeAsync(currencyTypeId), Localizer["Successfully updated"]));
             } catch (Exception exc) {

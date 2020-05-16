@@ -1,4 +1,5 @@
-﻿using MMSL.Domain.DbConnectionFactory;
+﻿using MMSL.Domain.DataContracts.Types;
+using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.CurrencyTypes;
 using MMSL.Domain.Repositories.Types.Contracts;
 using MMSL.Services.Types.Contracts;
@@ -19,14 +20,16 @@ namespace MMSL.Services.Types {
             _connectionFactory = connectionFactory;
         }
 
-        public Task<CurrencyType> AddCurrencyTypeAsync(CurrencyType currencyType) =>
+        public Task<CurrencyType> AddCurrencyTypeAsync(CurrencyTypeDataContract currencyType) =>
             Task.Factory.StartNew(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
-                    currencyType.Id = _typesRepositoriesFactory
-                        .NewCurrencyTypeRepository(connection)
-                        .AddCurrencyType(currencyType);
+                    CurrencyType currency = currencyType.GetEntity();
 
-                    return currencyType;
+                    currency.Id = _typesRepositoriesFactory
+                        .NewCurrencyTypeRepository(connection)
+                        .AddCurrencyType(currency);
+
+                    return currency;
                 }
             });
 
@@ -54,14 +57,12 @@ namespace MMSL.Services.Types {
                 }
             });
 
-        public Task<CurrencyType> UpdateCurrencyTypeAsync(CurrencyType currencyType) =>
+        public Task<CurrencyType> UpdateCurrencyTypeAsync(CurrencyTypeDataContract currencyType) =>
             Task.Factory.StartNew(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
-                    var repository = _typesRepositoriesFactory.NewCurrencyTypeRepository(connection);
-
-                    repository.UpdateCurrencyType(currencyType);
-
-                    return currencyType;
+                    return _typesRepositoriesFactory
+                        .NewCurrencyTypeRepository(connection)
+                        .UpdateCurrencyType(currencyType.GetEntity());
                 }
             });
     }

@@ -29,14 +29,18 @@ namespace MMSL.Domain.Repositories.Types {
                 new { Id = id });
 
         public List<CurrencyType> GetCurrencyTypes() =>
-            _connection.Query<CurrencyType>("SELECT * FROM [CurrencyTypes]").ToList();
+            _connection.Query<CurrencyType>(
+                "SELECT * FROM [CurrencyTypes] " +
+                "WHERE [CurrencyTypes].IsDeleted = 0"
+                ).ToList();
 
         public CurrencyType UpdateCurrencyType(CurrencyType currencyType) =>
             _connection.QuerySingleOrDefault<CurrencyType>(
                 "UPDATE [CurrencyTypes] SET " +
                 "[IsDeleted] = @IsDeleted, [LastModified]=getutcdate(), " +
                 "[Name] = @Name, [Description] = @Description " +
-                "WHERE [CurrencyTypes].Id = @Id",
+                "WHERE [CurrencyTypes].Id = @Id;" +
+                "SELECT * FROM [CurrencyTypes] WHERE [CurrencyTypes].Id = @Id;",
                 currencyType);
     }
 }

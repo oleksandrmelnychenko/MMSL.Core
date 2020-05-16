@@ -1,4 +1,5 @@
-﻿using MMSL.Domain.DbConnectionFactory;
+﻿using MMSL.Domain.DataContracts.Types;
+using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.PaymentTypes;
 using MMSL.Domain.Repositories.Types.Contracts;
 using MMSL.Services.Types.Contracts;
@@ -17,14 +18,16 @@ namespace MMSL.Services.Types {
             _connectionFactory = connectionFactory;
         }
 
-        public Task<PaymentType> AddPaymentTypeAsync(PaymentType paymentType)  =>
+        public Task<PaymentType> AddPaymentTypeAsync(PaymentTypeDataContract paymentType)  =>
             Task.Factory.StartNew(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
-                    paymentType.Id = _typesRepositoriesFactory
-                        .NewPaymentTypeRepository(connection)
-                        .AddPaymentType(paymentType);
+                    PaymentType payment = paymentType.GetEntity();
 
-                    return paymentType;
+                    payment.Id = _typesRepositoriesFactory
+                        .NewPaymentTypeRepository(connection)
+                        .AddPaymentType(paymentType.GetEntity());
+
+                    return payment;
                 }
             });
 
@@ -52,12 +55,12 @@ namespace MMSL.Services.Types {
                 }
             });
 
-        public Task<PaymentType> UpdatePaymentTypeAsync(PaymentType paymentType) =>
+        public Task<PaymentType> UpdatePaymentTypeAsync(PaymentTypeDataContract paymentType) =>
             Task.Factory.StartNew(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     return _typesRepositoriesFactory
                          .NewPaymentTypeRepository(connection)
-                         .UpdatePaymentType(paymentType);
+                         .UpdatePaymentType(paymentType.GetEntity());
                 }
             });
     }

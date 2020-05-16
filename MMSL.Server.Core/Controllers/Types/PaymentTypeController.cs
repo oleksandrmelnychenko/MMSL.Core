@@ -5,6 +5,7 @@ using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.Types;
+using MMSL.Domain.DataContracts.Types;
 using MMSL.Domain.Entities.PaymentTypes;
 using MMSL.Services.Types.Contracts;
 using Serilog;
@@ -38,7 +39,7 @@ namespace MMSL.Server.Core.Controllers.Types {
 
         [HttpPost]
         [AssignActionRoute(PaymentTypeSegments.ADD_PAYMENT_TYPE)]
-        public async Task<IActionResult> AddOptionUnit([FromBody]PaymentType paymentType) {
+        public async Task<IActionResult> Add([FromBody]PaymentTypeDataContract paymentType) {
             try {
                 return Ok(SuccessResponseBody(await _paymentTypeService.AddPaymentTypeAsync(paymentType), Localizer["Successfully created"]));
             } catch (Exception exc) {
@@ -49,7 +50,7 @@ namespace MMSL.Server.Core.Controllers.Types {
 
         [HttpPut]
         [AssignActionRoute(PaymentTypeSegments.UPDATE_PAYMENT_TYPE)]
-        public async Task<IActionResult> UpdateOptionUnit([FromBody]PaymentType paymentType) {
+        public async Task<IActionResult> Update([FromBody]PaymentTypeDataContract paymentType) {
             try {
                 return Ok(SuccessResponseBody(await _paymentTypeService.UpdatePaymentTypeAsync(paymentType), Localizer["Successfully updated"]));
             } catch (Exception exc) {
@@ -60,7 +61,7 @@ namespace MMSL.Server.Core.Controllers.Types {
 
         [HttpDelete]
         [AssignActionRoute(PaymentTypeSegments.DELETE_PAYMENT_TYPE)]
-        public async Task<IActionResult> DeleteOptionUnit([FromQuery]long paymentTypeId) {
+        public async Task<IActionResult> Delete([FromQuery]long paymentTypeId) {
             try {
                 return Ok(SuccessResponseBody(await _paymentTypeService.DeletePaymentTypeAsync(paymentTypeId), Localizer["Successfully updated"]));
             } catch (Exception exc) {

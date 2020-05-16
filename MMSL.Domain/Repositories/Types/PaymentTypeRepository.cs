@@ -28,14 +28,18 @@ namespace MMSL.Domain.Repositories.Types {
                 new { Id = id });
 
         public List<PaymentType> GetPaymentTypes() =>
-            _connection.Query<PaymentType>("SELECT * FROM [PaymentTypes]").ToList();
+            _connection.Query<PaymentType>(
+                "SELECT * FROM [PaymentTypes] " +
+                "WHERE [PaymentTypes].IsDeleted = 0"
+                ).ToList();
 
         public PaymentType UpdatePaymentType(PaymentType paymentType) =>
             _connection.QuerySingleOrDefault<PaymentType>(
                 "UPDATE [PaymentTypes] SET " +
                 "[IsDeleted] = @IsDeleted, [LastModified]=getutcdate(), " +
                 "[Name] = @Name, [Description] = @Description " +
-                "WHERE [PaymentTypes].Id = @Id",
+                "WHERE [PaymentTypes].Id = @Id;" +
+                "SELECT * FROM [PaymentTypes] WHERE [PaymentTypes].Id = @Id",
                 paymentType);
     }
 }
