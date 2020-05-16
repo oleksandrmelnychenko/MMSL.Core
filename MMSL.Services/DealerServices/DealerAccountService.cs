@@ -50,11 +50,11 @@ namespace MMSL.Services.DealerServices {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IAddressRepository addressRepository = _addressRepositoriesFactory.NewAddressRepository(connection);
 
-                    if (dealerAccount.BillingAddress != null) {
+                    if (dealerAccount.BillingAddress != null && !dealerAccount.BillingAddress.IsNew()) {
                         dealerAccount.BillingAddressId = dealerAccount.BillingAddress.Id = addressRepository.AddAddress(dealerAccount.BillingAddress);
                     }
 
-                    if (dealerAccount.ShippingAddress != null) {
+                    if (dealerAccount.ShippingAddress != null && !dealerAccount.ShippingAddress.IsNew()) {
                         dealerAccount.ShippingAddressId = dealerAccount.ShippingAddress.Id = addressRepository.AddAddress(dealerAccount.ShippingAddress);
                     }
 
