@@ -94,7 +94,7 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
                 return Ok(SuccessResponseBody(await _dealerAccountService.GetDealerAccount(dealerAccount.Id), Localizer["Dealer account successfully updated"]));
             } catch (InvalidDealerModelException dealerExc) {
-                return BadRequest(ErrorResponseBody(dealerExc.Message, HttpStatusCode.BadRequest));
+                return BadRequest(ErrorResponseBody(dealerExc.GetUserMessageException, HttpStatusCode.BadRequest));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
