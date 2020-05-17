@@ -11,3 +11,4 @@
 {"Timestamp":"2020-05-14T18:44:21.9399838+03:00","Level":"Error","MessageTemplate":"value not found"}
 {"Timestamp":"2020-05-14T18:45:05.8964424+03:00","Level":"Error","MessageTemplate":"value not found"}
 {"Timestamp":"2020-05-14T19:01:21.0396118+03:00","Level":"Error","MessageTemplate":"value not found"}
+{"Timestamp":"2020-05-17T15:05:33.5272641+03:00","Level":"Error","MessageTemplate":"The INSERT statement conflicted with the FOREIGN KEY constraint \"FK_DealerAccount_Address_BillingAddressId\". The conflict occurred in database \"Mmsl\", table \"dbo.Address\", column 'Id'.\r\nThe statement has been terminated."}
