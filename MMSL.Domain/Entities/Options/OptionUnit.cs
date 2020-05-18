@@ -2,9 +2,12 @@
 
 namespace MMSL.Domain.Entities.Options {
     public class OptionUnit : EntityBase {
-        public string Name { get; set; }
+
         public string Value { get; set; }
+
         public string ImageUrl { get; set; }
+
+        public bool IsMandatory { get; set; }
 
         public long OptionGroupId { get; set; }
 
