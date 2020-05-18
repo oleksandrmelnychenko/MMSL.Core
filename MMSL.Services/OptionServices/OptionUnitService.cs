@@ -64,6 +64,8 @@ namespace MMSL.Services.OptionServices {
 
                     OptionUnit optionUnit = repository.GetOptionUnit(optionUnitId);
 
+                    optionUnit.IsDeleted = true;
+
                     repository.UpdateOptionUnit(optionUnit);
 
                     return optionUnit;

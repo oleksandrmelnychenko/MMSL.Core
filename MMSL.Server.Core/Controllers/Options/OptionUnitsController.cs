@@ -5,7 +5,9 @@ using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.Options;
+using MMSL.Domain.DataContracts;
 using MMSL.Domain.Entities.Options;
+using MMSL.Server.Core.Helpers;
 using MMSL.Services.OptionServices.Contracts;
 using Serilog;
 using System;
@@ -49,9 +51,15 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpPost]
         [AssignActionRoute(OptionUnitSegments.ADD_OPTION_UNIT)]
-        public async Task<IActionResult> AddOptionUnit([FromBody]OptionUnit optionUnit) {
+        public async Task<IActionResult> AddOptionUnit([FromForm]OptionUnitDataContract optionUnit) {
             try {
-                return Ok(SuccessResponseBody(await _optionUnitService.AddOptionUnit(optionUnit), Localizer["Successfully created"]));
+                OptionUnit optionUnitEntity = optionUnit.GetEntity();
+
+                if (optionUnit.Image != null) {
+                    optionUnitEntity.ImageUrl = await FileUploadingHelper.UploadFile(optionUnit.Image);
+                }
+
+                return Ok(SuccessResponseBody(await _optionUnitService.AddOptionUnit(optionUnitEntity), Localizer["Successfully created"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
@@ -60,9 +68,21 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpPut]
         [AssignActionRoute(OptionUnitSegments.UPDATE_OPTION_UNIT)]
-        public async Task<IActionResult> UpdateOptionUnit([FromBody]OptionUnit optionUnit) {
+        public async Task<IActionResult> UpdateOptionUnit([FromForm]OptionUnitUpdateDataContract updateOptionUnit) {
             try {
-                return Ok(SuccessResponseBody(await _optionUnitService.UpdateOptionUnit(optionUnit), Localizer["Successfully updated"]));
+                OptionUnit entity = updateOptionUnit.GetEntity();
+
+                if (updateOptionUnit.Image != null) {
+                    string oldImage = entity.ImageUrl;
+
+                    entity.ImageUrl = await FileUploadingHelper.UploadFile(updateOptionUnit.Image);
+
+                    if (!string.IsNullOrEmpty(oldImage)) {
+                        FileUploadingHelper.DeleteFile(oldImage);
+                    }
+                }
+
+                return Ok(SuccessResponseBody(await _optionUnitService.UpdateOptionUnit(entity), Localizer["Successfully updated"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
