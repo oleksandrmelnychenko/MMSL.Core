@@ -3,6 +3,8 @@
 namespace MMSL.Domain.Entities.Options {
     public class OptionUnit : EntityBase {
 
+        public int OrderIndex { get; set; }
+
         public string Value { get; set; }
 
         public string ImageUrl { get; set; }
