@@ -40,7 +40,8 @@ namespace MMSL.Services.OptionServices {
                      IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
 
                      OptionGroup optionGroup = new OptionGroup {
-                         Name = newOptionGroupDataContract.Name
+                         Name = newOptionGroupDataContract.Name,
+                         IsMandatory = newOptionGroupDataContract.IsMandatory
                      };
 
                      optionGroup = optionGroupRepository.NewOptionGroup(optionGroup);
