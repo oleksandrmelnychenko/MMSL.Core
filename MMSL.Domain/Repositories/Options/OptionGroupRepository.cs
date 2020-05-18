@@ -60,8 +60,8 @@ namespace MMSL.Domain.Repositories.Options {
 
             public OptionGroup NewOptionGroup(OptionGroup optionGroup) =>
                 _connection.Query<OptionGroup>(
-                    "INSERT INTO[OptionGroups](IsDeleted,[Name]) " +
-                    "VALUES(0,@Name) " +
+                    "INSERT INTO[OptionGroups](IsDeleted,[Name],[IsMandatory]) " +
+                    "VALUES(0,@Name,@IsMandatory) " +
                     "SELECT[OptionGroups].* " +
                     "FROM [OptionGroups] " +
                     "WHERE [OptionGroups].Id = SCOPE_IDENTITY()", optionGroup)
@@ -70,7 +70,7 @@ namespace MMSL.Domain.Repositories.Options {
             public int UpdateOptionGroup(OptionGroup optionGroup) =>
                 _connection.Execute(
                     "UPDATE OptionGroups " +
-                    "SET IsDeleted = @IsDeleted, Name=@Name, " +
+                    "SET IsDeleted = @IsDeleted, Name=@Name,IsMandatory=@IsMandatory, " +
                     "LastModified = getutcdate() " +
                     "WHERE [OptionGroups].Id = @Id;"
                     , optionGroup);
