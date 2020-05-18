@@ -10,6 +10,8 @@ namespace MMSL.Domain.Entities.Options {
 
         public string Name { get; set; }
 
+        public bool IsMandatory { get; set; }
+
         public ICollection<OptionUnit> OptionUnits { get; set; }
     }
 }
