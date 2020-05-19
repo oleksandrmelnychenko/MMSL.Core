@@ -56,6 +56,24 @@ namespace MMSL.Server.Core.Controllers.Options {
             }
         }
 
+
+        [HttpGet]
+        [Authorize]
+        [AssignActionRoute(OptionGroupSegments.GET_OPTION_GROUP_BY_ID)]
+        public async Task<IActionResult> GetById([FromQuery]long groupId) {
+            try {
+                if (groupId == default(long))
+                    throw new ArgumentNullException(nameof(groupId));
+
+                return Ok(SuccessResponseBody(await _optionGroupService.GetOptionGroupAsync(groupId), Localizer["Successfully completed"]));
+            } catch (InvalidIdentityException exc) {
+                return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
         [HttpPost]
         [Authorize]
         [AssignActionRoute(OptionGroupSegments.NEW_OPTION_GROUP)]

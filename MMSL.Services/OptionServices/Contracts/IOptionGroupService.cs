@@ -8,6 +8,8 @@ namespace MMSL.Services.OptionServices.Contracts {
 
         Task<List<OptionGroup>> GetOptionGroupsAsync();
 
+        Task<OptionGroup> GetOptionGroupAsync(long groupId);
+
         Task<OptionGroup> NewOptionGroupAsync(NewOptionGroupDataContract newOptionGroupDataContract);
 
         Task UpdateOptionGroupAsync(OptionGroup optionGroup);

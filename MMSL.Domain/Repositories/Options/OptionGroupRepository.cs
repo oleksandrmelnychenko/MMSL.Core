@@ -34,7 +34,7 @@ namespace MMSL.Domain.Repositories.Options {
                 "FROM [OptionGroups] AS og " +
                 "LEFT JOIN [OptionUnits] AS u ON u.[OptionGroupId] = og.Id " +
                 "WHERE og.[IsDeleted] = 0 " +
-                "ORDER BY ORDER BY og.Id, u.OrderIndex ",
+                "ORDER BY og.Id, u.OrderIndex ",
                 (optionGroup, optionUnit) => {
                     if (optionGroups.Any(x => x.Id == optionGroup.Id)) {
                         optionGroup = optionGroups.First(x => x.Id == optionGroup.Id);
@@ -52,12 +52,29 @@ namespace MMSL.Domain.Repositories.Options {
             return optionGroups;
         }
 
-        public OptionGroup GetById(long id) =>
-            _connection.Query<OptionGroup>(
-                "SELECT * " +
+        public OptionGroup GetById(long id) {
+            OptionGroup groupResult = null;
+
+            _connection.Query<OptionGroup, OptionUnit, OptionGroup>(
+                "SELECT OptionGroups.*, [OptionUnits].* " +
                 "FROM OptionGroups " +
-                "WHERE Id = @Id",
-                new { Id = id }).SingleOrDefault();
+                "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id AND [OptionUnits].IsDeleted = 0" +
+                "WHERE [OptionGroups].Id = @Id",
+                (group, unit) => {
+                    if (groupResult == null) {
+                        groupResult = group;
+                    }
+
+                    if (unit != null) {
+                        groupResult.OptionUnits.Add(unit);
+                    }
+
+                    return group;
+                },
+                new { Id = id });
+
+            return groupResult;
+        }
 
         public OptionGroup NewOptionGroup(OptionGroup optionGroup) =>
             _connection.Query<OptionGroup>(
