@@ -12,3 +12,9 @@
 {"Timestamp":"2020-05-14T18:45:05.8964424+03:00","Level":"Error","MessageTemplate":"value not found"}
 {"Timestamp":"2020-05-14T19:01:21.0396118+03:00","Level":"Error","MessageTemplate":"value not found"}
 {"Timestamp":"2020-05-17T15:05:33.5272641+03:00","Level":"Error","MessageTemplate":"The INSERT statement conflicted with the FOREIGN KEY constraint \"FK_DealerAccount_Address_BillingAddressId\". The conflict occurred in database \"Mmsl\", table \"dbo.Address\", column 'Id'.\r\nThe statement has been terminated."}
+{"Timestamp":"2020-05-19T17:20:47.8039325+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
+{"Timestamp":"2020-05-19T17:21:34.3873773+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
+{"Timestamp":"2020-05-19T17:24:22.9521232+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
+{"Timestamp":"2020-05-19T17:25:27.0466463+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
+{"Timestamp":"2020-05-19T17:25:51.4911213+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
+{"Timestamp":"2020-05-19T17:26:01.8356916+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
