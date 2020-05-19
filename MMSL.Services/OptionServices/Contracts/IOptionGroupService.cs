@@ -13,6 +13,7 @@ namespace MMSL.Services.OptionServices.Contracts {
         Task<OptionGroup> NewOptionGroupAsync(NewOptionGroupDataContract newOptionGroupDataContract);
 
         Task UpdateOptionGroupAsync(OptionGroup optionGroup);
+
         Task DeleteOptionGroupAsunc(long optionGroupId);
     }
 }
