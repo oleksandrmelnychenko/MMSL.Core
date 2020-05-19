@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using MMSL.Domain.Entities.Products;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace MMSL.Domain.Entities.Options {
@@ -13,5 +14,7 @@ namespace MMSL.Domain.Entities.Options {
         public bool IsMandatory { get; set; }
 
         public ICollection<OptionUnit> OptionUnits { get; set; }
+
+        public ICollection<ProductCategoryMapOptionGroup> ProductCategoryMaps { get; set; }
     }
 }

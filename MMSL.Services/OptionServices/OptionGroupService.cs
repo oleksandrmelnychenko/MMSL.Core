@@ -34,6 +34,15 @@ namespace MMSL.Services.OptionServices {
                 }
             });
 
+        public Task<OptionGroup> GetOptionGroupAsync(long groupId) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    return _optionRepositoriesFactory
+                        .NewOptionGroupRepository(connection)
+                        .GetById(groupId);
+                }
+            });
+
         public Task<OptionGroup> NewOptionGroupAsync(NewOptionGroupDataContract newOptionGroupDataContract) =>
              Task.Run(() => {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
