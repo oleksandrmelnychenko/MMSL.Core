@@ -14,4 +14,10 @@
     <ProjectReference Include="..\MMSL.Common\MMSL.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\Measurements\" />
+    <Folder Include="Entities\Styles\" />
+    <Folder Include="Entities\Products\" />
+  </ItemGroup>
+
 </Project>
