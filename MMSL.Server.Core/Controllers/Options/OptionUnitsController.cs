@@ -11,6 +11,7 @@ using MMSL.Server.Core.Helpers;
 using MMSL.Services.OptionServices.Contracts;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -95,6 +96,20 @@ namespace MMSL.Server.Core.Controllers.Options {
             try {
                 return Ok(SuccessResponseBody(await _optionUnitService.DeleteOptionUnit(optionUnitId), Localizer["Successfully updated"]));
             } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpPut]
+        [AssignActionRoute(OptionUnitSegments.UPDATE_ORDER_INDEX)]
+        public async Task<IActionResult> UpdateOptionUnit([FromBody]List<UpdateOrderIndexDataContract> orderIndexes) {
+            try {
+                await _optionUnitService.UpdateOrderIndexesAsync(orderIndexes);
+
+                return Ok(SuccessResponseBody(orderIndexes, Localizer["Successfully updated"]));
+            }
+            catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }

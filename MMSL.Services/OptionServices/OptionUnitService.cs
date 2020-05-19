@@ -1,4 +1,5 @@
-﻿using MMSL.Domain.DbConnectionFactory;
+﻿using MMSL.Domain.DataContracts;
+using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Options;
 using MMSL.Domain.Repositories.Options.Contracts;
 using MMSL.Services.OptionServices.Contracts;
@@ -69,6 +70,20 @@ namespace MMSL.Services.OptionServices {
                     repository.UpdateOptionUnit(optionUnit);
 
                     return optionUnit;
+                }
+            });
+
+        public Task UpdateOrderIndexesAsync(List<UpdateOrderIndexDataContract> orderIndexes) =>
+            Task.Run(() => {
+                using (var connection = _connectionFactory.NewSqlConnection()) {
+                    IOptionUnitRepository repository = _optionRepositoriesFactory.NewOptionUnitRepository(connection);
+
+                    foreach (var item in orderIndexes) {
+                        OptionUnit exist = repository.GetOptionUnit(item.OptionUnitId);
+                        if (exist != null) {
+                            repository.UpdateOptionUnitIndex(item.OptionUnitId, item.OrderIndex);
+                        }
+                    }
                 }
             });
     }
