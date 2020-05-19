@@ -59,7 +59,8 @@ namespace MMSL.Domain.Repositories.Options {
                 "SELECT OptionGroups.*, [OptionUnits].* " +
                 "FROM OptionGroups " +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id AND [OptionUnits].IsDeleted = 0" +
-                "WHERE [OptionGroups].Id = @Id",
+                "WHERE [OptionGroups].Id = @Id AND [OptionGroups].IsDeleted = 0 " +
+                "ORDER BY [OptionUnits].OrderIndex",
                 (group, unit) => {
                     if (groupResult == null) {
                         groupResult = group;
