@@ -116,7 +116,7 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
         [AssignActionRoute(StoreSegments.DELETE_STORE)]
         public async Task<IActionResult> DeleteStore([FromQuery]long storeId) {
             try {
-                await _storeService.DeleteStoreAsunc(storeId);
+                await _storeService.DeleteStoreAsync(storeId);
 
                 return Ok(SuccessResponseBody(storeId, Localizer["Store successfully deleted"]));
             }

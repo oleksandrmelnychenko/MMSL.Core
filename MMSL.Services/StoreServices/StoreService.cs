@@ -101,7 +101,7 @@ namespace MMSL.Services.BankDetailsServices {
                   }
               });
 
-        public Task DeleteStoreAsunc(long storeId)=>
+        public Task DeleteStoreAsync(long storeId)=>
              Task.Run(() => {
                  using (var connection = _connectionFactory.NewSqlConnection()) {
                      IStoreRepository storeRepository = _storeRepositoriesFactory.NewStoreRepository(connection);
