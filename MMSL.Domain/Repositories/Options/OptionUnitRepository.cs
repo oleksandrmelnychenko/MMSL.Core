@@ -44,5 +44,8 @@ namespace MMSL.Domain.Repositories.Options {
                 "[Value] = @Value, [ImageUrl] = @ImageUrl, [OptionGroupId] = @OptionGroupId " +
                 "WHERE [OptionUnits].Id = @Id;",
                 optionUnit);
+
+        public void UpdateOptionUnitIndex(long optionUnitId, int orderIndex) =>
+            _connection.Execute("", new { Id = optionUnitId, OrderIndex = orderIndex });
     }
 }

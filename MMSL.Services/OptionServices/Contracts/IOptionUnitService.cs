@@ -1,4 +1,5 @@
-﻿using MMSL.Domain.Entities.Options;
+﻿using MMSL.Domain.DataContracts;
+using MMSL.Domain.Entities.Options;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,6 +10,6 @@ namespace MMSL.Services.OptionServices.Contracts {
         Task<OptionUnit> AddOptionUnit(OptionUnit optionUnit);
         Task<OptionUnit> UpdateOptionUnit(OptionUnit optionUnit);
         Task<OptionUnit> DeleteOptionUnit(long optionUnitId);
-
+        Task<object> UpdateOrderIndexesAsync(List<UpdateOrderIndexDataContract> optionIndexes);
     }
 }

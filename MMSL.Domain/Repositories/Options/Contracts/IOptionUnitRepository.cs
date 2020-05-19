@@ -7,5 +7,6 @@ namespace MMSL.Domain.Repositories.Options.Contracts {
         OptionUnit GetOptionUnit(long optionUnitId);
         long AddOptionUnit(OptionUnit optionUnit);
         void UpdateOptionUnit(OptionUnit optionUnit);
+        void UpdateOptionUnitIndex(long optionUnitId, int optionIndex);
     }
 }
