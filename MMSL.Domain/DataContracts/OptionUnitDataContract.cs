@@ -11,8 +11,6 @@ namespace MMSL.Domain.DataContracts {
 
         public long OptionGroupId { get; set; }
 
-        public IFormFile Image { get; set; }
-
         public override OptionUnit GetEntity() {
             return new OptionUnit {
                 Id = Id,

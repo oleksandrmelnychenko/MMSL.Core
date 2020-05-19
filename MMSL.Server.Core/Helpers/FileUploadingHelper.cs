@@ -6,18 +6,28 @@ using System.Threading.Tasks;
 
 namespace MMSL.Server.Core.Helpers {
     public class FileUploadingHelper {
-        public static async Task<string> UploadFile(IFormFile formFile) {
+
+        private const char urlSeparator = '/';
+
+        public static async Task<string> UploadFile(string baseUrl, IFormFile formFile) {
             string fullFilePath = Path.Combine(ConfigurationManager.UploadsPath, $"{DateTime.Now.Ticks}{Path.GetExtension(formFile.FileName)}");
 
-            using (var stream = File.Create(fullFilePath)) {
+            using (FileStream stream = File.Create(fullFilePath)) {
                 await formFile.CopyToAsync(stream);
             }
 
-            return fullFilePath.Replace($"{ConfigurationManager.ContentRootPath}{Path.DirectorySeparatorChar}", string.Empty);
+            string relatedPath = fullFilePath
+                .Replace(ConfigurationManager.ContentRootPath, baseUrl)
+                .Replace(Path.DirectorySeparatorChar, urlSeparator);
+
+            return new Uri(relatedPath).AbsoluteUri;
         }
 
-        public static void DeleteFile(string filePath) {
-            string fullFilePath = Path.Combine(ConfigurationManager.ContentRootPath, filePath);
+        public static void DeleteFile(string baseUrl, string filePath) {
+
+            string fullFilePath = filePath
+                .Replace(baseUrl, ConfigurationManager.ContentRootPath)
+                .Replace(urlSeparator, Path.DirectorySeparatorChar);
 
             if (File.Exists(fullFilePath)) {
                 File.Delete(fullFilePath);

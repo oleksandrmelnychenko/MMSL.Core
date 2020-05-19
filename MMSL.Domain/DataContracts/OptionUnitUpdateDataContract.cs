@@ -10,8 +10,6 @@ namespace MMSL.Domain.DataContracts {
 
         public bool IsMandatory { get; set; }
 
-        public IFormFile Image { get; set; }
-
         public string ImageUrl { get; set; }
 
         public override OptionUnit GetEntity() {
