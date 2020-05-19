@@ -54,12 +54,12 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpPost]
         [AssignActionRoute(OptionUnitSegments.ADD_OPTION_UNIT)]
-        public async Task<IActionResult> AddOptionUnit([FromForm]OptionUnitDataContract optionUnit, [FromForm]FileFormData formData) {
+        public async Task<IActionResult> AddOptionUnit([FromQuery]OptionUnitDataContract optionUnit, [FromForm]FileFormData formData) {
             try {
                 OptionUnit optionUnitEntity = optionUnit.GetEntity();
 
                 if (formData.File != null) {
-                    optionUnitEntity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}.{Request.Host}", formData.File);
+                    optionUnitEntity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}://{Request.Host}", formData.File);
                 }
 
                 return Ok(SuccessResponseBody(await _optionUnitService.AddOptionUnit(optionUnitEntity), Localizer["Successfully created"]));
