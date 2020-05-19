@@ -81,7 +81,7 @@ namespace MMSL.Server.Core.Controllers.Options {
                 string oldImage = entity.ImageUrl;
 
                 if (formData.File != null) {
-                    entity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}.{Request.Host}", formData.File);
+                    entity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}://{Request.Host}", formData.File);
                 }
 
                 if (string.IsNullOrEmpty(oldImage)) {
