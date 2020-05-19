@@ -16,6 +16,8 @@ using MMSL.Domain.Entities.PaymentTypes;
 using MMSL.Domain.Entities.CurrencyTypes;
 using MMSL.Databases.TableMaps.PaymentTypes;
 using MMSL.Databases.TableMaps.CurrencyTypes;
+using MMSL.Domain.Entities.Products;
+using MMSL.Databases.TableMaps.Products;
 
 namespace MMSL.Databases {
     public class MMSLDbContext : DbContext {       
@@ -40,6 +42,10 @@ namespace MMSL.Databases {
 
         public DbSet<StoreMapDealerAccount> StoreDealerAccounts { get; set; }
 
+        public DbSet<ProductCategory> ProductCategories { get; set; }
+
+        public DbSet<ProductCategoryMapOptionGroup> ProductCategoryMapOptionGroups { get; set; }
+
         /// <summary>
         ///     ctor().
         /// </summary>
@@ -62,6 +68,8 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new CurrencyTypeMap());
             modelBuilder.AddConfiguration(new StoreCustomersMap());
             modelBuilder.AddConfiguration(new StoreDealerAccountMap());
+            modelBuilder.AddConfiguration(new ProductCategoryMap());
+            modelBuilder.AddConfiguration(new ProductCategoryMapOptionGroupMap());
         }
     }
 }
