@@ -10,11 +10,15 @@ namespace MMSL.Server.Core.Helpers {
         public static async Task<string> UploadFile(string baseUrl, IFormFile formFile) {
             string fullFilePath = Path.Combine(ConfigurationManager.UploadsPath, $"{DateTime.Now.Ticks}{Path.GetExtension(formFile.FileName)}");
 
-            using (var stream = File.Create(fullFilePath)) {
+            using (FileStream stream = File.Create(fullFilePath)) {
                 await formFile.CopyToAsync(stream);
             }
 
-            return new Uri(fullFilePath.Replace($"{ConfigurationManager.ContentRootPath}", baseUrl)).AbsoluteUri;
+            string relatedPath = fullFilePath
+                .Replace($"{ConfigurationManager.ContentRootPath}", baseUrl)
+                .Replace(Path.DirectorySeparatorChar, '/');
+
+            return new Uri(relatedPath).AbsoluteUri;
         }
 
         public static void DeleteFile(string filePath) {
