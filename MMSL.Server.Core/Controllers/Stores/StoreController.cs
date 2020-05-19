@@ -25,7 +25,7 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
         /// <summary>
         ///     ctor().
         /// </summary>
-        /// <param name="bankDetailsService"></param>
+        /// <param name="storeService"></param>
         /// <param name="responseFactory"></param>
         /// <param name="localizer"></param>
         public StoreController(

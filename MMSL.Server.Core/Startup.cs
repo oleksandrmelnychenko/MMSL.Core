@@ -66,6 +66,10 @@ using MMSL.Services.Types.Contracts;
 using MMSL.Domain.Repositories.Types;
 using MMSL.Domain.Repositories.Types.Contracts;
 using Microsoft.OpenApi.Models;
+using MMSL.Services.ProductCategories;
+using MMSL.Services.ProductCategories.Contracts;
+using MMSL.Domain.Repositories.ProductRepositories;
+using MMSL.Domain.Repositories.ProductRepositories.Contracts;
 
 namespace MMSL.Server.Core
 {
@@ -178,25 +182,29 @@ namespace MMSL.Server.Core
             builder.RegisterType<GlobalExceptionHandler>().As<IGlobalExceptionHandler>();
             builder.RegisterType<GlobalExceptionFactory>().As<IGlobalExceptionFactory>();
 
+            // Repository Factories.
             builder.RegisterType<ResponseFactory>().As<IResponseFactory>();
             builder.RegisterType<IdentityRepository>().As<IIdentityRepository>();
             builder.RegisterType<IdentityRolesRepository>().As<IIdentityRolesRepository>();
+            builder.RegisterType<TypesRepositoriesFactory>().As<ITypesRepositoriesFactory>();
             builder.RegisterType<StoreRepositoriesFactory>().As<IStoreRepositoriesFactory>();
             builder.RegisterType<DealerRepositoriesFactory>().As<IDealerRepositoriesFactory>();
             builder.RegisterType<OptionRepositoriesFactory>().As<IOptionRepositoriesFactory>();
             builder.RegisterType<AddressRepositoriesFactory>().As<IAddressRepositoriesFactory>();
             builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
-            builder.RegisterType<TypesRepositoriesFactory>().As<ITypesRepositoriesFactory>();
+            builder.RegisterType<ProductCategoryRepositoriesFactory>().As<IProductCategoryRepositoriesFactory>();            
 
+            // Services.
             builder.RegisterType<StoreService>().As<IStoreService>();
             builder.RegisterType<AccountService>().As<IAccountService>();
             builder.RegisterType<OptionUnitService>().As<IOptionUnitService>();
             builder.RegisterType<OptionGroupService>().As<IOptionGroupService>();            
+            builder.RegisterType<PaymentTypeService>().As<IPaymentTypeService>();
             builder.RegisterType<UserIdentityService>().As<IUserIdentityService>();
+            builder.RegisterType<CurrencyTypeService>().As<ICurrencyTypeService>();
             builder.RegisterType<DealerAccountService>().As<IDealerAccountService>();
             builder.RegisterType<StoreCustomerService>().As<IStoreCustomerService>();
-            builder.RegisterType<CurrencyTypeService>().As<ICurrencyTypeService>();
-            builder.RegisterType<PaymentTypeService>().As<IPaymentTypeService>();
+            builder.RegisterType<ProductCategoryService>().As<IProductCategoryService>();
 
 
             builder.RegisterType<SqlDbContext>().As<ISqlDbContext>();

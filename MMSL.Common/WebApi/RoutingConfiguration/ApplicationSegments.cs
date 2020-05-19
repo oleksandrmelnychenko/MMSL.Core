@@ -13,5 +13,7 @@
         public const string CurrencyTypes = "types/currency";
 
         public const string Options = "options";
+
+        public const string ProductCategory = "product/category";
     }
 }
