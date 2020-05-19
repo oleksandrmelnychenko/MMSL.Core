@@ -68,6 +68,8 @@ using MMSL.Domain.Repositories.Types.Contracts;
 using Microsoft.OpenApi.Models;
 using MMSL.Services.ProductCategories;
 using MMSL.Services.ProductCategories.Contracts;
+using MMSL.Domain.Repositories.ProductRepositories;
+using MMSL.Domain.Repositories.ProductRepositories.Contracts;
 
 namespace MMSL.Server.Core
 {
@@ -190,6 +192,7 @@ namespace MMSL.Server.Core
             builder.RegisterType<OptionRepositoriesFactory>().As<IOptionRepositoriesFactory>();
             builder.RegisterType<AddressRepositoriesFactory>().As<IAddressRepositoriesFactory>();
             builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
+            builder.RegisterType<ProductCategoryRepositoriesFactory>().As<IProductCategoryRepositoriesFactory>();            
 
             // Services.
             builder.RegisterType<StoreService>().As<IStoreService>();

@@ -23,6 +23,12 @@ namespace MMSL.Services.BankDetailsServices {
 
         private readonly IAddressRepositoriesFactory _addressRepositoriesFactory;
 
+        /// <summary>
+        ///     ctor().
+        /// </summary>
+        /// <param name="connectionFactory"></param>
+        /// <param name="storeRepositoriesFactory"></param>
+        /// <param name="addressRepositoriesFactory"></param>
         public StoreService(IDbConnectionFactory connectionFactory,
             IStoreRepositoriesFactory storeRepositoriesFactory,
             IAddressRepositoriesFactory addressRepositoriesFactory) {
