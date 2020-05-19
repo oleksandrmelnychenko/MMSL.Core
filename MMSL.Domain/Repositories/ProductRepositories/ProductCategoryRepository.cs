@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using MMSL.Domain.DataContracts;
 using MMSL.Domain.Entities.Products;
 using MMSL.Domain.Repositories.ProductRepositories.Contracts;
 using System;
@@ -27,5 +28,18 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "WHERE IsDeleted = 0 AND PATINDEX('%' + @SearchTerm + '%', [ProductCategories].Name) > 0",
                 new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase })
             .ToList();
+
+        public ProductCategory NewProduct(NewProductCategoryDataContract newProductCategoryDataContract) =>
+            _connection.Query<ProductCategory>(
+                "INSERT INTO[ProductCategories](IsDeleted,[Name],[Description]) " +
+                "VALUES(0,@Name,@Description) " +
+                "SELECT[ProductCategories].* " +
+                "FROM [ProductCategories] " +
+                "WHERE [ProductCategories].Id = SCOPE_IDENTITY()",
+                new {
+                    Name = newProductCategoryDataContract.Name,
+                    Description = newProductCategoryDataContract.Description
+                })
+            .SingleOrDefault();
     }
 }

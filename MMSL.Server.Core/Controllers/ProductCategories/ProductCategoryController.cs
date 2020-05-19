@@ -6,6 +6,7 @@ using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.ProductCategories;
+using MMSL.Domain.DataContracts;
 using MMSL.Domain.Entities.Products;
 using MMSL.Services.ProductCategories.Contracts;
 using Serilog;
@@ -36,7 +37,6 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
             _productCategoryService = productCategoryService;
         }
 
-
         [HttpGet]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORIES)]
@@ -45,10 +45,26 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
                 List<ProductCategory> products = await _productCategoryService.GetProductCategoriesAsync(searchPhrase);
 
                 return Ok(SuccessResponseBody(products, Localizer["Successfully completed"]));
+            }           
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
-            catch (InvalidIdentityException exc) {
-                return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));
-            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [AssignActionRoute(ProductCategorySegments.NEW_PRODUCT_CATEGORY)]
+        public async Task<IActionResult> NewStore([FromBody] NewProductCategoryDataContract newProductCategoryDataContract) {
+            try {
+                if (newProductCategoryDataContract == null) throw new ArgumentNullException("NewProductCategoryDataContract");
+
+                if (string.IsNullOrEmpty(newProductCategoryDataContract.Name)) throw new ArgumentNullException("NewProductCategoryDataContract");
+
+                ProductCategory productCategory = await _productCategoryService.NewProductCategoryAsync(newProductCategoryDataContract);
+
+                return Ok(SuccessResponseBody(productCategory, Localizer["New ProductCategory has been created successfully"]));
+            }          
             catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
