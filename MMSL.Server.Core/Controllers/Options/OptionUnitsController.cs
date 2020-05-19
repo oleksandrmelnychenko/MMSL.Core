@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using MMSL.Common.ResponseBuilder.Contracts;
@@ -57,7 +58,7 @@ namespace MMSL.Server.Core.Controllers.Options {
                 OptionUnit optionUnitEntity = optionUnit.GetEntity();
 
                 if (optionUnit.Image != null) {
-                    optionUnitEntity.ImageUrl = await FileUploadingHelper.UploadFile(optionUnit.Image);
+                    optionUnitEntity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}.{Request.Host}", optionUnit.Image);
                 }
 
                 return Ok(SuccessResponseBody(await _optionUnitService.AddOptionUnit(optionUnitEntity), Localizer["Successfully created"]));
@@ -69,18 +70,23 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpPut]
         [AssignActionRoute(OptionUnitSegments.UPDATE_OPTION_UNIT)]
-        public async Task<IActionResult> UpdateOptionUnit([FromForm]OptionUnitUpdateDataContract updateOptionUnit) {
+        public async Task<IActionResult> UpdateOptionUnit([FromQuery]OptionUnitUpdateDataContract updateOptionUnit, [FromForm]TestFormData formData) {
             try {
+                if (updateOptionUnit == null) {
+                    throw new ArgumentNullException(nameof(updateOptionUnit));
+                }
+
                 OptionUnit entity = updateOptionUnit.GetEntity();
 
-                if (updateOptionUnit.Image != null) {
-                    string oldImage = entity.ImageUrl;
+                string oldImage = entity.ImageUrl;
 
-                    entity.ImageUrl = await FileUploadingHelper.UploadFile(updateOptionUnit.Image);
+                if (formData.File != null) {
+                    entity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}.{Request.Host}", formData.File);
+                }
 
-                    if (!string.IsNullOrEmpty(oldImage)) {
-                        FileUploadingHelper.DeleteFile(oldImage);
-                    }
+                if (string.IsNullOrEmpty(oldImage)) {
+                    //TODO: delete old img if new uploaded successfully OR just deleted old
+                    //FileUploadingHelper.DeleteFile(oldImage);
                 }
 
                 return Ok(SuccessResponseBody(await _optionUnitService.UpdateOptionUnit(entity), Localizer["Successfully updated"]));
@@ -108,11 +114,15 @@ namespace MMSL.Server.Core.Controllers.Options {
                 await _optionUnitService.UpdateOrderIndexesAsync(orderIndexes);
 
                 return Ok(SuccessResponseBody(orderIndexes, Localizer["Successfully updated"]));
-            }
-            catch (Exception exc) {
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
         }
+    }
+
+    public class TestFormData {
+
+        public IFormFile File { get; set; }
     }
 }
