@@ -8,7 +8,7 @@ using System.Linq;
 namespace MMSL.Domain.Repositories.Options {
     public class OptionUnitRepository : IOptionUnitRepository {
 
-        private IDbConnection _connection;
+        private readonly IDbConnection _connection;
 
         public OptionUnitRepository(IDbConnection connection) {
             this._connection = connection;
@@ -32,7 +32,8 @@ namespace MMSL.Domain.Repositories.Options {
             _connection.Query<OptionUnit>(
                 "SELECT * FROM [OptionUnits] " +
                 "WHERE [OptionUnits].[OptionGroupId] = @GroupId " +
-                "AND [OptionUnits].IsDeleted = 0 ",
+                "AND [OptionUnits].IsDeleted = 0 " +
+                "ORDER BY [OptionUnits].OrderIndex ",
                 new {
                     GroupId = optionGroupId
                 }).ToList();

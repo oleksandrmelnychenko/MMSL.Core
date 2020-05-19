@@ -33,14 +33,15 @@ namespace MMSL.Domain.Repositories.Options {
                 "SELECT * " +
                 "FROM [OptionGroups] AS og " +
                 "LEFT JOIN [OptionUnits] AS u ON u.[OptionGroupId] = og.Id " +
-                "WHERE og.[IsDeleted] = 0",
+                "WHERE og.[IsDeleted] = 0 " +
+                "ORDER BY ORDER BY og.Id, u.OrderIndex ",
                 (optionGroup, optionUnit) => {
-                    if (optionGroups.Any(x=> x.Id == optionGroup.Id)) {
+                    if (optionGroups.Any(x => x.Id == optionGroup.Id)) {
                         optionGroup = optionGroups.First(x => x.Id == optionGroup.Id);
                     } else {
                         optionGroups.Add(optionGroup);
                     }
-                    
+
                     if (optionUnit != null) {
                         optionGroup.OptionUnits.Add(optionUnit);
                     }
@@ -58,21 +59,21 @@ namespace MMSL.Domain.Repositories.Options {
                 "WHERE Id = @Id",
                 new { Id = id }).SingleOrDefault();
 
-            public OptionGroup NewOptionGroup(OptionGroup optionGroup) =>
-                _connection.Query<OptionGroup>(
-                    "INSERT INTO[OptionGroups](IsDeleted,[Name],[IsMandatory]) " +
-                    "VALUES(0,@Name,@IsMandatory) " +
-                    "SELECT[OptionGroups].* " +
-                    "FROM [OptionGroups] " +
-                    "WHERE [OptionGroups].Id = SCOPE_IDENTITY()", optionGroup)
-                .SingleOrDefault();
+        public OptionGroup NewOptionGroup(OptionGroup optionGroup) =>
+            _connection.Query<OptionGroup>(
+                "INSERT INTO[OptionGroups](IsDeleted,[Name],[IsMandatory]) " +
+                "VALUES(0,@Name,@IsMandatory) " +
+                "SELECT[OptionGroups].* " +
+                "FROM [OptionGroups] " +
+                "WHERE [OptionGroups].Id = SCOPE_IDENTITY()", optionGroup)
+            .SingleOrDefault();
 
-            public int UpdateOptionGroup(OptionGroup optionGroup) =>
-                _connection.Execute(
-                    "UPDATE OptionGroups " +
-                    "SET IsDeleted = @IsDeleted, Name=@Name,IsMandatory=@IsMandatory, " +
-                    "LastModified = getutcdate() " +
-                    "WHERE [OptionGroups].Id = @Id;"
-                    , optionGroup);
-        }
+        public int UpdateOptionGroup(OptionGroup optionGroup) =>
+            _connection.Execute(
+                "UPDATE OptionGroups " +
+                "SET IsDeleted = @IsDeleted, Name=@Name,IsMandatory=@IsMandatory, " +
+                "LastModified = getutcdate() " +
+                "WHERE [OptionGroups].Id = @Id;"
+                , optionGroup);
     }
+}
