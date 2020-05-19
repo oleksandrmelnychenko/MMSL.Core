@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using MMSL.Common;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
@@ -53,12 +54,12 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpPost]
         [AssignActionRoute(OptionUnitSegments.ADD_OPTION_UNIT)]
-        public async Task<IActionResult> AddOptionUnit([FromForm]OptionUnitDataContract optionUnit) {
+        public async Task<IActionResult> AddOptionUnit([FromForm]OptionUnitDataContract optionUnit, [FromForm]FileFormData formData) {
             try {
                 OptionUnit optionUnitEntity = optionUnit.GetEntity();
 
-                if (optionUnit.Image != null) {
-                    optionUnitEntity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}.{Request.Host}", optionUnit.Image);
+                if (formData.File != null) {
+                    optionUnitEntity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}.{Request.Host}", formData.File);
                 }
 
                 return Ok(SuccessResponseBody(await _optionUnitService.AddOptionUnit(optionUnitEntity), Localizer["Successfully created"]));
@@ -70,13 +71,15 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpPut]
         [AssignActionRoute(OptionUnitSegments.UPDATE_OPTION_UNIT)]
-        public async Task<IActionResult> UpdateOptionUnit([FromQuery]OptionUnitUpdateDataContract updateOptionUnit, [FromForm]TestFormData formData) {
+        public async Task<IActionResult> UpdateOptionUnit([FromQuery]OptionUnitUpdateDataContract updateOptionUnit, [FromForm]FileFormData formData) {
             try {
-                if (updateOptionUnit == null) {
+                if (updateOptionUnit == null)
                     throw new ArgumentNullException(nameof(updateOptionUnit));
-                }
 
                 OptionUnit entity = updateOptionUnit.GetEntity();
+
+                if (entity.IsNew())
+                    throw new ArgumentException(nameof(updateOptionUnit.Id));
 
                 string oldImage = entity.ImageUrl;
 
@@ -84,9 +87,12 @@ namespace MMSL.Server.Core.Controllers.Options {
                     entity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}://{Request.Host}", formData.File);
                 }
 
-                if (string.IsNullOrEmpty(oldImage)) {
-                    //TODO: delete old img if new uploaded successfully OR just deleted old
-                    //FileUploadingHelper.DeleteFile(oldImage);
+                if (string.IsNullOrEmpty(oldImage) || oldImage != entity.ImageUrl) {
+                    OptionUnit oldEntity = await _optionUnitService.GetOptionUnitByIdAsync(entity.Id);
+
+                    if (!string.IsNullOrEmpty(oldEntity.ImageUrl)) {
+                        FileUploadingHelper.DeleteFile($"{Request.Scheme}://{Request.Host}", oldEntity.ImageUrl);
+                    }
                 }
 
                 return Ok(SuccessResponseBody(await _optionUnitService.UpdateOptionUnit(entity), Localizer["Successfully updated"]));
@@ -119,10 +125,5 @@ namespace MMSL.Server.Core.Controllers.Options {
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
         }
-    }
-
-    public class TestFormData {
-
-        public IFormFile File { get; set; }
     }
 }
