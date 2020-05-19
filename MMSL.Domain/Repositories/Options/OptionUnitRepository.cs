@@ -47,6 +47,10 @@ namespace MMSL.Domain.Repositories.Options {
                 optionUnit);
 
         public void UpdateOptionUnitIndex(long optionUnitId, int orderIndex) =>
-            _connection.Execute("", new { Id = optionUnitId, OrderIndex = orderIndex });
+            _connection.Execute(
+                "UPDATE [OptionUnits] " +
+                "SET [LastModified] = getutcdate(), [OrderIndex] = @OrderIndex " +
+                "WHERE [OptionUnits].Id = @Id;",
+                new { Id = optionUnitId, OrderIndex = orderIndex });
     }
 }

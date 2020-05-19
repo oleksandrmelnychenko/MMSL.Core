@@ -2,6 +2,6 @@
     public class UpdateOrderIndexDataContract {
         public long OptionUnitId { get; set; }
 
-        public int OptionIndex { get; set; }
+        public int OrderIndex { get; set; }
     }
 }

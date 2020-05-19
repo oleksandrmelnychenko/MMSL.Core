@@ -103,9 +103,11 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpPut]
         [AssignActionRoute(OptionUnitSegments.UPDATE_ORDER_INDEX)]
-        public async Task<IActionResult> UpdateOptionUnit([FromBody]List<UpdateOrderIndexDataContract> optionIndexes) {
+        public async Task<IActionResult> UpdateOptionUnit([FromBody]List<UpdateOrderIndexDataContract> orderIndexes) {
             try {
-                return Ok(SuccessResponseBody(await _optionUnitService.UpdateOrderIndexesAsync(optionIndexes), Localizer["Successfully updated"]));
+                await _optionUnitService.UpdateOrderIndexesAsync(orderIndexes);
+
+                return Ok(SuccessResponseBody(orderIndexes, Localizer["Successfully updated"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);

@@ -73,22 +73,17 @@ namespace MMSL.Services.OptionServices {
                 }
             });
 
-        public Task<object> UpdateOrderIndexesAsync(List<UpdateOrderIndexDataContract> optionIndexes) =>
+        public Task UpdateOrderIndexesAsync(List<UpdateOrderIndexDataContract> orderIndexes) =>
             Task.Run(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IOptionUnitRepository repository = _optionRepositoriesFactory.NewOptionUnitRepository(connection);
 
-
-                    foreach (var item in optionIndexes) {
-
+                    foreach (var item in orderIndexes) {
                         OptionUnit exist = repository.GetOptionUnit(item.OptionUnitId);
                         if (exist != null) {
-                            repository.UpdateOptionUnitIndex(item.OptionUnitId, item.OptionIndex);
+                            repository.UpdateOptionUnitIndex(item.OptionUnitId, item.OrderIndex);
                         }
-
                     }
-
-                    return new object();
                 }
             });
     }
