@@ -257,8 +257,8 @@ namespace MMSL.Server.Core
             app.UseDefaultFiles();
             app.UseStaticFiles(new StaticFileOptions
             {
-                RequestPath = "/Exports",
-                FileProvider = new PhysicalFileProvider(_environment.ContentRootPath + "\\exports")
+                RequestPath = $"/{ConfigurationManager.UploadsDirectoryName}",
+                FileProvider = new PhysicalFileProvider(_environment.ContentRootPath + $"\\{ConfigurationManager.UploadsDirectoryName}")
             })
                 .UseHttpsRedirection()
                 .UseCookiePolicy()
