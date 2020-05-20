@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\Measurements\" />
     <Folder Include="Entities\Styles\" />
   </ItemGroup>
 

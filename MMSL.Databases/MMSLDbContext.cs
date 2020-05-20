@@ -18,6 +18,8 @@ using MMSL.Databases.TableMaps.PaymentTypes;
 using MMSL.Databases.TableMaps.CurrencyTypes;
 using MMSL.Domain.Entities.Products;
 using MMSL.Databases.TableMaps.Products;
+using MMSL.Domain.Entities.Measurements;
+using MMSL.Databases.TableMaps.Measurements;
 
 namespace MMSL.Databases {
     public class MMSLDbContext : DbContext {       
@@ -46,6 +48,16 @@ namespace MMSL.Databases {
 
         public DbSet<ProductCategoryMapOptionGroup> ProductCategoryMapOptionGroups { get; set; }
 
+        public DbSet<Measurement> Measurements { get; set; }
+
+        public DbSet<MeasurementSize> MeasurementSizes { get; set; }
+
+        public DbSet<MeasurementMapDefinition> MeasurementMapDefinitions { get; set; }
+
+        public DbSet<MeasurementDefinition> MeasurementDefinitions { get; set; }
+
+        public DbSet<MeasurementValue> MeasurementValues { get; set; }
+
         /// <summary>
         ///     ctor().
         /// </summary>
@@ -70,6 +82,11 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new StoreDealerAccountMap());
             modelBuilder.AddConfiguration(new ProductCategoryMap());
             modelBuilder.AddConfiguration(new ProductCategoryMapOptionGroupMap());
+            modelBuilder.AddConfiguration(new MeasurementMap());
+            modelBuilder.AddConfiguration(new MeasurementDefinitionMap());
+            modelBuilder.AddConfiguration(new MeasurementMapDefinitionMap());
+            modelBuilder.AddConfiguration(new MeasurementSizeMap());
+            modelBuilder.AddConfiguration(new MeasurementValueMap());
         }
     }
 }
