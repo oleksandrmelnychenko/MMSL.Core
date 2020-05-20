@@ -5,7 +5,7 @@ using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Services.MeasurementServices.Contracts;
 
-namespace MMSL.Server.Core.Controllers.Measurement {
+namespace MMSL.Server.Core.Controllers.Measurements {
     [Authorize]
     [AssignControllerLocalizedRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.MeasurementSizes)]
     [AssignControllerRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.MeasurementSizes)]
