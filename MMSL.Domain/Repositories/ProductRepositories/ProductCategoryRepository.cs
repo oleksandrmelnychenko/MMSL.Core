@@ -29,6 +29,14 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase })
             .ToList();
 
+        public ProductCategory GetById(long productCategoryId) =>
+            _connection.Query<ProductCategory>(
+                "SELECT * " +
+                "FROM [ProductCategories]" +
+                "WHERE [ProductCategories].Id = @Id",
+                new { Id = productCategoryId })
+            .SingleOrDefault();
+
         public ProductCategory NewProduct(NewProductCategoryDataContract newProductCategoryDataContract) =>
             _connection.Query<ProductCategory>(
                 "INSERT INTO[ProductCategories](IsDeleted,[Name],[Description]) " +
@@ -41,5 +49,12 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                     Description = newProductCategoryDataContract.Description
                 })
             .SingleOrDefault();
+
+        public void UpdateProduct(ProductCategory product) =>
+            _connection.Execute(
+                "UPDATE [ProductCategories] " +
+                "SET [IsDeleted] = @IsDeleted,[LastModified]=getutcdate()," +
+                "[Name]=@Name,[Description]=@Description " +
+                "WHERE [ProductCategories].Id = @Id", product);
     }
 }

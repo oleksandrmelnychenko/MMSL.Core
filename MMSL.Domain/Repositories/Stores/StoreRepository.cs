@@ -74,7 +74,7 @@ namespace MMSL.Domain.Repositories.Stores {
         public void UpdateStore(Store store) =>
              _connection.Query<Store>(
                 "UPDATE [Stores]" +
-                "SET [IsDeleted]=@IsDeleted,[Created]=@Created,[LastModified]=getutcdate()," +
+                "SET [IsDeleted]=@IsDeleted,[LastModified]=getutcdate()," +
                 "[Name]=@Name,[Description]=@Description," +
                 "[AddressId]=@AddressId,[ContactEmail]=@ContactEmail," +
                 "[BillingEmail]=@BillingEmail " +

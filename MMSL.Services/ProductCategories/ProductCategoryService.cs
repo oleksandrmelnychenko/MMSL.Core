@@ -54,5 +54,29 @@ namespace MMSL.Services.ProductCategories {
                     return product;
                 }
             });
+
+        public Task UpdateProductCategoryAsync(ProductCategory product) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    IProductCategoryRepository productCategoryRepository = _productCategoryRepositoriesFactory.NewProductCategoryRepository(connection);
+
+                    productCategoryRepository.UpdateProduct(product);
+                }
+            });
+
+        public Task DeleteProductCategoryAsync(long productCategoryId) =>
+             Task.Run(() => {
+                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                     IProductCategoryRepository productCategoryRepository = _productCategoryRepositoriesFactory.NewProductCategoryRepository(connection);
+
+                     ProductCategory product = productCategoryRepository.GetById(productCategoryId);
+
+                     if (product == null) throw new Exception("ProductCategory not found");
+                     
+                     product.IsDeleted = true;
+
+                     productCategoryRepository.UpdateProduct(product);
+                 }
+             });
     }
 }
