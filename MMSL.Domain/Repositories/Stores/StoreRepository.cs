@@ -28,7 +28,9 @@ namespace MMSL.Domain.Repositories.Stores {
 
         public List<Store> GetAllByDealerAccountId(long dealerAccountId, string searchPhrase) =>
             _connection.Query<Store, Address, Store>(
-                "SELECT [Stores].*, [Address].* " +
+                "SELECT [Stores].*" +
+                ",(SELECT COUNT([StoreCustomers].Id) FROM [StoreCustomers] WHERE [StoreCustomers].StoreId = [Stores].Id AND [StoreCustomers].IsDeleted = 0) AS [StoreCustomersCount]" +
+                ",[Address].* " +
                 "FROM [Stores] " +
                 "LEFT JOIN [StoreMapDealerAccounts] ON [StoreMapDealerAccounts].StoreId = [Stores].Id " +
                 "LEFT JOIN [Address] ON [Address].Id = [Stores].AddressId " +
