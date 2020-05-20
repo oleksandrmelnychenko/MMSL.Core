@@ -6,6 +6,7 @@ using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.Measurements;
 using MMSL.Common.WebApi.RoutingConfiguration.ProductCategories;
+using MMSL.Domain.DataContracts;
 using MMSL.Domain.Entities.Measurements;
 using MMSL.Services.MeasurementServices.Contracts;
 using Serilog;
@@ -51,5 +52,28 @@ namespace MMSL.Server.Core.Controllers.Measurements {
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
         }
+
+        [HttpPost]
+        [Authorize]
+        [AssignActionRoute(MeasurementSegments.NEW_MEASUREMENT)]
+        public async Task<IActionResult> NewMeasurement([FromBody] NewMeasurementDataContract newMeasurementDataContract) {
+            try {
+                if (newMeasurementDataContract == null) throw new ArgumentNullException("NewMeasurementDataContract");
+
+                if (string.IsNullOrEmpty(newMeasurementDataContract.Name)) throw new ArgumentNullException("NewMeasurementDataContract");
+
+                if (newMeasurementDataContract.ProductCategoryId == default(long)) throw new ArgumentNullException("NewMeasurementDataContract");
+
+                Measurement measurement = await _measurementService.NewMeasurementAsync(newMeasurementDataContract);
+
+                return Ok(SuccessResponseBody(measurement, Localizer["New Measurement has been created successfully"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+
     }
 }
