@@ -20,13 +20,14 @@ namespace MMSL.Domain.Repositories.Options {
             _connection = connection;
         }
 
-        public List<OptionGroup> GetAll() =>
+        public List<OptionGroup> GetAll(string search) =>
             _connection.Query<OptionGroup>(
                 "SELECT * " +
                 "FROM [OptionGroups]" +
-                "WHERE [OptionGroups].IsDeleted = 0").ToList();
+                "WHERE [OptionGroups].IsDeleted = 0 " +
+                (string.IsNullOrEmpty(search) ? string.Empty : "AND PATINDEX('%' + @Search + '%', og.[Name]) > 0")).ToList();
 
-        public List<OptionGroup> GetAllMapped() {
+        public List<OptionGroup> GetAllMapped(string search) {
             List<OptionGroup> optionGroups = new List<OptionGroup>();
 
             _connection.Query<OptionGroup, OptionUnit, OptionGroup>(
@@ -34,6 +35,7 @@ namespace MMSL.Domain.Repositories.Options {
                 "FROM [OptionGroups] AS og " +
                 "LEFT JOIN [OptionUnits] AS u ON u.[OptionGroupId] = og.Id AND u.IsDeleted = 0 " +
                 "WHERE og.[IsDeleted] = 0 " +
+                (string.IsNullOrEmpty(search) ? string.Empty : "AND PATINDEX('%' + @Search + '%', og.[Name]) > 0") +
                 "ORDER BY og.Id, u.OrderIndex ",
                 (optionGroup, optionUnit) => {
                     if (optionGroups.Any(x => x.Id == optionGroup.Id)) {
@@ -47,7 +49,8 @@ namespace MMSL.Domain.Repositories.Options {
                     }
 
                     return optionGroup;
-                });
+                },
+                new { Search = search });
 
             return optionGroups;
         }

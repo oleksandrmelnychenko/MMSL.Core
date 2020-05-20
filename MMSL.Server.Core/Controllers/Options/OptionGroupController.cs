@@ -41,9 +41,9 @@ namespace MMSL.Server.Core.Controllers.Options {
         [HttpGet]
         [Authorize]
         [AssignActionRoute(OptionGroupSegments.GET_OPTION_GROUPS)]
-        public async Task<IActionResult> GetAll() {
+        public async Task<IActionResult> GetAll([FromQuery]string search) {
             try {
-                List<OptionGroup> optionGroups = await _optionGroupService.GetOptionGroupsAsync();
+                List<OptionGroup> optionGroups = await _optionGroupService.GetOptionGroupsAsync(search);
 
                 return Ok(SuccessResponseBody(optionGroups, Localizer["Successfully completed"]));
             }

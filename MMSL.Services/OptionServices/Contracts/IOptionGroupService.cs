@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace MMSL.Services.OptionServices.Contracts {
     public interface IOptionGroupService {
 
-        Task<List<OptionGroup>> GetOptionGroupsAsync();
+        Task<List<OptionGroup>> GetOptionGroupsAsync(string search);
 
         Task<OptionGroup> GetOptionGroupAsync(long groupId);
 

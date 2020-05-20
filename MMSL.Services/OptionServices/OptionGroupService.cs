@@ -27,10 +27,10 @@ namespace MMSL.Services.OptionServices {
             _optionRepositoriesFactory = optionRepositoriesFactory;
         }
 
-        public Task<List<OptionGroup>> GetOptionGroupsAsync() =>
+        public Task<List<OptionGroup>> GetOptionGroupsAsync(string search) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {                   
-                    return _optionRepositoriesFactory.NewOptionGroupRepository(connection).GetAllMapped();
+                    return _optionRepositoriesFactory.NewOptionGroupRepository(connection).GetAllMapped(search);
                 }
             });
 
