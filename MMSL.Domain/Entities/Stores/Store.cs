@@ -16,5 +16,7 @@ namespace MMSL.Domain.Entities.Stores {
         public string BillingEmail { get; set; }
 
         public ICollection<StoreMapDealerAccount> StoreMapDealerAccounts { get; set; }
+
+        public int StoreCustomersCount { get; set; }
     }
 }
