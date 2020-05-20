@@ -70,6 +70,8 @@ using MMSL.Services.ProductCategories;
 using MMSL.Services.ProductCategories.Contracts;
 using MMSL.Domain.Repositories.ProductRepositories;
 using MMSL.Domain.Repositories.ProductRepositories.Contracts;
+using MMSL.Services.MeasurementServices.Contracts;
+using MMSL.Services.MeasurementServices;
 using MMSL.Domain.Repositories.Measurements;
 using MMSL.Domain.Repositories.Measurements.Contracts;
 
@@ -197,7 +199,6 @@ namespace MMSL.Server.Core
             builder.RegisterType<MeasurementsRepositoriesFactory>().As<IMeasurementsRepositoriesFactory>();
             builder.RegisterType<ProductCategoryRepositoriesFactory>().As<IProductCategoryRepositoriesFactory>();
             
-
             // Services.
             builder.RegisterType<StoreService>().As<IStoreService>();
             builder.RegisterType<AccountService>().As<IAccountService>();
@@ -209,7 +210,9 @@ namespace MMSL.Server.Core
             builder.RegisterType<DealerAccountService>().As<IDealerAccountService>();
             builder.RegisterType<StoreCustomerService>().As<IStoreCustomerService>();
             builder.RegisterType<ProductCategoryService>().As<IProductCategoryService>();
-
+            builder.RegisterType<MeasurementService>().As<IMeasurementService>();
+            builder.RegisterType<MeasurementSizeService>().As<IMeasurementSizeService>();
+            builder.RegisterType<MeasurementDefinitionService>().As<IMeasurementDefinitionService>();
 
             builder.RegisterType<SqlDbContext>().As<ISqlDbContext>();
             builder.RegisterType<SqlContextFactory>().As<ISqlContextFactory>();

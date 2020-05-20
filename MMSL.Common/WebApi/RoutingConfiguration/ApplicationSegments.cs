@@ -15,5 +15,11 @@
         public const string Options = "options";
 
         public const string ProductCategory = "product/category";
+
+        public const string Measurements = "measurements";
+
+        public const string MeasurementDefinitions = "measurements/definitions";
+
+        public const string MeasurementSizes = "measurements/sizes";
     }
 }
