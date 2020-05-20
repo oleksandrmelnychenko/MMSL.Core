@@ -15,7 +15,5 @@ namespace MMSL.Domain.Entities.Measurements {
 
         public ICollection<MeasurementMapDefinition> MeasurementMapDefinitions { get; set; }
         public ICollection<MeasurementSize> MeasurementSizes { get; set; }
-
-
     }
 }

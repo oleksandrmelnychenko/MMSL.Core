@@ -38,5 +38,20 @@ namespace MMSL.Domain.Repositories.Measurements {
                     Description = newMeasurementDataContract.Description
                 })
             .SingleOrDefault();
+
+        public void UpdateMeasurement(Measurement measurement) =>
+            _connection.Execute(
+                "UPDATE [Measurements] " +
+                "SET [IsDeleted] = @IsDeleted, [LastModified]=getutcdate()," +
+                "[Name]=@Name,[Description]=@Description " +
+                "WHERE [Measurements].Id = @Id", measurement);
+
+        public Measurement GetById(long measurementId) =>
+            _connection.Query<Measurement>(
+                "SELECT * " +
+                "FROM [Measurements] " +
+                "WHERE Id = @Id",
+                new { Id = measurementId })
+            .SingleOrDefault();
     }
 }

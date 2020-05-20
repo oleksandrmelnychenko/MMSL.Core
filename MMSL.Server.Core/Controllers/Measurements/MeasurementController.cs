@@ -74,6 +74,38 @@ namespace MMSL.Server.Core.Controllers.Measurements {
             }
         }
 
+        [HttpPut]
+        [Authorize]
+        [AssignActionRoute(MeasurementSegments.UPDATE_MEASUREMENT)]
+        public async Task<IActionResult> UpdateMeasurement([FromBody]Measurement measurement) {
+            try {
+                if (measurement == null) throw new ArgumentNullException("UpdateMeasurement");
 
+                await _measurementService.UpdateMeasurementAsync(measurement);
+
+                return Ok(SuccessResponseBody(measurement, Localizer["Measurement successfully updated"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [AssignActionRoute(MeasurementSegments.DELETE_MEASUREMENT)]
+        public async Task<IActionResult> DeleteMeasurement([FromQuery]long measurementId) {
+            try {
+                if (measurementId == default(long)) throw new ArgumentNullException("DeleteMeasurement");
+
+                await _measurementService.DeleteMeasurementAsync(measurementId);
+
+                return Ok(SuccessResponseBody(measurementId, Localizer["Measurement successfully deleted"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
     }
 }

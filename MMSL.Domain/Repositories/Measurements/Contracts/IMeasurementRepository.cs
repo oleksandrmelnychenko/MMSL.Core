@@ -8,5 +8,7 @@ namespace MMSL.Domain.Repositories.Measurements.Contracts {
     public interface IMeasurementRepository {
         List<Measurement> GetAll(string searchPhrase);
         Measurement NewMeasurement(NewMeasurementDataContract newMeasurementDataContract);
+        void UpdateMeasurement(Measurement measurement);
+        Measurement GetById(long measurementId);
     }
 }

@@ -3,6 +3,7 @@ using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Measurements;
 using MMSL.Domain.Repositories.Measurements.Contracts;
 using MMSL.Services.MeasurementServices.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -45,5 +46,30 @@ namespace MMSL.Services.MeasurementServices {
                      return measurement;
                  }
              });
+
+        public Task UpdateMeasurementAsync(Measurement measurement) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    var measurementRepository = _measurementsRepositoriesFactory.NewMeasurementRepository(connection);
+
+                    measurementRepository.UpdateMeasurement(measurement);
+                }
+            });
+
+        public Task DeleteMeasurementAsync(long measurementId) =>
+             Task.Run(() => {
+                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                     var measurementRepository = _measurementsRepositoriesFactory.NewMeasurementRepository(connection);
+
+                     Measurement measurement = measurementRepository.GetById(measurementId);
+
+                     if (measurement == null) throw new Exception("Measurement not found");
+
+                     measurement.IsDeleted = true;
+
+                     measurementRepository.UpdateMeasurement(measurement);
+                 }
+             });
+
     }
 }

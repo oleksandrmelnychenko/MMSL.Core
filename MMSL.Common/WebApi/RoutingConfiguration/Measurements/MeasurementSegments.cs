@@ -8,8 +8,8 @@ namespace MMSL.Common.WebApi.RoutingConfiguration.Measurements {
 
         public const string NEW_MEASUREMENT = "new/measurement";
 
-        public const string UPDATE_PRODUCT_CATEGORY = "update/product/category";
+        public const string UPDATE_MEASUREMENT = "update/measurement";
 
-        public const string DELETE_PRODUCT_CATEGORY = "delete/product/category";
+        public const string DELETE_MEASUREMENT = "delete/measurement";
     }
 }

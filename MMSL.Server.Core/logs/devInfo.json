@@ -21,3 +21,4 @@
 {"Timestamp":"2020-05-19T18:43:42.0225502+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
 {"Timestamp":"2020-05-20T11:22:06.8692149+03:00","Level":"Error","MessageTemplate":"ProductCategory not found"}
 {"Timestamp":"2020-05-20T17:58:14.9617843+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
+{"Timestamp":"2020-05-20T19:28:19.9344060+03:00","Level":"Error","MessageTemplate":"Measurement not found"}
