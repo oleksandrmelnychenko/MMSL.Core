@@ -196,8 +196,8 @@ namespace MMSL.Server.Core
             builder.RegisterType<OptionRepositoriesFactory>().As<IOptionRepositoriesFactory>();
             builder.RegisterType<AddressRepositoriesFactory>().As<IAddressRepositoriesFactory>();
             builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
-            builder.RegisterType<ProductCategoryRepositoriesFactory>().As<IProductCategoryRepositoriesFactory>();
             builder.RegisterType<MeasurementsRepositoriesFactory>().As<IMeasurementsRepositoriesFactory>();
+            builder.RegisterType<ProductCategoryRepositoriesFactory>().As<IProductCategoryRepositoriesFactory>();
             
             // Services.
             builder.RegisterType<StoreService>().As<IStoreService>();
