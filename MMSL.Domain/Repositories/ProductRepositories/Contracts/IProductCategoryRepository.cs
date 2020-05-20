@@ -7,6 +7,10 @@ using System.Text;
 namespace MMSL.Domain.Repositories.ProductRepositories.Contracts {
     public interface IProductCategoryRepository {
         List<ProductCategory> GetAll(string searchPhrase);
+
         ProductCategory NewProduct(NewProductCategoryDataContract newProductCategoryDataContract);
+
+        void UpdateProduct(ProductCategory product);
+        ProductCategory GetById(long productCategoryId);
     }
 }

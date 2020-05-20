@@ -70,5 +70,37 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
         }
+
+        [HttpPut]
+        [Authorize]
+        [AssignActionRoute(ProductCategorySegments.UPDATE_PRODUCT_CATEGORY)]
+        public async Task<IActionResult> UpdateProductCategory([FromBody]ProductCategory product) {
+            try {
+                if (product == null) throw new ArgumentNullException("UpdateProductCategory");
+
+                await _productCategoryService.UpdateProductCategoryAsync(product);
+
+                return Ok(SuccessResponseBody(product, Localizer["ProductCategory successfully updated"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [AssignActionRoute(ProductCategorySegments.DELETE_PRODUCT_CATEGORY)]
+        public async Task<IActionResult> DeleteProductCategory([FromQuery]long productCategoryId) {
+            try {
+                await _productCategoryService.DeleteProductCategoryAsync(productCategoryId);
+
+                return Ok(SuccessResponseBody(productCategoryId, Localizer["ProductCategory successfully deleted"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
     }
 }

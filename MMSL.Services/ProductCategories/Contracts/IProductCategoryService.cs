@@ -9,5 +9,7 @@ namespace MMSL.Services.ProductCategories.Contracts {
     public interface IProductCategoryService {
         Task<List<ProductCategory>> GetProductCategoriesAsync(string searchPhrase);
         Task<ProductCategory> NewProductCategoryAsync(NewProductCategoryDataContract newProductCategoryDataContract);
+        Task UpdateProductCategoryAsync(ProductCategory product);
+        Task DeleteProductCategoryAsync(long productCategoryId);
     }
 }
