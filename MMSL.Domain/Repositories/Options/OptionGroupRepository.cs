@@ -32,7 +32,7 @@ namespace MMSL.Domain.Repositories.Options {
             _connection.Query<OptionGroup, OptionUnit, OptionGroup>(
                 "SELECT * " +
                 "FROM [OptionGroups] AS og " +
-                "LEFT JOIN [OptionUnits] AS u ON u.[OptionGroupId] = og.Id " +
+                "LEFT JOIN [OptionUnits] AS u ON u.[OptionGroupId] = og.Id AND u.IsDeleted = 0 " +
                 "WHERE og.[IsDeleted] = 0 " +
                 "ORDER BY og.Id, u.OrderIndex ",
                 (optionGroup, optionUnit) => {
