@@ -72,6 +72,8 @@ using MMSL.Domain.Repositories.ProductRepositories;
 using MMSL.Domain.Repositories.ProductRepositories.Contracts;
 using MMSL.Services.MeasurementServices.Contracts;
 using MMSL.Services.MeasurementServices;
+using MMSL.Domain.Repositories.Measurements;
+using MMSL.Domain.Repositories.Measurements.Contracts;
 
 namespace MMSL.Server.Core
 {
@@ -194,8 +196,9 @@ namespace MMSL.Server.Core
             builder.RegisterType<OptionRepositoriesFactory>().As<IOptionRepositoriesFactory>();
             builder.RegisterType<AddressRepositoriesFactory>().As<IAddressRepositoriesFactory>();
             builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
-            builder.RegisterType<ProductCategoryRepositoriesFactory>().As<IProductCategoryRepositoriesFactory>();            
-
+            builder.RegisterType<ProductCategoryRepositoriesFactory>().As<IProductCategoryRepositoriesFactory>();
+            builder.RegisterType<MeasurementsRepositoriesFactory>().As<IMeasurementsRepositoriesFactory>();
+            
             // Services.
             builder.RegisterType<StoreService>().As<IStoreService>();
             builder.RegisterType<AccountService>().As<IAccountService>();
