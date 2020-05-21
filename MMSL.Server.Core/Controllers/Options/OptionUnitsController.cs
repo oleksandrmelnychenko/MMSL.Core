@@ -23,7 +23,7 @@ namespace MMSL.Server.Core.Controllers.Options {
     [AssignControllerRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Options)]
     public class OptionUnitsController : WebApiControllerBase {
 
-        private IOptionUnitService _optionUnitService;
+        private readonly IOptionUnitService _optionUnitService;
 
         public OptionUnitsController(IOptionUnitService optionUnitService, IResponseFactory responseFactory, IStringLocalizer<OptionUnitsController> localizer)
             : base(responseFactory, localizer) {
@@ -60,6 +60,7 @@ namespace MMSL.Server.Core.Controllers.Options {
 
                 if (formData.File != null) {
                     optionUnitEntity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}://{Request.Host}", formData.File);
+                    optionUnitEntity.ImageName = formData.File.FileName;
                 }
 
                 return Ok(SuccessResponseBody(await _optionUnitService.AddOptionUnit(optionUnitEntity), Localizer["Successfully created"]));
@@ -85,6 +86,7 @@ namespace MMSL.Server.Core.Controllers.Options {
 
                 if (formData.File != null) {
                     entity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}://{Request.Host}", formData.File);
+                    entity.ImageName = formData.File.FileName;
                 }
 
                 if (string.IsNullOrEmpty(oldImage) || oldImage != entity.ImageUrl) {

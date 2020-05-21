@@ -36,8 +36,8 @@ namespace MMSL.Domain.Repositories.Stores {
             _connection.Query<StoreCustomer, Address, Address, StoreCustomer>(
                 "SELECT [StoreCustomers].*, [Billing].*, [Delivery].* " +
                 "FROM [StoreCustomers] " +
-                "LEFT JOIN [Address] AS [Billing] ON [Billing].Id = [StoreCustomers].[BillingAddressId] " +
-                "LEFT JOIN [Address] AS [Delivery] ON [Delivery].Id = [StoreCustomers].[DeliveryAddressId] " +
+                "LEFT JOIN [Address] AS [Billing] ON [Billing].Id = [StoreCustomers].[BillingAddressId] AND [Billing].IsDeleted = 0 " +
+                "LEFT JOIN [Address] AS [Delivery] ON [Delivery].Id = [StoreCustomers].[DeliveryAddressId] AND [Delivery].IsDeleted = 0 " +
                 "WHERE [StoreCustomers].Id = @Id AND [StoreCustomers].[IsDeleted] = 0",
                 (dealerAccount, billingAddress, deliveryAddress) => {
                     dealerAccount.BillingAddress = billingAddress;
@@ -69,13 +69,13 @@ namespace MMSL.Domain.Repositories.Stores {
                "[TotalItems] = COUNT(DISTINCT [StoreCustomers].Id), " +
                "[PagesCount] = CEILING(CONVERT(float, COUNT(DISTINCT[StoreCustomers].Id)) / @Limit) " +
                "FROM [StoreCustomers] " +
-               "LEFT JOIN [Stores] ON [Stores].Id = [StoreCustomers].StoreId " +
+               "LEFT JOIN [Stores] ON [Stores].Id = [StoreCustomers].StoreId AND [Stores].IsDeleted = 0 " +
                "WHERE [StoreCustomers].[IsDeleted] = 0 ";
 
             string query = ";WITH [Paginated_StoreCustomer_CTE] AS ( " +
                 "SELECT [StoreCustomers].Id, ROW_NUMBER() OVER(ORDER BY [StoreCustomers].UserName) AS [RowNumber] " +
                 "FROM [StoreCustomers] " +
-                "LEFT JOIN [Stores] ON [Stores].Id = [StoreCustomers].StoreId " +
+                "LEFT JOIN [Stores] ON [Stores].Id = [StoreCustomers].StoreId AND [Stores].IsDeleted = 0 " +
                 "WHERE [StoreCustomers].IsDeleted = 0";
 
             if (storeId.HasValue) {
@@ -104,7 +104,7 @@ namespace MMSL.Domain.Repositories.Stores {
                 "SELECT [Paginated_StoreCustomer_CTE].RowNumber, [StoreCustomers].*, [Stores].* " +
                 "FROM [StoreCustomers] " +
                 "LEFT JOIN [Paginated_StoreCustomer_CTE] ON [Paginated_StoreCustomer_CTE].Id = [StoreCustomers].Id " +
-                "LEFT JOIN [Stores] ON [Stores].Id = [StoreCustomers].StoreId " +
+                "LEFT JOIN [Stores] ON [Stores].Id = [StoreCustomers].StoreId AND [Stores].IsDeleted = 0 " +
                 "WHERE [StoreCustomers].IsDeleted = 0 " +
                 "AND [Paginated_StoreCustomer_CTE].RowNumber > @Offset " +
                 "AND [Paginated_StoreCustomer_CTE].RowNumber <= @Offset + @Limit " +
@@ -129,7 +129,7 @@ namespace MMSL.Domain.Repositories.Stores {
                 "[Email]=@Email,[PhoneNumber]=@PhoneNumber,[BirthDate]=@BirthDate," +
                 "[UseBillingAsDeliveryAddress]=@UseBillingAsDeliveryAddress," +
                 "[BillingAddressId]=@BillingAddressId,[DeliveryAddressId]=@DeliveryAddressId," +
-                "[StoreId]=@StoreId " +
+                "[StoreId]=@StoreId, [LastModified] = GETUTCDATE() " +
                 "WHERE [StoreCustomers].Id=@Id;", storeCustomer);
     }
 }

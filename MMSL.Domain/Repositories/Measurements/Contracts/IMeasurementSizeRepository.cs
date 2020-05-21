@@ -1,8 +1,10 @@
-﻿using System;
+﻿using MMSL.Domain.Entities.Measurements;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MMSL.Domain.Repositories.Measurements.Contracts {
     public interface IMeasurementSizeRepository {
+        List<MeasurementSize> GetMeasurementSizes(long measurementId);
+        long AddMeasurementSize(MeasurementSize measurementSize);
+        MeasurementSize UpdateMeasurementSize(MeasurementSize measurementSize);
     }
 }

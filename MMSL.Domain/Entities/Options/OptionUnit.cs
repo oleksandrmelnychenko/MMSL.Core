@@ -9,6 +9,8 @@ namespace MMSL.Domain.Entities.Options {
 
         public string ImageUrl { get; set; }
 
+        public string ImageName { get; set; }
+
         public bool IsMandatory { get; set; }
 
         public long OptionGroupId { get; set; }

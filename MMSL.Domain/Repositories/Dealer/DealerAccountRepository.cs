@@ -106,12 +106,12 @@ namespace MMSL.Domain.Repositories.Dealer {
         public DealerAccount GetDealerAccount(long dealerAccountId) =>
             _connection.Query<DealerAccount, Address, Address, DealerAccount>(
                 "SELECT [DealerAccount].*, Billing.*, Shipping.* " +
-                "FROM[DealerAccount] " +
-                "LEFT JOIN[Address] AS Billing " +
+                "FROM [DealerAccount] " +
+                "LEFT JOIN [Address] AS Billing " +
                 "ON Billing.Id = [DealerAccount].BillingAddressId AND [DealerAccount].BillingAddressId IS NOT NULL " +
-                "LEFT JOIN[Address] AS Shipping " +
+                "LEFT JOIN [Address] AS Shipping " +
                 "ON Shipping.Id = [DealerAccount].BillingAddressId AND [DealerAccount].ShippingAddressId IS NOT NULL " +
-                "WHERE[DealerAccount].Id = @Id",
+                "WHERE [DealerAccount].Id = @Id",
                 (dealerAccount, billingAddress, shippingAddress) => {
                     dealerAccount.BillingAddress = billingAddress;
                     dealerAccount.ShippingAddress = shippingAddress;
