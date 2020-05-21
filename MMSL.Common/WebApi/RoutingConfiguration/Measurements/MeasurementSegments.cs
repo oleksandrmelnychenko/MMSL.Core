@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MMSL.Common.WebApi.RoutingConfiguration.Measurements {
+﻿namespace MMSL.Common.WebApi.RoutingConfiguration.Measurements {
     public class MeasurementSegments {
         public const string GET_MEASUREMENTS = "get/all";
 
