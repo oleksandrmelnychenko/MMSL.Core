@@ -23,7 +23,7 @@ namespace MMSL.Server.Core.Controllers.Options {
     [AssignControllerRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Options)]
     public class OptionUnitsController : WebApiControllerBase {
 
-        private IOptionUnitService _optionUnitService;
+        private readonly IOptionUnitService _optionUnitService;
 
         public OptionUnitsController(IOptionUnitService optionUnitService, IResponseFactory responseFactory, IStringLocalizer<OptionUnitsController> localizer)
             : base(responseFactory, localizer) {
