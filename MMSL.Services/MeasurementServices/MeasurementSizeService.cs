@@ -4,6 +4,8 @@ using MMSL.Domain.Repositories.Measurements.Contracts;
 using MMSL.Services.MeasurementServices.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace MMSL.Services.MeasurementServices {
@@ -28,25 +30,14 @@ namespace MMSL.Services.MeasurementServices {
 
         public Task<MeasurementSize> AddMeasurementSize(MeasurementSize measurementSize) =>
             Task.Run(() => {
-                using (var connection = _connectionFactory.NewSqlConnection()) {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
-                    IMeasurementDefinitionRepository definitionRepository = _measurementsRepositoriesFactory.NewMeasurementDefinitionRepository(connection);
-                    IMeasurementValueRepository valueRepository = _measurementsRepositoriesFactory.NewMeasurementValueRepository(connection);
+
+                    CheckMeasurementValues(connection, measurementSize.MeasurementId, measurementSize.Values);
 
                     measurementSize.Id = sizeRepository.AddMeasurementSize(measurementSize);
 
-                    foreach (MeasurementValue measurementValue in measurementSize.Values) {
-                        if (measurementValue.MeasurementDefinition.IsNew()) {
-                            //TODO: create new definition and map
-                            //AND save value 
-                            
-                        } else {
-                            //TODO: save value
-
-                        }
-                    }
-
-                    return measurementSize;
+                    return sizeRepository.GetMeasurementSize(measurementSize.Id);
                 }
             });
 
@@ -62,26 +53,42 @@ namespace MMSL.Services.MeasurementServices {
 
         public Task<MeasurementSize> UpdateMeasurementSize(MeasurementSize measurementSize) =>
             Task.Run(() => {
-                using (var connection = _connectionFactory.NewSqlConnection()) {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
-                    IMeasurementDefinitionRepository definitionRepository = _measurementsRepositoriesFactory.NewMeasurementDefinitionRepository(connection);
-                    IMeasurementValueRepository valueRepository = _measurementsRepositoriesFactory.NewMeasurementValueRepository(connection);
 
-                    measurementSize = sizeRepository.UpdateMeasurementSize(measurementSize);
+                    CheckMeasurementValues(connection, measurementSize.MeasurementId, measurementSize.Values);
 
-                    foreach (MeasurementValue measurementValue in measurementSize.Values) {
-                        if (measurementValue.MeasurementDefinition.IsNew()) {
-                            //TODO: create new definition and map
-                            //AND save value 
+                    sizeRepository.UpdateMeasurementSize(measurementSize);
 
-                        } else {
-                            //TODO: save value
-
-                        }
-                    }
-
-                    return new MeasurementSize();
+                    return sizeRepository.GetMeasurementSize(measurementSize.Id);
                 }
             });
+
+        private void CheckMeasurementValues(IDbConnection connection, long measurementId, IEnumerable<MeasurementValue> values) {
+            IMeasurementDefinitionRepository definitionRepository = _measurementsRepositoriesFactory.NewMeasurementDefinitionRepository(connection);
+            IMeasurementValueRepository valueRepository = _measurementsRepositoriesFactory.NewMeasurementValueRepository(connection);
+            IMeasurementMapDefinitionRepository mapRepository = _measurementsRepositoriesFactory.NewMeasurementMapDefinitionRepository(connection);
+
+
+            foreach (MeasurementValue measurementValue in values) {
+                if (measurementValue.MeasurementDefinition.IsNew()) {
+
+                    MeasurementDefinition definition = definitionRepository.NewMeasurementDefinition(measurementValue.MeasurementDefinition);
+
+                    MeasurementMapDefinition map = new MeasurementMapDefinition {
+                        MeasurementDefinitionId = definition.Id,
+                        MeasurementId = measurementId
+                    };
+
+                    long mapId = mapRepository.AddMeasurementMapDefinition(map);
+                }
+
+                if (measurementValue.IsNew()) {
+                    measurementValue.Id = valueRepository.AddValue(measurementValue);
+                } else {
+                    valueRepository.UpdateValue(measurementValue);
+                }
+            }
+        }
     }
 }

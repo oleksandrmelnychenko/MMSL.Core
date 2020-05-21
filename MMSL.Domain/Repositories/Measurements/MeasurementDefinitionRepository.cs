@@ -2,6 +2,7 @@
 using MMSL.Domain.DataContracts;
 using MMSL.Domain.Entities.Measurements;
 using MMSL.Domain.Repositories.Measurements.Contracts;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -44,7 +45,7 @@ namespace MMSL.Domain.Repositories.Measurements {
                 "WHERE Id = @Id", new { Id = measurementDefinitionId })
             .SingleOrDefault();
 
-        public MeasurementDefinition NewMeasurementDefinition(NewMeasurementDefinitionDataContract newMeasurementDefinitionDataContract) =>
+        public MeasurementDefinition NewMeasurementDefinition(MeasurementDefinition newMeasurementDefinitionDataContract) =>
             _connection.Query<MeasurementDefinition>(
                 "INSERT INTO [MeasurementDefinitions]([IsDeleted],[Name],[Description],[IsDefault]) " +
                 "VALUES(0,@Name,@Description,@IsDefault) " +

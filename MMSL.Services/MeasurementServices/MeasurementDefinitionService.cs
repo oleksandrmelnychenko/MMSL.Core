@@ -39,7 +39,12 @@ namespace MMSL.Services.MeasurementServices {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     var measurementDefinitionRepository = _measurementsRepositoriesFactory.NewMeasurementDefinitionRepository(connection);
 
-                    MeasurementDefinition measurementDefinition = measurementDefinitionRepository.NewMeasurementDefinition(newMeasurementDefinitionDataContract);
+                    MeasurementDefinition measurementDefinition = measurementDefinitionRepository
+                        .NewMeasurementDefinition(new MeasurementDefinition {
+                            Name = newMeasurementDefinitionDataContract.Name,
+                            Description = newMeasurementDefinitionDataContract.Description,
+                            IsDefault = newMeasurementDefinitionDataContract.IsDefault
+                        });
 
                     return measurementDefinition;
                 }
