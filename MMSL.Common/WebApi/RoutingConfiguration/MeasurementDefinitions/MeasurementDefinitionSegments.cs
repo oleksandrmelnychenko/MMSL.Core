@@ -2,12 +2,10 @@
     public class MeasurementDefinitionSegments {
         public const string GET_MEASUREMENT_DEFINITIONS = "get/all";
 
-        public const string GET_DEFAULT_MEASUREMENT_DEFINITIONS = "get/all/default";
+        public const string NEW_MEASUREMENT_DEFINITION = "new/measurement/definition";
 
-        public const string NEW_MEASUREMENT = "new/measurement";
+        public const string UPDATE_MEASUREMENT_DEFINITION = "update/measurement/definition";
 
-        public const string UPDATE_MEASUREMENT = "update/measurement";
-
-        public const string DELETE_MEASUREMENT = "delete/measurement";
+        public const string DELETE_MEASUREMENT_DEFINITION = "delete/measurement/definition";
     }
 }

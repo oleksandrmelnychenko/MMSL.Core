@@ -6,6 +6,7 @@ using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.MeasurementDefinitions;
 using MMSL.Common.WebApi.RoutingConfiguration.Measurements;
+using MMSL.Domain.DataContracts;
 using MMSL.Domain.Entities.Measurements;
 using MMSL.Services.MeasurementServices.Contracts;
 using Serilog;
@@ -53,6 +54,55 @@ namespace MMSL.Server.Core.Controllers.Measurements {
             }
         }
 
-  
+        [HttpPost]
+        [Authorize]
+        [AssignActionRoute(MeasurementDefinitionSegments.NEW_MEASUREMENT_DEFINITION)]
+        public async Task<IActionResult> NewMeasurementDefinition([FromBody] NewMeasurementDefinitionDataContract newMeasurementDefinitionDataContract) {
+            try {
+                if (newMeasurementDefinitionDataContract == null) throw new ArgumentNullException("NewMeasurementDefinitionDataContract");
+
+                MeasurementDefinition measurementDefinition = await _measurementDefinitionService.NewMeasurementDefinitionAsync(newMeasurementDefinitionDataContract);
+
+                return Ok(SuccessResponseBody(measurementDefinition, Localizer["New MeasurementDefinition has been created successfully"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpPut]
+        [Authorize]
+        [AssignActionRoute(MeasurementDefinitionSegments.UPDATE_MEASUREMENT_DEFINITION)]
+        public async Task<IActionResult> UpdateMeasurementDefinition([FromBody]MeasurementDefinition measurementDefinition) {
+            try {
+                if (measurementDefinition == null) throw new ArgumentNullException("UpdateMeasurementDefinition");
+
+                await _measurementDefinitionService.UpdateMeasurementDefinitionAsync(measurementDefinition);
+
+                return Ok(SuccessResponseBody(measurementDefinition, Localizer["MeasurementDefinition successfully updated"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [AssignActionRoute(MeasurementDefinitionSegments.DELETE_MEASUREMENT_DEFINITION)]
+        public async Task<IActionResult> DeleteMeasurementDefinition([FromQuery]long measurementDefinitionId) {
+            try {
+                if (measurementDefinitionId == default(long)) throw new ArgumentNullException("DeleteMeasurementDefinition");
+
+                await _measurementDefinitionService.DeleteMeasurementDefinitionAsync(measurementDefinitionId);
+
+                return Ok(SuccessResponseBody(measurementDefinitionId, Localizer["MeasurementDefinition successfully deleted"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
     }
 }
