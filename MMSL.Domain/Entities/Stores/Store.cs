@@ -2,6 +2,7 @@
 using MMSL.Domain.Entities.Dealer;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MMSL.Domain.Entities.Stores {
     public class Store : EntityBaseNamed {
@@ -17,6 +18,7 @@ namespace MMSL.Domain.Entities.Stores {
 
         public ICollection<StoreMapDealerAccount> StoreMapDealerAccounts { get; set; }
 
+        [NotMapped]
         public int StoreCustomersCount { get; set; }
     }
 }
