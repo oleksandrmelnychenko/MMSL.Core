@@ -4,6 +4,7 @@ using Microsoft.Extensions.Localization;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
+using MMSL.Common.WebApi.RoutingConfiguration.Measurements;
 using MMSL.Services.MeasurementServices.Contracts;
 using Serilog;
 using System;
@@ -25,6 +26,8 @@ namespace MMSL.Server.Core.Controllers.Measurements {
             _measurementSizeService = measurementSizeService;
         }
 
+        [HttpGet]
+        [AssignActionRoute(MeasurementSegments.GET_MEASUREMENT_SIZES)]
         public async Task<IActionResult> GetSize([FromQuery] long measurementId) {
             try {
                 return Ok(SuccessResponseBody(await _measurementSizeService.GetMeasurementSizes(measurementId), Localizer["Successfully completed"]));
@@ -34,13 +37,5 @@ namespace MMSL.Server.Core.Controllers.Measurements {
             }
         }
 
-        public async Task<IActionResult> GetSize([FromQuery] long measurementId) {
-            try {
-                return Ok(SuccessResponseBody(await _measurementSizeService.GetMeasurementSizes(measurementId), Localizer["Successfully completed"]));
-            } catch (Exception exc) {
-                Log.Error(exc.Message);
-                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
-            }
-        }
     }
 }
