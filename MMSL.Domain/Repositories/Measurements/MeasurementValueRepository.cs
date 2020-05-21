@@ -2,13 +2,14 @@
 using System.Data;
 
 namespace MMSL.Domain.Repositories.Measurements {
-    public class MeasurementDefinitionRepository : IMeasurementDefinitionRepository {
-
+    public class MeasurementValueRepository : IMeasurementValueRepository {
 
         private readonly IDbConnection _connection;
 
-        public MeasurementDefinitionRepository(IDbConnection connection) {
+        public MeasurementValueRepository(IDbConnection connection) {
             this._connection = connection;
         }
+
+
     }
 }

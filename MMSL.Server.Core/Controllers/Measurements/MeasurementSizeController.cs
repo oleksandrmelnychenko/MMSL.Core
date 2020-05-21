@@ -5,6 +5,8 @@ using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.Measurements;
+using MMSL.Domain.DataContracts.Measurements;
+using MMSL.Domain.Entities.Measurements;
 using MMSL.Services.MeasurementServices.Contracts;
 using Serilog;
 using System;
@@ -25,9 +27,9 @@ namespace MMSL.Server.Core.Controllers.Measurements {
             : base(responseFactory, localizer) {
             _measurementSizeService = measurementSizeService;
         }
-
+            
         [HttpGet]
-        [AssignActionRoute(MeasurementSegments.GET_MEASUREMENT_SIZES)]
+        [AssignActionRoute(MeasurementSizeSegments.GET_MEASUREMENT_SIZES)]
         public async Task<IActionResult> GetSize([FromQuery] long measurementId) {
             try {
                 return Ok(SuccessResponseBody(await _measurementSizeService.GetMeasurementSizes(measurementId), Localizer["Successfully completed"]));
@@ -37,5 +39,26 @@ namespace MMSL.Server.Core.Controllers.Measurements {
             }
         }
 
+        [HttpPost]
+        [AssignActionRoute(MeasurementSizeSegments.ADD_MEASUREMENT_SIZE)]
+        public async Task<IActionResult> AddSize([FromBody] MeasurementSizeDataContract measurementSize) {
+            try {
+                return Ok(SuccessResponseBody(await _measurementSizeService.AddMeasurementSize(measurementSize.GetEntity()), Localizer["Successfully completed"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpPut]
+        [AssignActionRoute(MeasurementSizeSegments.UPDATE_MEASUREMENT_SIZE)]
+        public async Task<IActionResult> UpdateSize([FromBody] MeasurementSizeDataContract measurementSize) {
+            try {
+                return Ok(SuccessResponseBody(await _measurementSizeService.UpdateMeasurementSize(measurementSize.GetEntity()), Localizer["Successfully completed"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
     }
 }
