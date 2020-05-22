@@ -39,14 +39,15 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
 
         public ProductCategory NewProduct(ProductCategory newProductCategory) =>
             _connection.Query<ProductCategory>(
-                "INSERT INTO[ProductCategories](IsDeleted,[Name],[Description]) " +
-                "VALUES(0,@Name,@Description) " +
+                "INSERT INTO[ProductCategories](IsDeleted,[Name],[Description],[ImageUrl]) " +
+                "VALUES(0,@Name,@Description,@ImageUrl) " +
                 "SELECT[ProductCategories].* " +
                 "FROM [ProductCategories] " +
                 "WHERE [ProductCategories].Id = SCOPE_IDENTITY()",
                 new {
                     Name = newProductCategory.Name,
-                    Description = newProductCategory.Description
+                    Description = newProductCategory.Description,
+                    ImageUrl = newProductCategory.ImageUrl
                 })
             .SingleOrDefault();
 
@@ -54,7 +55,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
             _connection.Execute(
                 "UPDATE [ProductCategories] " +
                 "SET [IsDeleted] = @IsDeleted,[LastModified]=getutcdate()," +
-                "[Name]=@Name,[Description]=@Description " +
+                "[Name]=@Name,[Description]=@Description,[ImageUrl] = @ImageUrl " +
                 "WHERE [ProductCategories].Id = @Id", product);
     }
 }
