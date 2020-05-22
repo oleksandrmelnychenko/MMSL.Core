@@ -53,6 +53,18 @@ namespace MMSL.Server.Core.Controllers.Measurements {
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [AssignActionRoute(MeasurementSegments.GET_MEASUREMENT)]
+        public async Task<IActionResult> GetSingle([FromQuery]long measurementId) {
+            try {
+                return Ok(SuccessResponseBody(await _measurementService.GetMeasurementDetailsAsync(measurementId), Localizer["Successfully completed"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
         [HttpPost]
         [Authorize]
         [AssignActionRoute(MeasurementSegments.NEW_MEASUREMENT)]

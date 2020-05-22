@@ -2,6 +2,8 @@
     public class MeasurementSegments {
         public const string GET_MEASUREMENTS = "get/all";
 
+        public const string GET_MEASUREMENT = "get/measurement";
+
         public const string NEW_MEASUREMENT = "new/measurement";
 
         public const string UPDATE_MEASUREMENT = "update/measurement";

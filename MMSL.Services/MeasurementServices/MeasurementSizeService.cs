@@ -33,9 +33,9 @@ namespace MMSL.Services.MeasurementServices {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
 
-                    CheckMeasurementValues(connection, measurementSize.MeasurementId, measurementSize.Values);
-
                     measurementSize.Id = sizeRepository.AddMeasurementSize(measurementSize);
+
+                    CheckMeasurementValues(connection, measurementSize.Id, measurementSize.MeasurementId, measurementSize.Values);
 
                     return sizeRepository.GetMeasurementSize(measurementSize.Id);
                 }
@@ -56,15 +56,15 @@ namespace MMSL.Services.MeasurementServices {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
 
-                    CheckMeasurementValues(connection, measurementSize.MeasurementId, measurementSize.Values);
-
                     sizeRepository.UpdateMeasurementSize(measurementSize);
+
+                    CheckMeasurementValues(connection, measurementSize.Id, measurementSize.MeasurementId, measurementSize.Values);
 
                     return sizeRepository.GetMeasurementSize(measurementSize.Id);
                 }
             });
 
-        private void CheckMeasurementValues(IDbConnection connection, long measurementId, IEnumerable<MeasurementValue> values) {
+        private void CheckMeasurementValues(IDbConnection connection, long sizeId, long measurementId, IEnumerable<MeasurementValue> values) {
             IMeasurementDefinitionRepository definitionRepository = _measurementsRepositoriesFactory.NewMeasurementDefinitionRepository(connection);
             IMeasurementValueRepository valueRepository = _measurementsRepositoriesFactory.NewMeasurementValueRepository(connection);
             IMeasurementMapDefinitionRepository mapRepository = _measurementsRepositoriesFactory.NewMeasurementMapDefinitionRepository(connection);
@@ -84,6 +84,8 @@ namespace MMSL.Services.MeasurementServices {
 
                     map.Id = mapRepository.AddMeasurementMapDefinition(map);
                 }
+
+                measurementValue.MeasurementSizeId = sizeId;
 
                 if (measurementValue.IsNew()) {
                     measurementValue.Id = valueRepository.AddValue(measurementValue);

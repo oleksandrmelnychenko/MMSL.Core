@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using MMSL.Common;
 using MMSL.Common.Exceptions.UserExceptions;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
@@ -55,7 +56,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         [HttpPost]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.NEW_PRODUCT_CATEGORY)]
-        public async Task<IActionResult> NewStore([FromBody] NewProductCategoryDataContract newProductCategoryDataContract) {
+        public async Task<IActionResult> NewStore([FromBody] NewProductCategoryDataContract newProductCategoryDataContract, [FromForm]FileFormData formData) {
             try {
                 if (newProductCategoryDataContract == null) throw new ArgumentNullException("NewProductCategoryDataContract");
 

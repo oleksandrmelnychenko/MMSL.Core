@@ -27,10 +27,19 @@ namespace MMSL.Services.MeasurementServices {
         public Task<List<Measurement>> GetMeasurementsAsync(string searchPhrase) =>
              Task.Run(() => {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
-                     List < Measurement> measurements = null;
+                     List<Measurement> measurements = null;
                      var measurementRepository = _measurementsRepositoriesFactory.NewMeasurementRepository(connection);
                      measurements = measurementRepository.GetAll(searchPhrase);
                      return measurements;
+                 }
+             });
+
+        public Task<Measurement> GetMeasurementDetailsAsync(long measurementId) =>
+             Task.Run(() => {
+                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                     return _measurementsRepositoriesFactory
+                        .NewMeasurementRepository(connection)
+                        .GetByIdWithDependencies(measurementId);
                  }
              });
 
@@ -41,7 +50,7 @@ namespace MMSL.Services.MeasurementServices {
 
                      Measurement measurement = null;
 
-                     measurement = measurementRepository.NewMeasurement(newMeasurementDataContract);                     
+                     measurement = measurementRepository.NewMeasurement(newMeasurementDataContract);
 
                      return measurement;
                  }
