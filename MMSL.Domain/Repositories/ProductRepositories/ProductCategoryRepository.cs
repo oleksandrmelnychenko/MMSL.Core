@@ -37,7 +37,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 new { Id = productCategoryId })
             .SingleOrDefault();
 
-        public ProductCategory NewProduct(NewProductCategoryDataContract newProductCategoryDataContract) =>
+        public ProductCategory NewProduct(ProductCategory newProductCategory) =>
             _connection.Query<ProductCategory>(
                 "INSERT INTO[ProductCategories](IsDeleted,[Name],[Description]) " +
                 "VALUES(0,@Name,@Description) " +
@@ -45,8 +45,8 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "FROM [ProductCategories] " +
                 "WHERE [ProductCategories].Id = SCOPE_IDENTITY()",
                 new {
-                    Name = newProductCategoryDataContract.Name,
-                    Description = newProductCategoryDataContract.Description
+                    Name = newProductCategory.Name,
+                    Description = newProductCategory.Description
                 })
             .SingleOrDefault();
 

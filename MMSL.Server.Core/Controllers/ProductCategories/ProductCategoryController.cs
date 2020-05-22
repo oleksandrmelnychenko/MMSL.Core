@@ -9,6 +9,7 @@ using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.ProductCategories;
 using MMSL.Domain.DataContracts;
 using MMSL.Domain.Entities.Products;
+using MMSL.Server.Core.Helpers;
 using MMSL.Services.ProductCategories.Contracts;
 using Serilog;
 using System;
@@ -58,11 +59,19 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         [AssignActionRoute(ProductCategorySegments.NEW_PRODUCT_CATEGORY)]
         public async Task<IActionResult> NewStore([FromQuery] NewProductCategoryDataContract newProductCategoryDataContract, [FromForm] FileFormData formData) {
             try {
-                if (newProductCategoryDataContract == null) throw new ArgumentNullException("NewProductCategoryDataContract");
+                if (newProductCategoryDataContract == null)
+                    throw new ArgumentNullException("NewProductCategoryDataContract");
 
-                if (string.IsNullOrEmpty(newProductCategoryDataContract.Name)) throw new ArgumentNullException("NewProductCategoryDataContract");
+                if (string.IsNullOrEmpty(newProductCategoryDataContract.Name))
+                    throw new ArgumentNullException("NewProductCategoryDataContract.Name");
 
-                ProductCategory productCategory = await _productCategoryService.NewProductCategoryAsync(newProductCategoryDataContract);
+                ProductCategory productCategory = newProductCategoryDataContract.GetEntity();
+
+                if (formData?.File != null) {
+                    productCategory.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}://{Request.Host}", formData.File);
+                }
+
+                productCategory = await _productCategoryService.NewProductCategoryAsync(productCategory, newProductCategoryDataContract.OptionGroupIds);
 
                 return Ok(SuccessResponseBody(productCategory, Localizer["New ProductCategory has been created successfully"]));
             }          

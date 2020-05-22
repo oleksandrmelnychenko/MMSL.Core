@@ -35,21 +35,21 @@ namespace MMSL.Services.ProductCategories {
                 }
             });
 
-        public Task<ProductCategory> NewProductCategoryAsync(NewProductCategoryDataContract newProductCategoryDataContract) =>
+        public Task<ProductCategory> NewProductCategoryAsync(ProductCategory newProductCategory, IEnumerable<long> groupIds = null) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IProductCategoryRepository productCategoryRepository = _productCategoryRepositoriesFactory.NewProductCategoryRepository(connection);
-                    var productCategoryMapOptionGroupsRepository = _productCategoryRepositoriesFactory.NewProductCategoryMapOptionGroupsRepository(connection);
+                    IProductCategoryMapOptionGroupsRepository productCategoryMapOptionGroupsRepository = _productCategoryRepositoriesFactory.NewProductCategoryMapOptionGroupsRepository(connection);
 
                     ProductCategory product = null;
 
-                    product = productCategoryRepository.NewProduct(newProductCategoryDataContract);
+                    product = productCategoryRepository.NewProduct(newProductCategory);
 
-                    //if (newProductCategoryDataContract.OptionGroupIds != null && newProductCategoryDataContract.OptionGroupIds.Any() && product != null) {
-                    //    foreach (long optionGroupId in newProductCategoryDataContract.OptionGroupIds) {
-                    //        productCategoryMapOptionGroupsRepository.NewMap(product.Id, optionGroupId);
-                    //    }
-                    //}
+                    if (groupIds != null && groupIds.Any() && product != null) {
+                        foreach (long optionGroupId in groupIds) {
+                            productCategoryMapOptionGroupsRepository.NewMap(product.Id, optionGroupId);
+                        }
+                    }
 
                     return product;
                 }

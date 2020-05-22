@@ -1,5 +1,4 @@
 ﻿using MMSL.Domain.Entities.Measurements;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace MMSL.Domain.Entities.Products {
@@ -9,6 +8,7 @@ namespace MMSL.Domain.Entities.Products {
 
         public ProductCategory() {
             OptionGroupMaps = new HashSet<ProductCategoryMapOptionGroup>();
+            Measurements = new HashSet<Measurement>();
         }
 
         public ICollection<ProductCategoryMapOptionGroup> OptionGroupMaps { get; set; }
