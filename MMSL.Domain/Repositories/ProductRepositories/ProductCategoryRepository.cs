@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MMSL.Domain.DataContracts;
+using MMSL.Domain.Entities.Options;
 using MMSL.Domain.Entities.Products;
 using MMSL.Domain.Repositories.ProductRepositories.Contracts;
 using System;
@@ -21,13 +22,49 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
             _connection = connection;
         }
 
-        public List<ProductCategory> GetAll(string searchPhrase) =>
-             _connection.Query<ProductCategory>(
-                "SELECT *" +
+        public List<ProductCategory> GetAll(string searchPhrase) {
+            List<ProductCategory> result = new List<ProductCategory>();
+
+            _connection.Query<ProductCategory, ProductCategoryMapOptionGroup, OptionGroup, OptionUnit, ProductCategory>(
+                "SELECT [ProductCategories].*, [ProductCategoryMapOptionGroups].*, [OptionGroups].*, [OptionUnits].* " +
                 "FROM [ProductCategories] " +
-                "WHERE IsDeleted = 0 AND PATINDEX('%' + @SearchTerm + '%', [ProductCategories].Name) > 0",
-                new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase })
-            .ToList();
+                "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].ProductCategoryId = [ProductCategories].Id " +
+                "AND [ProductCategoryMapOptionGroups].IsDeleted = 0 " +
+                "LEFT JOIN [OptionGroups] ON [OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId " +
+                "AND [OptionGroups].IsDeleted = 0 " +
+                "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id " +
+                "AND [OptionUnits].IsDeleted = 0 " +
+                "WHERE [ProductCategories].IsDeleted = 0",
+                //"AND PATINDEX('%' + @SearchTerm + '%', [ProductCategories].Name) > 0",
+                (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit) => {
+                    if (result.Any(x => x.Id == productCategory.Id)) {
+                        productCategory = result.First(x => x.Id == productCategory.Id);
+                    } else {
+                        result.Add(productCategory);
+                    }
+
+                    if (productCategoryMapOptionGroup != null) {
+                        if (productCategory.OptionGroupMaps.Any(x => x.Id == productCategoryMapOptionGroup.Id)) {
+                            productCategoryMapOptionGroup = productCategory.OptionGroupMaps.First(x => x.Id == productCategoryMapOptionGroup.Id);
+                        } else {
+                            productCategory.OptionGroupMaps.Add(productCategoryMapOptionGroup);
+                        }
+
+                        if (optionGroup != null) {
+                            productCategoryMapOptionGroup.OptionGroup = optionGroup;
+
+                            if (optionUnit != null) {
+                                optionGroup.OptionUnits.Add(optionUnit);
+                            }
+                        }
+                    }
+
+                    return productCategory;
+                },
+                new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase });
+
+            return result;
+        }
 
         public ProductCategory GetById(long productCategoryId) =>
             _connection.Query<ProductCategory>(
