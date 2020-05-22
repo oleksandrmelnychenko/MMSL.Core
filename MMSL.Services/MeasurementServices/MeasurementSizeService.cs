@@ -80,7 +80,9 @@ namespace MMSL.Services.MeasurementServices {
                         MeasurementId = measurementId
                     };
 
-                    long mapId = mapRepository.AddMeasurementMapDefinition(map);
+                    measurementValue.MeasurementDefinitionId = definition.Id;
+
+                    map.Id = mapRepository.AddMeasurementMapDefinition(map);
                 }
 
                 if (measurementValue.IsNew()) {
