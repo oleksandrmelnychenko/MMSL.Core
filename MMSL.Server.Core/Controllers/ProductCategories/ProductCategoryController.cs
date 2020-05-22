@@ -56,7 +56,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         [HttpPost]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.NEW_PRODUCT_CATEGORY)]
-        public async Task<IActionResult> NewStore([FromBody] NewProductCategoryDataContract newProductCategoryDataContract, [FromForm]FileFormData formData) {
+        public async Task<IActionResult> NewStore([FromQuery] NewProductCategoryDataContract newProductCategoryDataContract, [FromForm] FileFormData formData) {
             try {
                 if (newProductCategoryDataContract == null) throw new ArgumentNullException("NewProductCategoryDataContract");
 

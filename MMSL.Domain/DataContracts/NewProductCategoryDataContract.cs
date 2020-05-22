@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 
 namespace MMSL.Domain.DataContracts {
     public class NewProductCategoryDataContract {
@@ -7,5 +8,8 @@ namespace MMSL.Domain.DataContracts {
         public string Description { get; set; }
 
         public List<long> OptionGroupIds { get; set; }
+
+        //public IFormFile File { get; set; }
+
     }
 }

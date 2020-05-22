@@ -45,11 +45,11 @@ namespace MMSL.Services.ProductCategories {
 
                     product = productCategoryRepository.NewProduct(newProductCategoryDataContract);
 
-                    if (newProductCategoryDataContract.OptionGroupIds != null && newProductCategoryDataContract.OptionGroupIds.Any() && product != null) {
-                        foreach (long optionGroupId in newProductCategoryDataContract.OptionGroupIds) {
-                            productCategoryMapOptionGroupsRepository.NewMap(product.Id, optionGroupId);
-                        }
-                    }
+                    //if (newProductCategoryDataContract.OptionGroupIds != null && newProductCategoryDataContract.OptionGroupIds.Any() && product != null) {
+                    //    foreach (long optionGroupId in newProductCategoryDataContract.OptionGroupIds) {
+                    //        productCategoryMapOptionGroupsRepository.NewMap(product.Id, optionGroupId);
+                    //    }
+                    //}
 
                     return product;
                 }
