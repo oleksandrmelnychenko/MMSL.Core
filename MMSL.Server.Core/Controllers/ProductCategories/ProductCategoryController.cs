@@ -84,13 +84,25 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         [HttpPut]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.UPDATE_PRODUCT_CATEGORY)]
-        public async Task<IActionResult> UpdateProductCategory([FromBody]ProductCategory product) {
+        public async Task<IActionResult> UpdateProductCategory([FromQuery]UpdateProductCategoryDataContract productDataContract, [FromForm] FileFormData formData) {
             try {
-                if (product == null) throw new ArgumentNullException("UpdateProductCategory");
+                if (productDataContract == null) throw new ArgumentNullException("UpdateProductCategory");
+
+                ProductCategory product = productDataContract.GetEntity();
+
+                if (formData?.File != null) {
+                    product.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}://{Request.Host}", formData.File);
+                }
 
                 await _productCategoryService.UpdateProductCategoryAsync(product);
 
-                return Ok(SuccessResponseBody(product, Localizer["ProductCategory successfully updated"]));
+                if (string.IsNullOrEmpty(productDataContract.ImageUrl) || productDataContract.ImageUrl != product.ImageUrl) {
+                    if (!string.IsNullOrEmpty(productDataContract.ImageUrl)) {
+                        FileUploadingHelper.DeleteFile($"{Request.Scheme}://{Request.Host}", productDataContract.ImageUrl);
+                    }
+                }
+
+                return Ok(SuccessResponseBody(productDataContract, Localizer["ProductCategory successfully updated"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);
