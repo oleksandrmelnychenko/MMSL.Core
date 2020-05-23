@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 namespace MMSL.Services.MeasurementServices.Contracts {
     public interface IMeasurementService {
         Task<List<Measurement>> GetMeasurementsAsync(string searchPhrase);
+        Task<List<Measurement>> GetProductMeasurementsAsync(long productCategoryId);
         Task<Measurement> GetMeasurementDetailsAsync(long measurementId);
         Task<Measurement> NewMeasurementAsync(NewMeasurementDataContract newMeasurementDataContract);
         Task UpdateMeasurementAsync(Measurement measurement);

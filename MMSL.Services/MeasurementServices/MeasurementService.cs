@@ -46,11 +46,22 @@ namespace MMSL.Services.MeasurementServices {
         public Task<Measurement> NewMeasurementAsync(NewMeasurementDataContract newMeasurementDataContract) =>
              Task.Run(() => {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
-                     var measurementRepository = _measurementsRepositoriesFactory.NewMeasurementRepository(connection);
+                     IMeasurementRepository measurementRepository = _measurementsRepositoriesFactory.NewMeasurementRepository(connection);
+                     IMeasurementMapDefinitionRepository mapDefinitionRepository = _measurementsRepositoriesFactory.NewMeasurementMapDefinitionRepository(connection);
+                     IMeasurementDefinitionRepository definitionRepository = _measurementsRepositoriesFactory.NewMeasurementDefinitionRepository(connection);
 
-                     Measurement measurement = null;
+                     Measurement measurement = measurementRepository.NewMeasurement(newMeasurementDataContract);
 
-                     measurement = measurementRepository.NewMeasurement(newMeasurementDataContract);
+                     //Auto attached default definitions
+                     List<MeasurementDefinition> deafultDefinitions = definitionRepository.GetAll(string.Empty, true);
+
+                     foreach (MeasurementDefinition definition in deafultDefinitions) {
+                         mapDefinitionRepository.AddMeasurementMapDefinition(
+                             new MeasurementMapDefinition {
+                                 MeasurementDefinitionId = definition.Id,
+                                 MeasurementId = measurement.Id
+                             });
+                     }
 
                      return measurement;
                  }
@@ -80,5 +91,13 @@ namespace MMSL.Services.MeasurementServices {
                  }
              });
 
+        public Task<List<Measurement>> GetProductMeasurementsAsync(long productCategoryId) =>
+             Task.Run(() => {
+                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                     return _measurementsRepositoriesFactory
+                        .NewMeasurementRepository(connection)
+                        .GetAllByProduct(productCategoryId);
+                 }
+             });
     }
 }
