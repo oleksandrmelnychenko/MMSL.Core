@@ -131,7 +131,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
 
                 await _productCategoryService.UpdateProductCategoryOptionGroupsAsync(maps);          
 
-                return Ok(SuccessResponseBody(maps, Localizer["ProductCategory successfully updated"]));
+                return Ok(SuccessResponseBody("Completed", Localizer["ProductCategory OptionGroups successfully updated"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);
