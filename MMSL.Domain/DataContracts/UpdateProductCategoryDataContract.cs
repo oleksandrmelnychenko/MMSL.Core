@@ -7,6 +7,7 @@ namespace MMSL.Domain.DataContracts {
 
         public override ProductCategory GetEntity() {
             return new ProductCategory {
+                Id = Id,
                 Name = Name,
                 Description = Description,
                 ImageUrl = ImageUrl

@@ -34,8 +34,8 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "AND [OptionGroups].IsDeleted = 0 " +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id " +
                 "AND [OptionUnits].IsDeleted = 0 " +
-                "WHERE [ProductCategories].IsDeleted = 0",
-                //"AND PATINDEX('%' + @SearchTerm + '%', [ProductCategories].Name) > 0",
+                "WHERE [ProductCategories].IsDeleted = 0" +
+                "AND PATINDEX('%' + @SearchTerm + '%', [ProductCategories].Name) > 0",
                 (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit) => {
                     if (result.Any(x => x.Id == productCategory.Id)) {
                         productCategory = result.First(x => x.Id == productCategory.Id);
