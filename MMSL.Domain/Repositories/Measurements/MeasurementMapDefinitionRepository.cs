@@ -1,4 +1,5 @@
-﻿using MMSL.Domain.Entities.Measurements;
+﻿using Dapper;
+using MMSL.Domain.Entities.Measurements;
 using MMSL.Domain.Repositories.Measurements.Contracts;
 using System;
 using System.Collections.Generic;
@@ -15,16 +16,25 @@ namespace MMSL.Domain.Repositories.Measurements {
             this._connection = connection;
         }
 
-        public long AddMeasurementMapDefinition(MeasurementMapDefinition measurementMapDefinition) {
-            throw new NotImplementedException();
-        }
+        public long AddMeasurementMapDefinition(MeasurementMapDefinition measurementMapDefinition) =>
+            _connection.QuerySingleOrDefault<long>(
+                "INSERT INTO [MeasurementMapDefinitions] " +
+                "([IsDeleted], [MeasurementId], [MeasurementDefinitionId]) " +
+                "VALUES (0, @MeasurementId, @MeasurementDefinitionId)",
+                measurementMapDefinition);
 
-        public MeasurementMapDefinition GetMeasurementMapDefinition(MeasurementMapDefinition measurementMapDefinition) {
-            throw new NotImplementedException();
-        }
+        public MeasurementMapDefinition GetMeasurementMapDefinition(long measurementMapDefinitionId) =>
+            _connection.QuerySingleOrDefault<MeasurementMapDefinition>(
+                "SELECT * FROM [MeasurementMapDefinitions] " +
+                "WHERE [MeasurementMapDefinitions].Id = @Id",
+                new { Id = measurementMapDefinitionId });
 
-        public MeasurementMapDefinition UpdateMeasurementMapDefinition(MeasurementMapDefinition measurementMapDefinition) {
-            throw new NotImplementedException();
-        }
+        public MeasurementMapDefinition UpdateMeasurementMapDefinition(MeasurementMapDefinition measurementMapDefinition) =>
+            _connection.QuerySingleOrDefault<MeasurementMapDefinition>(
+                "UPDATE [MeasurementMapDefinitions] " +
+                "SET [IsDeleted] = @IsDeleted," +
+                "[MeasurementId] = @MeasurementId," +
+                "[MeasurementDefinitionId] = @MeasurementDefinitionId",
+                measurementMapDefinition);
     }
 }

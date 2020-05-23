@@ -47,8 +47,8 @@ namespace MMSL.Services.MeasurementServices {
              Task.Run(() => {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                      IMeasurementRepository measurementRepository = _measurementsRepositoriesFactory.NewMeasurementRepository(connection);
-                     IMeasurementMapDefinitionRepository mapDefinitionRepository = _measurementsRepositoriesFactory.NewMeasurementMapDefinitionRepository(connection);
                      IMeasurementDefinitionRepository definitionRepository = _measurementsRepositoriesFactory.NewMeasurementDefinitionRepository(connection);
+                     IMeasurementMapDefinitionRepository mapDefinitionRepository = _measurementsRepositoriesFactory.NewMeasurementMapDefinitionRepository(connection);
 
                      Measurement measurement = measurementRepository.NewMeasurement(newMeasurementDataContract);
 
