@@ -15,10 +15,10 @@ namespace MMSL.Domain.DataContracts.Measurements {
 
         public override MeasurementSize GetEntity() {
             return new MeasurementSize {
-                MeasurementId = MeasurementId,
+                Id = Id,
                 Name = Name,
-
                 Description = Description,
+                MeasurementId = MeasurementId,
                 Values = Values.Select(x => new MeasurementValue {
                     Id = x.Id,
                     Value = x.Value,

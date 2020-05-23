@@ -54,6 +54,18 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORIES)]
+        public async Task<IActionResult> Get([FromQuery]long productCategoryId) {
+            try {
+                return Ok(SuccessResponseBody(await _productCategoryService.GetProductCategoryAsync(productCategoryId), Localizer["Successfully completed"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
         [HttpPost]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.NEW_PRODUCT_CATEGORY)]

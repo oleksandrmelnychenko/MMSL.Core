@@ -35,6 +35,15 @@ namespace MMSL.Services.ProductCategories {
                 }
             });
 
+        public Task<ProductCategory> GetProductCategoryAsync(long productCategoryId) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    return _productCategoryRepositoriesFactory
+                        .NewProductCategoryRepository(connection)
+                        .GetById(productCategoryId);
+                }
+            });
+
         public Task<ProductCategory> NewProductCategoryAsync(ProductCategory newProductCategory, IEnumerable<long> groupIds = null) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
