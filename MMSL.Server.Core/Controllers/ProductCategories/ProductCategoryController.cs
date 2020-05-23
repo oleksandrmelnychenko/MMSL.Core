@@ -56,7 +56,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
 
         [HttpGet]
         [Authorize]
-        [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORIES)]
+        [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORY)]
         public async Task<IActionResult> Get([FromQuery]long productCategoryId) {
             try {
                 return Ok(SuccessResponseBody(await _productCategoryService.GetProductCategoryAsync(productCategoryId), Localizer["Successfully completed"]));
