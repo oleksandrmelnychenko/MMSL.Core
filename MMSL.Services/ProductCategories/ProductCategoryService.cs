@@ -1,6 +1,7 @@
 ﻿using MMSL.Domain.DataContracts;
 using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Products;
+using MMSL.Domain.Repositories.Options.Contracts;
 using MMSL.Domain.Repositories.ProductRepositories.Contracts;
 using MMSL.Services.ProductCategories.Contracts;
 using System;
@@ -15,13 +16,23 @@ namespace MMSL.Services.ProductCategories {
 
         private readonly IProductCategoryRepositoriesFactory _productCategoryRepositoriesFactory;
 
+        private readonly IOptionRepositoriesFactory _optionRepositoriesFactory;
+
         private readonly IDbConnectionFactory _connectionFactory;
 
+        /// <summary>
+        ///     ctor().
+        /// </summary>
+        /// <param name="productCategoryRepositoriesFactory"></param>
+        /// <param name="connectionFactory"></param>
+        /// <param name="optionGroupRepository"></param>
         public ProductCategoryService(
             IProductCategoryRepositoriesFactory productCategoryRepositoriesFactory,
-            IDbConnectionFactory connectionFactory) {
+            IDbConnectionFactory connectionFactory,
+            IOptionRepositoriesFactory optionRepositoriesFactory) {
 
             _productCategoryRepositoriesFactory = productCategoryRepositoriesFactory;
+            _optionRepositoriesFactory = optionRepositoriesFactory;
             _connectionFactory = connectionFactory;
         }
 
@@ -81,11 +92,32 @@ namespace MMSL.Services.ProductCategories {
                      ProductCategory product = productCategoryRepository.GetById(productCategoryId);
 
                      if (product == null) throw new Exception("ProductCategory not found");
-                     
+
                      product.IsDeleted = true;
 
                      productCategoryRepository.UpdateProduct(product);
                  }
              });
+
+        public Task UpdateProductCategoryOptionGroupsAsync(IEnumerable<ProductCategoryMapOptionGroup> maps) =>
+              Task.Run(() => {
+                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                      IProductCategoryRepository productCategoryRepository = _productCategoryRepositoriesFactory.NewProductCategoryRepository(connection);
+                      IProductCategoryMapOptionGroupsRepository productCategoryMapOptionGroupsRepository = _productCategoryRepositoriesFactory.NewProductCategoryMapOptionGroupsRepository(connection);
+                      IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
+
+                      foreach (ProductCategoryMapOptionGroup map in maps) {
+                          if (map.Id != default(long) && map.IsDeleted) {                              
+                              ProductCategoryMapOptionGroup toDelete = productCategoryMapOptionGroupsRepository.GetById(map.Id);
+                              if (toDelete != null) {
+                                  toDelete.IsDeleted = true;
+                                  productCategoryMapOptionGroupsRepository.UpdateMap(toDelete);
+                              }
+                          } else {
+                              productCategoryMapOptionGroupsRepository.NewMap(map.ProductCategoryId, map.OptionGroupId);
+                          }
+                      }
+                  }
+              });
     }
 }

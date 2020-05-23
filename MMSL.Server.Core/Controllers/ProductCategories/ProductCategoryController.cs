@@ -122,6 +122,23 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
             }
         }
 
+        [HttpPut]
+        [Authorize]
+        [AssignActionRoute(ProductCategorySegments.UPDATE_PRODUCT_CATEGORY_OPTION_GROUPS)]
+        public async Task<IActionResult> UpdateProductCategoryOptionGroups([FromBody]IEnumerable<ProductCategoryMapOptionGroup> maps) {
+            try {
+                if (maps == null) throw new ArgumentNullException("UpdateProductCategoryOptionGroups");
+
+                await _productCategoryService.UpdateProductCategoryOptionGroupsAsync(maps);          
+
+                return Ok(SuccessResponseBody("Done", Localizer["ProductCategory successfully updated"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
         [HttpDelete]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.DELETE_PRODUCT_CATEGORY)]

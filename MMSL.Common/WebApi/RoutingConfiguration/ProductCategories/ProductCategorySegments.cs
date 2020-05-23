@@ -8,6 +8,8 @@
 
         public const string UPDATE_PRODUCT_CATEGORY = "update/product/category";
 
+        public const string UPDATE_PRODUCT_CATEGORY_OPTION_GROUPS = "update/product/category/option/group";
+
         public const string DELETE_PRODUCT_CATEGORY = "delete/product/category";        
     }
 }

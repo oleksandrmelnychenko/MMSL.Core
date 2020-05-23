@@ -12,5 +12,6 @@ namespace MMSL.Services.ProductCategories.Contracts {
         Task<ProductCategory> NewProductCategoryAsync(ProductCategory newProductCategory, IEnumerable<long> groupIds = null);
         Task UpdateProductCategoryAsync(ProductCategory product);
         Task DeleteProductCategoryAsync(long productCategoryId);
+        Task UpdateProductCategoryOptionGroupsAsync(IEnumerable<ProductCategoryMapOptionGroup> maps);
     }
 }
