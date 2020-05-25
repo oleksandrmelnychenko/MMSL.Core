@@ -74,6 +74,49 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 new { Id = productCategoryId })
             .SingleOrDefault();
 
+        public ProductCategory GetDetailedById(long productCategoryId) {
+            ProductCategory result = null;
+
+            _connection.Query<ProductCategory, ProductCategoryMapOptionGroup, OptionGroup, OptionUnit, ProductCategory>(
+                "SELECT [ProductCategories].*, [ProductCategoryMapOptionGroups].*, [OptionGroups].*, [OptionUnits].* " +
+                "FROM [ProductCategories] " +
+                "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].ProductCategoryId = [ProductCategories].Id " +
+                "AND [ProductCategoryMapOptionGroups].IsDeleted = 0 " +
+                "LEFT JOIN [OptionGroups] ON [OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId " +
+                "AND [OptionGroups].IsDeleted = 0 " +
+                "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id " +
+                "AND [OptionUnits].IsDeleted = 0 " +
+                "WHERE [ProductCategories].Id = @Id AND [ProductCategories].IsDeleted = 0",
+                (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit) => {
+                    if (result == null) {
+                        result = productCategory;
+                    } else {
+                        productCategory = result;
+                    }
+
+                    if (productCategoryMapOptionGroup != null) {
+                        if (productCategory.OptionGroupMaps.Any(x => x.Id == productCategoryMapOptionGroup.Id)) {
+                            productCategoryMapOptionGroup = productCategory.OptionGroupMaps.First(x => x.Id == productCategoryMapOptionGroup.Id);
+                        } else {
+                            productCategory.OptionGroupMaps.Add(productCategoryMapOptionGroup);
+                        }
+
+                        if (optionGroup != null) {
+                            productCategoryMapOptionGroup.OptionGroup = optionGroup;
+
+                            if (optionUnit != null) {
+                                optionGroup.OptionUnits.Add(optionUnit);
+                            }
+                        }
+                    }
+
+                    return productCategory;
+                },
+                new { Id = productCategoryId });
+
+            return result;
+        }
+
         public ProductCategory NewProduct(ProductCategory newProductCategory) =>
             _connection.Query<ProductCategory>(
                 "INSERT INTO[ProductCategories](IsDeleted,[Name],[Description],[ImageUrl]) " +

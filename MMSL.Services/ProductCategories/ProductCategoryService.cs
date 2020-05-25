@@ -46,12 +46,12 @@ namespace MMSL.Services.ProductCategories {
                 }
             });
 
-        public Task<ProductCategory> GetProductCategoryAsync(long productCategoryId) =>
+        public Task<ProductCategory> GetProductCategoryAsync(long productCategoryId, bool includeDetails = false) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
-                    return _productCategoryRepositoriesFactory
-                        .NewProductCategoryRepository(connection)
-                        .GetById(productCategoryId);
+                    IProductCategoryRepository repo = _productCategoryRepositoriesFactory.NewProductCategoryRepository(connection);
+
+                    return includeDetails ? repo.GetDetailedById(productCategoryId) : repo.GetById(productCategoryId);
                 }
             });
 
@@ -107,7 +107,7 @@ namespace MMSL.Services.ProductCategories {
                       IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
 
                       foreach (ProductCategoryMapOptionGroup map in maps) {
-                          if (map.Id != default(long) && map.IsDeleted) {                              
+                          if (map.Id != default(long) && map.IsDeleted) {
                               ProductCategoryMapOptionGroup toDelete = productCategoryMapOptionGroupsRepository.GetById(map.Id);
                               if (toDelete != null) {
                                   toDelete.IsDeleted = true;
