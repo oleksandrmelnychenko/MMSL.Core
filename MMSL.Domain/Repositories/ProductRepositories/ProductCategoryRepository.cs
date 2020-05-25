@@ -30,12 +30,14 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "FROM [ProductCategories] " +
                 "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].ProductCategoryId = [ProductCategories].Id " +
                 "AND [ProductCategoryMapOptionGroups].IsDeleted = 0 " +
+                "AND (SELECT COUNT([OptionGroups].Id) FROM [OptionGroups] WHERE [OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId AND [OptionGroups].IsDeleted = 0) > 0 " +
                 "LEFT JOIN [OptionGroups] ON [OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId " +
                 "AND [OptionGroups].IsDeleted = 0 " +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id " +
                 "AND [OptionUnits].IsDeleted = 0 " +
                 "WHERE [ProductCategories].IsDeleted = 0" +
-                "AND PATINDEX('%' + @SearchTerm + '%', [ProductCategories].Name) > 0",
+                "AND PATINDEX('%' + @SearchTerm + '%', [ProductCategories].Name) > 0 " +
+                "ORDER BY [ProductCategories].Id, [OptionGroups].Id, [OptionUnits].OrderIndex",
                 (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit) => {
                     if (result.Any(x => x.Id == productCategory.Id)) {
                         productCategory = result.First(x => x.Id == productCategory.Id);
@@ -48,14 +50,11 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                             productCategoryMapOptionGroup = productCategory.OptionGroupMaps.First(x => x.Id == productCategoryMapOptionGroup.Id);
                         } else {
                             productCategory.OptionGroupMaps.Add(productCategoryMapOptionGroup);
+                            productCategoryMapOptionGroup.OptionGroup = optionGroup;
                         }
 
-                        if (optionGroup != null) {
-                            productCategoryMapOptionGroup.OptionGroup = optionGroup;
-
-                            if (optionUnit != null) {
-                                optionGroup.OptionUnits.Add(optionUnit);
-                            }
+                        if (optionUnit != null) {
+                            productCategoryMapOptionGroup.OptionGroup.OptionUnits.Add(optionUnit);
                         }
                     }
 
@@ -82,11 +81,13 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "FROM [ProductCategories] " +
                 "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].ProductCategoryId = [ProductCategories].Id " +
                 "AND [ProductCategoryMapOptionGroups].IsDeleted = 0 " +
+                "AND (SELECT COUNT([OptionGroups].Id) FROM [OptionGroups] WHERE [OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId AND [OptionGroups].IsDeleted = 0) > 0 " +
                 "LEFT JOIN [OptionGroups] ON [OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId " +
                 "AND [OptionGroups].IsDeleted = 0 " +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id " +
                 "AND [OptionUnits].IsDeleted = 0 " +
-                "WHERE [ProductCategories].Id = @Id AND [ProductCategories].IsDeleted = 0",
+                "WHERE [ProductCategories].Id = @Id AND [ProductCategories].IsDeleted = 0 " +
+                "ORDER BY [ProductCategories].Id, [OptionGroups].Id, [OptionUnits].OrderIndex",
                 (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit) => {
                     if (result == null) {
                         result = productCategory;
@@ -99,14 +100,11 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                             productCategoryMapOptionGroup = productCategory.OptionGroupMaps.First(x => x.Id == productCategoryMapOptionGroup.Id);
                         } else {
                             productCategory.OptionGroupMaps.Add(productCategoryMapOptionGroup);
+                            productCategoryMapOptionGroup.OptionGroup = optionGroup;
                         }
 
-                        if (optionGroup != null) {
-                            productCategoryMapOptionGroup.OptionGroup = optionGroup;
-
-                            if (optionUnit != null) {
-                                optionGroup.OptionUnits.Add(optionUnit);
-                            }
+                        if (optionUnit != null) {
+                            productCategoryMapOptionGroup.OptionGroup.OptionUnits.Add(optionUnit);
                         }
                     }
 
