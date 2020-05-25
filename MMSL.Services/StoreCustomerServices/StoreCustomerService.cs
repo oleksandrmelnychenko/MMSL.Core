@@ -91,9 +91,8 @@ namespace MMSL.Services.StoreCustomerServices {
             Task.Run(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
 
-                    if (storeCustomer.IsNew()) {
-                        //TODO: throw argexc id 
-                    }
+                    if (storeCustomer.IsNew())
+                        throw new ArgumentOutOfRangeException("Id");
 
                     IStoreCustomerRepository storeCustomerRepository = _storeRepositoriesFactory.NewStoreCustomerRepository(connection);
                     IAddressRepository addressRepository = _addressRepositoriesFactory.NewAddressRepository(connection);
@@ -102,7 +101,7 @@ namespace MMSL.Services.StoreCustomerServices {
                         if (storeCustomer.BillingAddress.IsNew()) {
                             storeCustomer.BillingAddressId = addressRepository.AddAddress(storeCustomer.BillingAddress);
                         } else {
-                            addressRepository.UpdateAddress(storeCustomer.BillingAddress);    
+                            addressRepository.UpdateAddress(storeCustomer.BillingAddress);
                         }
                     }
 
