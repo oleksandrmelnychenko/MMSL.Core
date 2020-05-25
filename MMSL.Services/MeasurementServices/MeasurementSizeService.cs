@@ -41,13 +41,18 @@ namespace MMSL.Services.MeasurementServices {
                 }
             });
 
-        public Task<MeasurementSize> DeleteMeasurementSize(MeasurementSize measurementSize) =>
+        public Task<MeasurementSize> DeleteMeasurementSize(long measurementSizeId) =>
             Task.Run(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
-                    //TODO: 
-                    throw new NotImplementedException();
+                    IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
 
-                    return new MeasurementSize();
+                    MeasurementSize size = sizeRepository.GetMeasurementSize(measurementSizeId);
+
+                    size.IsDeleted = true;
+
+                    sizeRepository.UpdateMeasurementSize(size);
+
+                    return size;
                 }
             });
 
