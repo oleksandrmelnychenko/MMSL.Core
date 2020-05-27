@@ -1,4 +1,5 @@
-﻿using MMSL.Domain.DbConnectionFactory;
+﻿using MMSL.Domain.DataContracts.Measurements;
+using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Measurements;
 using MMSL.Domain.Repositories.Measurements.Contracts;
 using MMSL.Services.MeasurementServices.Contracts;
@@ -24,20 +25,23 @@ namespace MMSL.Services.MeasurementServices {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     return _measurementsRepositoriesFactory
                         .NewMeasurementSizeRepository(connection)
-                        .GetSizesByMeasurementId(measurementId);
+                        .GetAllByMeasurementId(measurementId);
                 }
             });
 
-        public Task<MeasurementSize> AddMeasurementSize(MeasurementSize measurementSize) =>
+        public Task<MeasurementSize> AddMeasurementSize(MeasurementSizeDataContract measurementSizeDataContract) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
+                    IMeasurementMapSizeRepository measurementMapSizeRepository = _measurementsRepositoriesFactory.NewMeasurementMapSizeRepository(connection);
 
-                    measurementSize.Id = sizeRepository.AddMeasurementSize(measurementSize);
+                    MeasurementSize newMeasurementSize = sizeRepository.AddMeasurementSize(measurementSizeDataContract.Name, measurementSizeDataContract.Description);
 
-                    //CheckMeasurementValues(connection, measurementSize.Id, measurementSize.MeasurementId, measurementSize.Values);
+                    if (newMeasurementSize != null) {
+                        measurementMapSizeRepository.New(measurementSizeDataContract.MeasurementId, newMeasurementSize.Id);
+                    }
 
-                    return sizeRepository.GetMeasurementSize(measurementSize.Id);
+                    return newMeasurementSize;
                 }
             });
 
@@ -46,7 +50,7 @@ namespace MMSL.Services.MeasurementServices {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
 
-                    MeasurementSize size = sizeRepository.GetMeasurementSize(measurementSizeId);
+                    MeasurementSize size = sizeRepository.GetById(measurementSizeId);
 
                     size.IsDeleted = true;
 
@@ -65,7 +69,7 @@ namespace MMSL.Services.MeasurementServices {
 
                     //CheckMeasurementValues(connection, measurementSize.Id, measurementSize.MeasurementId, measurementSize.Values);
 
-                    return sizeRepository.GetMeasurementSize(measurementSize.Id);
+                    return sizeRepository.GetById(measurementSize.Id);
                 }
             });
 

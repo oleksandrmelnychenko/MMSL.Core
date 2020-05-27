@@ -14,32 +14,31 @@ namespace MMSL.Domain.Repositories.Measurements {
             this._connection = connection;
         }
 
-        public long AddMeasurementSize(MeasurementSize measurementSize) {
-            return _connection.QuerySingleOrDefault<long>(
-                    "INSERT INTO [MeasurementSizes] " +
-                    "([IsDeleted],[Name],[Description],[MeasurementId]) " +
-                    "VALUES (0, @Name, @Description, @MeasurementId) " +
-                    "SELECT SCOPE_IDENTITY()",
-                    measurementSize
+        public MeasurementSize AddMeasurementSize(string name, string description) {
+            return _connection.QuerySingleOrDefault<MeasurementSize>(
+                    "INSERT INTO [MeasurementSizes] ([IsDeleted],[Name],[Description] ) " +
+                    "VALUES (0, @Name, @Description) " +
+                    "SELECT * " +
+                    "FROM [MeasurementSizes] " +
+                    "WHERE [MeasurementSizes].Id = SCOPE_IDENTITY()", new { Name = name, Description = description }
                     );
         }
 
-        public MeasurementSize GetMeasurementSize(long measurementSizeId) {
+        public MeasurementSize GetById(long measurementSizeId) {
             return _connection.QuerySingleOrDefault<MeasurementSize>(
-                    "SELECT [MeasurementSizes].*, [MeasurementValues].*, [MeasurementDefinitions].* " +
-                    "FROM [MeasurementSizes] " +
-                    "LEFT JOIN [MeasurementValues] ON [MeasurementValues].MeasurementSizeId = [MeasurementSizes].Id " +
-                    "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementValues].MeasurementDefinitionId " +
-                    "WHERE [MeasurementSizes].Id = @MeasurementSizeId " +
-                    "AND [MeasurementSizes].IsDeleted = 0",
+                    "SELECT * " +
+                    "FROM [MeasurementSizes] AS s    " +
+                    "LEFT JOIN [MeasurementMapSizes] AS ms ON ms.MeasurementSizeId = s.Id AND ms.IsDeleted = 0 " +
+                    "LEFT JOIN [MeasurementMapValues] AS mv ON mv.MeasurementSizeId = s.Id AND mv.IsDeleted = 0 " +
+                    "WHERE s.Id = @MeasurementSizeId AND s.IsDeleted = 0",
                     new {
                         MeasurementSizeId = measurementSizeId
                     });
         }
 
-        public List<MeasurementSize> GetSizesByMeasurementId(long measurementId) {
+        public List<MeasurementSize> GetAllByMeasurementId(long measurementId) {
             return _connection.Query<MeasurementSize>(
-                    "SELECT * " +
+                    "SELECT s.* " +
                     "FROM [MeasurementSizes] as s " +
                     "LEFT JOIN [MeasurementMapSizes] AS ms ON ms.MeasurementSizeId = s.Id" +
                     " AND ms.IsDeleted = 0 " +
@@ -49,8 +48,7 @@ namespace MMSL.Domain.Repositories.Measurements {
                     "ORDER BY s.Name",
                     new {
                         Id = measurementId
-                    }
-                    ).ToList();
+                    }).ToList();
         }
 
         public MeasurementSize UpdateMeasurementSize(MeasurementSize measurementSize) {

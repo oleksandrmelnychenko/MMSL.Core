@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace MMSL.Domain.Repositories.Measurements.Contracts {
     public interface IMeasurementSizeRepository {
-        List<MeasurementSize> GetSizesByMeasurementId(long measurementId);
-        MeasurementSize GetMeasurementSize(long measurementSizeId);
-        long AddMeasurementSize(MeasurementSize measurementSize);
+        List<MeasurementSize> GetAllByMeasurementId(long measurementId);
+        MeasurementSize GetById(long measurementSizeId);
+        MeasurementSize AddMeasurementSize(string name, string description);
         MeasurementSize UpdateMeasurementSize(MeasurementSize measurementSize);
     }
 }
