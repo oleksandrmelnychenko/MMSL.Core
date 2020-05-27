@@ -31,3 +31,4 @@
 {"Timestamp":"2020-05-23T15:49:43.6286537+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
 {"Timestamp":"2020-05-23T18:03:22.8244286+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
 {"Timestamp":"2020-05-27T17:23:09.7046792+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'MeasurementSize')"}
+{"Timestamp":"2020-05-27T20:06:45.9892325+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'MeasurementSizeDataContract')"}

@@ -44,7 +44,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [AssignActionRoute(MeasurementSizeSegments.ADD_MEASUREMENT_SIZE)]
         public async Task<IActionResult> AddSize([FromBody] MeasurementSizeDataContract measurementSizeDataContract) {
             try {
-                if (measurementSizeDataContract != null && !string.IsNullOrEmpty(measurementSizeDataContract.Name)) {
+                if (measurementSizeDataContract == null && string.IsNullOrEmpty(measurementSizeDataContract.Name)) {
                     throw new ArgumentNullException("MeasurementSizeDataContract");
                 }
 
