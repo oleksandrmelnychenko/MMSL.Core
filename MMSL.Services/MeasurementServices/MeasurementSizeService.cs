@@ -6,6 +6,7 @@ using MMSL.Services.MeasurementServices.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
@@ -34,13 +35,24 @@ namespace MMSL.Services.MeasurementServices {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
                     IMeasurementMapSizeRepository measurementMapSizeRepository = _measurementsRepositoriesFactory.NewMeasurementMapSizeRepository(connection);
+                    IMeasurementMapValueRepository measurementMapValueRepository = _measurementsRepositoriesFactory.NewMeasurementMapValueRepository(connection);
 
                     MeasurementSize newMeasurementSize = sizeRepository.AddMeasurementSize(measurementSizeDataContract.Name, measurementSizeDataContract.Description);
 
                     if (newMeasurementSize != null) {
                         measurementMapSizeRepository.New(measurementSizeDataContract.MeasurementId, newMeasurementSize.Id);
-                    }
 
+                        if (measurementSizeDataContract.ValueDataContracts != null && measurementSizeDataContract.ValueDataContracts.Any()) {
+                            foreach (ValueDataContract valueDataContract in measurementSizeDataContract.ValueDataContracts) {
+                                measurementMapValueRepository.AddValue(new MeasurementMapValue {
+                                    MeasurementId = measurementSizeDataContract.MeasurementId,
+                                    MeasurementSizeId = newMeasurementSize.Id,
+                                    MeasurementDefinitionId = valueDataContract.MeasurementDefinitionId,
+                                    Value = valueDataContract.Value
+                                });
+                            }
+                        }
+                    }
                     return newMeasurementSize;
                 }
             });
