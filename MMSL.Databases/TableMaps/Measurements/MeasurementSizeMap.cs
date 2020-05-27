@@ -8,11 +8,6 @@ namespace MMSL.Databases.TableMaps.Measurements {
             base.Map(entity);
 
             entity.ToTable("MeasurementSizes");
-
-            entity.HasOne(x => x.Measurement)
-                .WithMany(x => x.MeasurementSizes)
-                .HasForeignKey(s => s.MeasurementId)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

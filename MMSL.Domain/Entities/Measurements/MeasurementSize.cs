@@ -5,13 +5,11 @@ namespace MMSL.Domain.Entities.Measurements {
     public class MeasurementSize : EntityBaseNamed {
 
         public MeasurementSize() {
-            Values = new HashSet<MeasurementValue>();
+            MeasurementMapSizes = new HashSet<MeasurementMapSize>();
+            MeasurementMapValues = new HashSet<MeasurementMapValue>();
         }
 
-        public long MeasurementId { get; set; }
-
-        public Measurement Measurement { get; set; }
-
-        public ICollection<MeasurementValue> Values { get; set; }
+        public ICollection<MeasurementMapSize> MeasurementMapSizes { get; set; }
+        public ICollection<MeasurementMapValue> MeasurementMapValues { get; set; }
     }
 }

@@ -50,13 +50,18 @@ namespace MMSL.Databases {
 
         public DbSet<Measurement> Measurements { get; set; }
 
+        public DbSet<MeasurementMapSize> MeasurementMapSizes { get; set; }
+
         public DbSet<MeasurementSize> MeasurementSizes { get; set; }
 
         public DbSet<MeasurementMapDefinition> MeasurementMapDefinitions { get; set; }
 
         public DbSet<MeasurementDefinition> MeasurementDefinitions { get; set; }
+        
+        public DbSet<MeasurementMapValue> MeasurementMapValues { get; set; }
 
-        public DbSet<MeasurementValue> MeasurementValues { get; set; }
+
+        //public DbSet<MeasurementValue> MeasurementValues { get; set; }
 
         /// <summary>
         ///     ctor().
@@ -86,7 +91,8 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new MeasurementDefinitionMap());
             modelBuilder.AddConfiguration(new MeasurementMapDefinitionMap());
             modelBuilder.AddConfiguration(new MeasurementSizeMap());
-            modelBuilder.AddConfiguration(new MeasurementValueMap());
+            modelBuilder.AddConfiguration(new MeasurementMapSizeMap());
+            modelBuilder.AddConfiguration(new MeasurementMapValueMap());
         }
     }
 }

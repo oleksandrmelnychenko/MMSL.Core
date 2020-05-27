@@ -7,13 +7,19 @@ namespace MMSL.Domain.Entities.Measurements {
 
         public Measurement() {
             MeasurementMapDefinitions = new HashSet<MeasurementMapDefinition>();
-            MeasurementSizes = new HashSet<MeasurementSize>();
+            MeasurementMapSizes = new HashSet<MeasurementMapSize>();
         }
 
-        public long ProductCategoryId { get; set; }
+        public long? ProductCategoryId { get; set; }
         public ProductCategory ProductCategory { get; set; }
 
+        public long? ParentMeasurementId { get; set; }
+        public Measurement ParentMeasurement { get; set; }
+
+        public ICollection<MeasurementMapSize> MeasurementMapSizes { get; set; }
+
         public ICollection<MeasurementMapDefinition> MeasurementMapDefinitions { get; set; }
-        public ICollection<MeasurementSize> MeasurementSizes { get; set; }
+
+        public ICollection<MeasurementMapValue> MeasurementMapValues { get; set; }
     }
 }
