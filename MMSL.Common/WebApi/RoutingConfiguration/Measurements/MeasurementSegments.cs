@@ -8,6 +8,8 @@
 
         public const string NEW_MEASUREMENT = "new/measurement";
 
+        public const string NEW_BASE_MEASUREMENT = "new/measurement";
+
         public const string UPDATE_MEASUREMENT = "update/measurement";
 
         public const string DELETE_MEASUREMENT = "delete/measurement";

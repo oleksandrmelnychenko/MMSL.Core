@@ -9,6 +9,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace MMSL.Services.MeasurementServices {
+    //TODO: update this
     public class MeasurementSizeService : IMeasurementSizeService {
         private readonly IMeasurementsRepositoriesFactory _measurementsRepositoriesFactory;
 
@@ -35,7 +36,7 @@ namespace MMSL.Services.MeasurementServices {
 
                     measurementSize.Id = sizeRepository.AddMeasurementSize(measurementSize);
 
-                    CheckMeasurementValues(connection, measurementSize.Id, measurementSize.MeasurementId, measurementSize.Values);
+                    //CheckMeasurementValues(connection, measurementSize.Id, measurementSize.MeasurementId, measurementSize.Values);
 
                     return sizeRepository.GetMeasurementSize(measurementSize.Id);
                 }
@@ -63,19 +64,20 @@ namespace MMSL.Services.MeasurementServices {
 
                     sizeRepository.UpdateMeasurementSize(measurementSize);
 
-                    CheckMeasurementValues(connection, measurementSize.Id, measurementSize.MeasurementId, measurementSize.Values);
+                    //CheckMeasurementValues(connection, measurementSize.Id, measurementSize.MeasurementId, measurementSize.Values);
 
                     return sizeRepository.GetMeasurementSize(measurementSize.Id);
                 }
             });
 
-        private void CheckMeasurementValues(IDbConnection connection, long sizeId, long measurementId, IEnumerable<MeasurementValue> values) {
+        //TODO: update this
+        private void CheckMeasurementValues(IDbConnection connection, long sizeId, long measurementId, IEnumerable<MeasurementMapValue> values) {
             IMeasurementDefinitionRepository definitionRepository = _measurementsRepositoriesFactory.NewMeasurementDefinitionRepository(connection);
             IMeasurementValueRepository valueRepository = _measurementsRepositoriesFactory.NewMeasurementValueRepository(connection);
             IMeasurementMapDefinitionRepository mapRepository = _measurementsRepositoriesFactory.NewMeasurementMapDefinitionRepository(connection);
 
 
-            foreach (MeasurementValue measurementValue in values) {
+            foreach (MeasurementMapValue measurementValue in values) {
                 if (measurementValue.MeasurementDefinition.IsNew()) {
 
                     MeasurementDefinition definition = definitionRepository.NewMeasurementDefinition(measurementValue.MeasurementDefinition);

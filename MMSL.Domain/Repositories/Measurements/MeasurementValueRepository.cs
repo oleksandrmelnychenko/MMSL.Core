@@ -4,6 +4,7 @@ using MMSL.Domain.Repositories.Measurements.Contracts;
 using System.Data;
 
 namespace MMSL.Domain.Repositories.Measurements {
+    //TODO: update this
     public class MeasurementValueRepository : IMeasurementValueRepository {
 
         private readonly IDbConnection _connection;
@@ -12,7 +13,7 @@ namespace MMSL.Domain.Repositories.Measurements {
             this._connection = connection;
         }
 
-        public long AddValue(MeasurementValue value) =>
+        public long AddValue(MeasurementMapValue value) =>
             _connection.QuerySingleOrDefault<long>(
                 "INSERT INTO [MeasurementValues] " +
                 "([IsDeleted], [Value], [MeasurementDefinitionId], [MeasurementSizeId]) " +
@@ -20,8 +21,8 @@ namespace MMSL.Domain.Repositories.Measurements {
                 "SELECT SCOPE_IDENTITY()",
                 value);
 
-        public MeasurementValue UpdateValue(MeasurementValue measurementValue) =>
-            _connection.QuerySingleOrDefault<MeasurementValue>(
+        public MeasurementMapValue UpdateValue(MeasurementMapValue measurementValue) =>
+            _connection.QuerySingleOrDefault<MeasurementMapValue>(
                 "UPDATE [MeasurementValues] " +
                 "SET [IsDeleted] = @IsDeleted, [LastModified] = GETUTCDATE(), [Value] = @Value " +
                 "WHERE [MeasurementValues].Id = @Id;" +

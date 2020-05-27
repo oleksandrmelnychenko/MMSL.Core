@@ -55,10 +55,12 @@ namespace MMSL.Server.Core.Controllers.Measurements {
 
         [HttpGet]
         [Authorize]
+        //TODO: implement 
         [AssignActionRoute(MeasurementSegments.GET_PRODUCT_MEASUREMENTS)]
         public async Task<IActionResult> GetByProduct([FromQuery]long productCategoryId) {
             try {
-                return Ok(SuccessResponseBody(await _measurementService.GetProductMeasurementsAsync(productCategoryId), Localizer["Successfully completed"]));
+                //List<Measurement> te = await _measurementService.GetProductMeasurementsAsync(productCategoryId)
+                return Ok(SuccessResponseBody(await Task.FromResult(new List<Measurement>()), Localizer["Successfully completed"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
@@ -93,6 +95,24 @@ namespace MMSL.Server.Core.Controllers.Measurements {
                 return Ok(SuccessResponseBody(measurement, Localizer["New Measurement has been created successfully"]));
             }
             catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [AssignActionRoute(MeasurementSegments.NEW_BASE_MEASUREMENT)]
+        public async Task<IActionResult> NewBaseMeasurement([FromBody] NewBaseMeasurementDataContract newMeasurementDataContract) {
+            try {
+                if (newMeasurementDataContract == null) throw new ArgumentNullException("NewMeasurementDataContract");
+
+                if (string.IsNullOrEmpty(newMeasurementDataContract.Name)) throw new ArgumentNullException("NewMeasurementDataContract");
+
+                //Measurement measurement = await _measurementService.NewMeasurementAsync(newMeasurementDataContract);
+
+                return Ok(SuccessResponseBody(null, Localizer["New Measurement has been created successfully"]));
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
