@@ -8,8 +8,7 @@ using System.Data;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace MMSL.Services.MeasurementServices {
-    //TODO: update this
+namespace MMSL.Services.MeasurementServices {    
     public class MeasurementSizeService : IMeasurementSizeService {
         private readonly IMeasurementsRepositoriesFactory _measurementsRepositoriesFactory;
 
@@ -25,7 +24,7 @@ namespace MMSL.Services.MeasurementServices {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     return _measurementsRepositoriesFactory
                         .NewMeasurementSizeRepository(connection)
-                        .GetMeasurementSizes(measurementId);
+                        .GetSizesByMeasurementId(measurementId);
                 }
             });
 
