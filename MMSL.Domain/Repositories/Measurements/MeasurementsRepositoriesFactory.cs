@@ -18,7 +18,7 @@ namespace MMSL.Domain.Repositories.Measurements {
         public IMeasurementMapDefinitionRepository NewMeasurementMapDefinitionRepository(IDbConnection connection) =>
             new MeasurementMapDefinitionRepository(connection);
 
-        public IMeasurementValueRepository NewMeasurementValueRepository(IDbConnection connection) =>
-            new MeasurementValueRepository(connection);
+        public IMeasurementMapValueRepository NewMeasurementValueRepository(IDbConnection connection) =>
+            new MeasurementMapValueRepository(connection);
     }
 }
