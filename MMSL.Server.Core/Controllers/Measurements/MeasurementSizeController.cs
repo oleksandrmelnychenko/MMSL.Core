@@ -44,6 +44,10 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [AssignActionRoute(MeasurementSizeSegments.ADD_MEASUREMENT_SIZE)]
         public async Task<IActionResult> AddSize([FromBody] MeasurementSizeDataContract measurementSizeDataContract) {
             try {
+                if (measurementSizeDataContract != null && !string.IsNullOrEmpty(measurementSizeDataContract.Name)) {
+                    throw new ArgumentNullException("MeasurementSizeDataContract");
+                }
+
                 return Ok(SuccessResponseBody(await _measurementSizeService.AddMeasurementSize(measurementSizeDataContract), Localizer["Successfully completed"]));
             }
             catch (Exception exc) {
@@ -54,9 +58,13 @@ namespace MMSL.Server.Core.Controllers.Measurements {
 
         [HttpPut]
         [AssignActionRoute(MeasurementSizeSegments.UPDATE_MEASUREMENT_SIZE)]
-        public async Task<IActionResult> UpdateSize([FromBody] MeasurementSizeDataContract tt) {
-            try {                
-                return Ok(SuccessResponseBody(await _measurementSizeService.UpdateMeasurementSize(new MeasurementSize()), Localizer["Successfully completed"]));
+        public async Task<IActionResult> UpdateSize([FromBody] MeasurementSize measurementSize) {
+            try {
+                if (measurementSize == null) {
+                    throw new ArgumentNullException("MeasurementSize");
+                }
+
+                return Ok(SuccessResponseBody(await _measurementSizeService.UpdateMeasurementSize(measurementSize), Localizer["Successfully completed"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);

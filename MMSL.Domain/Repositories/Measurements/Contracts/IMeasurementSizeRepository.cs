@@ -6,6 +6,6 @@ namespace MMSL.Domain.Repositories.Measurements.Contracts {
         List<MeasurementSize> GetAllByMeasurementId(long measurementId);
         MeasurementSize GetById(long measurementSizeId);
         MeasurementSize AddMeasurementSize(string name, string description);
-        MeasurementSize UpdateMeasurementSize(MeasurementSize measurementSize);
+        void UpdateMeasurementSize(MeasurementSize measurementSize);
     }
 }

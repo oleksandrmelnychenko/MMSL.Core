@@ -64,10 +64,8 @@ namespace MMSL.Services.MeasurementServices {
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
-
-                    sizeRepository.UpdateMeasurementSize(measurementSize);
-
-                    //CheckMeasurementValues(connection, measurementSize.Id, measurementSize.MeasurementId, measurementSize.Values);
+                  
+                    sizeRepository.UpdateMeasurementSize(measurementSize);                   
 
                     return sizeRepository.GetById(measurementSize.Id);
                 }

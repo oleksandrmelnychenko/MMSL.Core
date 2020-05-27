@@ -1,8 +1,4 @@
-﻿using MMSL.Domain.Entities.Measurements;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace MMSL.Domain.DataContracts.Measurements {
+﻿namespace MMSL.Domain.DataContracts.Measurements {
     public class MeasurementSizeDataContract  {
 
         public string Name { get; set; }

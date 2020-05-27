@@ -59,7 +59,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [AssignActionRoute(MeasurementDefinitionSegments.NEW_MEASUREMENT_DEFINITION)]
         public async Task<IActionResult> NewMeasurementDefinition([FromBody] NewMeasurementDefinitionDataContract newMeasurementDefinitionDataContract) {
             try {
-                if (newMeasurementDefinitionDataContract == null) throw new ArgumentNullException("NewMeasurementDefinitionDataContract");
+                if (newMeasurementDefinitionDataContract == null) throw new ArgumentNullException("MeasurementDefinitionDataContract");
 
                 MeasurementDefinition measurementDefinition = await _measurementDefinitionService.NewMeasurementDefinitionAsync(newMeasurementDefinitionDataContract);
 

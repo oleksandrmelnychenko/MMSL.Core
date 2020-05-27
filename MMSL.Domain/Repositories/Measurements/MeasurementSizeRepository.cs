@@ -26,7 +26,7 @@ namespace MMSL.Domain.Repositories.Measurements {
 
         public MeasurementSize GetById(long measurementSizeId) {
             return _connection.QuerySingleOrDefault<MeasurementSize>(
-                    "SELECT * " +
+                    "SELECT s.* " +
                     "FROM [MeasurementSizes] AS s    " +
                     "LEFT JOIN [MeasurementMapSizes] AS ms ON ms.MeasurementSizeId = s.Id AND ms.IsDeleted = 0 " +
                     "LEFT JOIN [MeasurementMapValues] AS mv ON mv.MeasurementSizeId = s.Id AND mv.IsDeleted = 0 " +
@@ -51,15 +51,12 @@ namespace MMSL.Domain.Repositories.Measurements {
                     }).ToList();
         }
 
-        public MeasurementSize UpdateMeasurementSize(MeasurementSize measurementSize) {
-            return _connection.QuerySingleOrDefault<MeasurementSize>(
+        public void UpdateMeasurementSize(MeasurementSize measurementSize) =>
+             _connection.Execute(
                     "UPDATE [MeasurementSizes] SET " +
                     "[IsDeleted] = @IsDeleted, [LastModified] = GETUTCDATE(), [Name] = @Name, " +
-                    "[Description] = @Description, [MeasurementId] = @MeasurementId " +
-                    "WHERE [MeasurementSizes].Id = @Id " +
-                    "SELECT TOP(1) [MS].* FROM [MeasurementSizes] AS [MS] WHERE [MS].Id = SCOPE_IDENTITY()",
-                    measurementSize
-                    );
-        }
+                    "[Description] = @Description " +
+                    "WHERE [MeasurementSizes].Id = @Id", measurementSize);
     }
 }
+
