@@ -43,9 +43,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [AssignActionRoute(MeasurementSegments.GET_MEASUREMENTS)]
         public async Task<IActionResult> GetAll([FromQuery]string searchPhrase) {
             try {
-                List<Measurement> measurements = await _measurementService.GetMeasurementsAsync(searchPhrase);
-
-                return Ok(SuccessResponseBody(measurements, Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(await _measurementService.GetMeasurementsAsync(searchPhrase), Localizer["Successfully completed"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);

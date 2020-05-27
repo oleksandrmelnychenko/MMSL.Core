@@ -11,6 +11,7 @@ namespace MMSL.Domain.Repositories.Measurements.Contracts {
         Measurement NewMeasurement(NewMeasurementDataContract newMeasurementDataContract);
         void UpdateMeasurement(Measurement measurement);
         Measurement GetById(long measurementId);
+        Measurement GetByIdWithDefinitions(long measurementId);
         Measurement GetByIdWithDependencies(long measurementId);
     }
 }

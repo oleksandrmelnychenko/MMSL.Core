@@ -18,13 +18,42 @@ namespace MMSL.Domain.Repositories.Measurements {
             this._connection = connection;
         }
 
-        public List<Measurement> GetAll(string searchPhrase) =>
-             _connection.Query<Measurement>(
-                "SELECT *" +
-                "FROM [Measurements] " +
-                "WHERE IsDeleted = 0 AND PATINDEX('%' + @SearchTerm + '%', [Measurements].Name) > 0",
-                new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase })
-            .ToList();
+        public List<Measurement> GetAll(string searchPhrase) {
+            List<Measurement> result = new List<Measurement>();
+            string query = "SELECT [Measurements].*, [MeasurementMapDefinitions].*, [MeasurementDefinitions].* " +
+               "FROM [Measurements] " +
+               "LEFT JOIN [MeasurementMapDefinitions] ON [MeasurementMapDefinitions].MeasurementId = [Measurements].Id " +
+               "AND [MeasurementMapDefinitions].IsDeleted = 0 " +
+               "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapDefinitions].MeasurementDefinitionId " +
+               "WHERE [Measurements].IsDeleted = 0 " +
+               "AND PATINDEX('%' + @SearchTerm + '%', [Measurements].[Name]) > 0 " +
+               "AND [Measurements].ParentMeasurementId IS NULL";
+
+            _connection.Query<Measurement, MeasurementMapDefinition, MeasurementDefinition, Measurement>(
+               query,
+               (measurement, measurementMapDefinition, measurementDefinition) => {
+
+                   if (result.Any(x => x.Id == measurement.Id)) {
+                       measurement = result.First(x => x.Id == measurement.Id);
+                   } else {
+                       result.Add(measurement);
+                   }
+
+                   if (measurementMapDefinition != null) {
+                       measurementMapDefinition.MeasurementDefinition = measurementDefinition;
+
+                       if (!measurement.MeasurementMapDefinitions.Any(x => x.MeasurementDefinitionId == measurementMapDefinition.MeasurementDefinitionId)) {
+                           //MeasurementMapDefinition map = measurement.MeasurementMapDefinitions.First(x => x.MeasurementDefinitionId == measurementMapDefinition.MeasurementDefinitionId);
+                           measurement.MeasurementMapDefinitions.Add(measurementMapDefinition);
+                       }
+                   }
+
+                   return measurement;
+               },
+               new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase });
+
+            return result;
+        }
 
         public Measurement NewMeasurement(NewMeasurementDataContract newMeasurementDataContract) =>
             _connection.Query<Measurement>(
@@ -184,6 +213,36 @@ namespace MMSL.Domain.Repositories.Measurements {
             //   new { ProductCategoryId = productCategoryId });
 
             return measurementsResult;
+        }
+
+        public Measurement GetByIdWithDefinitions(long measurementId) {
+            Measurement result = new Measurement();
+
+            string query = "SELECT [Measurements].*, [MeasurementMapDefinitions].*, [MeasurementDefinitions].* " +
+                "FROM [Measurements] " +
+                "LEFT JOIN [MeasurementMapDefinitions] ON [MeasurementMapDefinitions].MeasurementId = [Measurements].Id " +
+                "AND [MeasurementMapDefinitions].IsDeleted = 0 " +
+                "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapDefinitions].MeasurementDefinitionId " +
+                "WHERE [Measurements].Id = @Id AND [Measurements].IsDeleted = 0";
+
+            _connection.Query<Measurement, MeasurementMapDefinition, MeasurementDefinition, Measurement>(
+                query,
+                (measurement, measurementMapDefinition, measurementDefinition) => {
+                    if (result == null) {
+                        result = measurement;
+                    }
+
+                    if (measurementMapDefinition != null) {
+                        measurementMapDefinition.MeasurementDefinition = measurementDefinition;
+
+                        result.MeasurementMapDefinitions.Add(measurementMapDefinition);
+                    }
+
+                    return measurement;
+                },
+                new { Id = measurementId });
+
+            return result;
         }
     }
 }
