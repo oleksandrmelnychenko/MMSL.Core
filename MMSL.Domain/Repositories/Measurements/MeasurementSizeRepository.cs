@@ -41,9 +41,11 @@ namespace MMSL.Domain.Repositories.Measurements {
             return _connection.Query<MeasurementSize>(
                     "SELECT * " +
                     "FROM [MeasurementSizes] as s " +
-                    "LEFT JOIN [MeasurementMapSizes] AS ms ON ms.MeasurementSizeId = s.Id " +
-                    "LEFT JOIN [Measurements] as m ON m.Id = ms.MeasurementId " +
-                    "WHERE m.Id = @Id " +
+                    "LEFT JOIN [MeasurementMapSizes] AS ms ON ms.MeasurementSizeId = s.Id" +
+                    " AND ms.IsDeleted = 0 " +
+                    "LEFT JOIN [Measurements] as m ON m.Id = ms.MeasurementId" +
+                    " AND m.IsDeleted = 0 " +
+                    "WHERE s.IsDeleted = 0 AND m.Id = @Id " +
                     "ORDER BY s.Name",
                     new {
                         Id = measurementId
