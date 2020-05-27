@@ -28,15 +28,15 @@ namespace MMSL.Domain.Repositories.Measurements {
 
         public Measurement NewMeasurement(NewMeasurementDataContract newMeasurementDataContract) =>
             _connection.Query<Measurement>(
-                "INSERT INTO [Measurements]([IsDeleted],[Name],[Description]) " +
-                "VALUES(0,@Name,@Description)" +
+                "INSERT INTO [Measurements]([IsDeleted],[Name],[Description],[ParentMeasurementId]) " +
+                "VALUES(0,@Name,@ProductCategoryId, @ParentMeasurementId)" +
                 "SELECT * " +
                 "FROM [Measurements]" +
                 "WHERE [Measurements].Id = SCOPE_IDENTITY()",
                 new {
                     Name = newMeasurementDataContract.Name,
-                    //ProductCategoryId = newMeasurementDataContract.ProductCategoryId,
-                    Description = newMeasurementDataContract.Description
+                    ProductCategoryId = newMeasurementDataContract.ProductCategoryId,
+                    ParentMeasurementId = newMeasurementDataContract.BaseMeasurementId
                 })
             .SingleOrDefault();
 

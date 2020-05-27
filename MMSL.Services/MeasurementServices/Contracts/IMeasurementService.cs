@@ -9,7 +9,7 @@ namespace MMSL.Services.MeasurementServices.Contracts {
         Task<List<Measurement>> GetProductMeasurementsAsync(long productCategoryId);
         Task<Measurement> GetMeasurementDetailsAsync(long measurementId);
         Task<Measurement> NewMeasurementAsync(NewMeasurementDataContract newMeasurementDataContract);
-        Task UpdateMeasurementAsync(Measurement measurement);
+        Task UpdateMeasurementAsync(UpdateMeasurementDataContract measurement);
         Task DeleteMeasurementAsync(long measurementId);
     }
 }

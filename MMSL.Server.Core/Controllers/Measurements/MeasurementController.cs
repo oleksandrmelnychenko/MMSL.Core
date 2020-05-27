@@ -55,20 +55,6 @@ namespace MMSL.Server.Core.Controllers.Measurements {
 
         [HttpGet]
         [Authorize]
-        //TODO: implement 
-        [AssignActionRoute(MeasurementSegments.GET_PRODUCT_MEASUREMENTS)]
-        public async Task<IActionResult> GetByProduct([FromQuery]long productCategoryId) {
-            try {
-                //List<Measurement> te = await _measurementService.GetProductMeasurementsAsync(productCategoryId)
-                return Ok(SuccessResponseBody(await Task.FromResult(new List<Measurement>()), Localizer["Successfully completed"]));
-            } catch (Exception exc) {
-                Log.Error(exc.Message);
-                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
-            }
-        }
-
-        [HttpGet]
-        [Authorize]
         [AssignActionRoute(MeasurementSegments.GET_MEASUREMENT)]
         public async Task<IActionResult> GetSingle([FromQuery]long measurementId) {
             try {
@@ -84,35 +70,13 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [AssignActionRoute(MeasurementSegments.NEW_MEASUREMENT)]
         public async Task<IActionResult> NewMeasurement([FromBody] NewMeasurementDataContract newMeasurementDataContract) {
             try {
-                if (newMeasurementDataContract == null) throw new ArgumentNullException("NewMeasurementDataContract");
+                if (newMeasurementDataContract == null) throw new ArgumentNullException(nameof(newMeasurementDataContract));
 
-                if (string.IsNullOrEmpty(newMeasurementDataContract.Name)) throw new ArgumentNullException("NewMeasurementDataContract");
+                if (string.IsNullOrEmpty(newMeasurementDataContract.Name)) throw new ArgumentNullException(nameof(newMeasurementDataContract.Name));
 
-                if (newMeasurementDataContract.ProductCategoryId == default(long)) throw new ArgumentNullException("NewMeasurementDataContract");
-
-                Measurement measurement = await _measurementService.NewMeasurementAsync(newMeasurementDataContract);
-
-                return Ok(SuccessResponseBody(measurement, Localizer["New Measurement has been created successfully"]));
+                return Ok(SuccessResponseBody(await _measurementService.NewMeasurementAsync(newMeasurementDataContract), Localizer["New Measurement has been created successfully"]));
             }
             catch (Exception exc) {
-                Log.Error(exc.Message);
-                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
-            }
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
-        [AssignActionRoute(MeasurementSegments.NEW_BASE_MEASUREMENT)]
-        public async Task<IActionResult> NewBaseMeasurement([FromBody] NewBaseMeasurementDataContract newMeasurementDataContract) {
-            try {
-                if (newMeasurementDataContract == null) throw new ArgumentNullException("NewMeasurementDataContract");
-
-                if (string.IsNullOrEmpty(newMeasurementDataContract.Name)) throw new ArgumentNullException("NewMeasurementDataContract");
-
-                //Measurement measurement = await _measurementService.NewMeasurementAsync(newMeasurementDataContract);
-
-                return Ok(SuccessResponseBody(null, Localizer["New Measurement has been created successfully"]));
-            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
@@ -121,7 +85,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [HttpPut]
         [Authorize]
         [AssignActionRoute(MeasurementSegments.UPDATE_MEASUREMENT)]
-        public async Task<IActionResult> UpdateMeasurement([FromBody]Measurement measurement) {
+        public async Task<IActionResult> UpdateMeasurement([FromBody]UpdateMeasurementDataContract measurement) {
             try {
                 if (measurement == null) throw new ArgumentNullException("UpdateMeasurement");
 

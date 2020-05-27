@@ -74,7 +74,7 @@ namespace MMSL.Services.MeasurementServices {
         //TODO: update this
         private void CheckMeasurementValues(IDbConnection connection, long sizeId, long measurementId, IEnumerable<MeasurementMapValue> values) {
             IMeasurementDefinitionRepository definitionRepository = _measurementsRepositoriesFactory.NewMeasurementDefinitionRepository(connection);
-            IMeasurementValueRepository valueRepository = _measurementsRepositoriesFactory.NewMeasurementValueRepository(connection);
+            IMeasurementMapValueRepository valueRepository = _measurementsRepositoriesFactory.NewMeasurementMapValueRepository(connection);
             IMeasurementMapDefinitionRepository mapRepository = _measurementsRepositoriesFactory.NewMeasurementMapDefinitionRepository(connection);
 
 
