@@ -4,7 +4,6 @@ using MMSL.Domain.Repositories.Measurements.Contracts;
 using System.Data;
 
 namespace MMSL.Domain.Repositories.Measurements {
-    //TODO: update this
     public class MeasurementMapValueRepository : IMeasurementMapValueRepository {
 
         private readonly IDbConnection _connection;
