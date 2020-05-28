@@ -25,9 +25,29 @@ namespace MMSL.Domain.Repositories.Measurements {
             _connection.Query<FittingType>(
                 "SELECT * " +
                 "FROM [FittingTypes] " +
-                "WHERE [FittingTypes].Id = 0 AND PATINDEX('%' + @SearchTerm + '%', [FittingTypes].Type) > 0 ",
+                "WHERE [FittingTypes].IsDeleted = 0 AND PATINDEX('%' + @SearchTerm + '%', [FittingTypes].Type) > 0 ",
                 new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase })
             .ToList();
+
+        public FittingType GetById(long fittingTypeId) =>
+            _connection.Query<FittingType, MeasurementMapValue, MeasurementDefinition, FittingType>(
+                "SELECT ft.*, mv.*, d.* " +
+                "FROM [FittingTypes] AS ft " +
+                "LEFT JOIN [MeasurementMapValues] AS mv ON mv.FittingTypeId = ft.Id " +
+                "LEFT JOIN [MeasurementDefinitions] AS d ON d.Id = mv.MeasurementDefinitionId " +
+                "WHERE ft.IsDeleted = 0 AND ft.Id = @Id",
+                (fittingType, measurementMapValue, measurementDefinition) => {
+                    if (measurementMapValue != null) {
+                        fittingType.MeasurementMapValues.Add(measurementMapValue);
+
+                        if (measurementDefinition != null) {
+                            measurementMapValue.MeasurementDefinition = measurementDefinition;
+                        }
+                    }
+                    return fittingType;
+                },
+                new { Id = fittingTypeId })
+            .SingleOrDefault();
 
         public FittingType Add(string type, string unit, long dealerAccountId) =>
             _connection.QuerySingleOrDefault<FittingType>(

@@ -51,6 +51,21 @@ namespace MMSL.Server.Core.Controllers.Measurements {
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [AssignActionRoute(FittingTypeSegments.GET_FITTING_TYPE)]
+        public async Task<IActionResult> GetFittingType([FromQuery]long fittingTypeId) {
+            try {
+                FittingType fittingType = await _fittingTypeService.GetFittingTypeByIdAsync(fittingTypeId);
+
+                return Ok(SuccessResponseBody(fittingType, Localizer["Successfully completed"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
         [HttpPost]
         [Authorize]
         [AssignActionRoute(FittingTypeSegments.ADD_FITTING_TYPE)]

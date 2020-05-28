@@ -32,6 +32,15 @@ namespace MMSL.Services.MeasurementServices {
                  }
              });
 
+        public Task<FittingType> GetFittingTypeByIdAsync(long fittingTypeId) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    var fittingTypeRepository = _measurementsRepositoriesFactory.NewFittingTypeRepository(connection);
+                    FittingType fittingType = fittingTypeRepository.GetById(fittingTypeId);
+                    return fittingType;
+                }
+            });
+
         public Task<FittingType> AddFittingTypeAsync(FittingTypeDataContract fittingTypeDataContract) =>
              Task.Run(() => {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
@@ -57,5 +66,6 @@ namespace MMSL.Services.MeasurementServices {
                      return newFittingType;
                  }
              });
+
     }
 }
