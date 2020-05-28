@@ -1,5 +1,5 @@
 ﻿namespace MMSL.Common.WebApi.RoutingConfiguration.Measurements {
-    public class MeasurementSegments {
+    public static class MeasurementSegments {
         public const string GET_MEASUREMENTS = "get/all";
 
         public const string GET_MEASUREMENT = "get/measurement";

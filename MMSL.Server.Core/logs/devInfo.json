@@ -34,3 +34,5 @@
 {"Timestamp":"2020-05-27T20:06:45.9892325+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'MeasurementSizeDataContract')"}
 {"Timestamp":"2020-05-28T11:34:59.7003613+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
 {"Timestamp":"2020-05-28T11:35:40.5015824+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
+{"Timestamp":"2020-05-28T13:13:29.1610678+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'NewDeliveryTimelineDataContract')"}
+{"Timestamp":"2020-05-28T13:45:06.8637677+03:00","Level":"Error","MessageTemplate":"value not found"}
