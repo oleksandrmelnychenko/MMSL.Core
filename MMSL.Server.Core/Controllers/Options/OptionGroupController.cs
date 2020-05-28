@@ -86,10 +86,7 @@ namespace MMSL.Server.Core.Controllers.Options {
                 OptionGroup optionGroup = await _optionGroupService.NewOptionGroupAsync(newOptionGroupDataContract);
 
                 return Ok(SuccessResponseBody(optionGroup, Localizer["New OptionGroup has been created successfully"]));
-            }
-            catch (InvalidIdentityException exc) {
-                return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));
-            }
+            }           
             catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
@@ -122,7 +119,7 @@ namespace MMSL.Server.Core.Controllers.Options {
         [AssignActionRoute(OptionGroupSegments.DELETE_OPTION_GROUP)]
         public async Task<IActionResult> DeleteStore([FromQuery]long optionGroupId) {
             try {
-                await _optionGroupService.DeleteOptionGroupAsunc(optionGroupId);
+                await _optionGroupService.DeleteOptionGroupAsync(optionGroupId);
 
                 return Ok(SuccessResponseBody(optionGroupId, Localizer["OptionGroup successfully deleted"]));
             }

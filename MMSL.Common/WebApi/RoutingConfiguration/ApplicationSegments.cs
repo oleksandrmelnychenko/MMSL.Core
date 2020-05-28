@@ -21,5 +21,9 @@
         public const string MeasurementDefinitions = "measurements/definitions";
 
         public const string MeasurementSizes = "measurements/sizes";
+
+        public const string FittingTypes = "measurements/fitting/types";
+
+        public const string DeliveryTimelines = "delivery/timelines";
     }
 }

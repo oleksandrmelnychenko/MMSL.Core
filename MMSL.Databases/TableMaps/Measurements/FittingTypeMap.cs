@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MMSL.Domain.Entities.Measurements;
 
 namespace MMSL.Databases.TableMaps.Measurements {
-    internal class MeasurementDefinitionMap : EntityBaseMap<MeasurementDefinition> {
-        public override void Map(EntityTypeBuilder<MeasurementDefinition> entity) {
+    internal class FittingTypeMap : EntityBaseMap<FittingType> {
+        public override void Map(EntityTypeBuilder<FittingType> entity) {
             base.Map(entity);
 
-            entity.ToTable("MeasurementDefinitions");
+            entity.ToTable("FittingTypes");
         }
     }
 }

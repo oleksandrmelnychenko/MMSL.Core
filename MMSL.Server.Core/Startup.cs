@@ -74,6 +74,10 @@ using MMSL.Services.MeasurementServices.Contracts;
 using MMSL.Services.MeasurementServices;
 using MMSL.Domain.Repositories.Measurements;
 using MMSL.Domain.Repositories.Measurements.Contracts;
+using MMSL.Services.DeliveryTimelines.Contracts;
+using MMSL.Services.DeliveryTimelines;
+using MMSL.Domain.Repositories.DeliveryTimelines;
+using MMSL.Domain.Repositories.DeliveryTimelines.Contracts;
 
 namespace MMSL.Server.Core
 {
@@ -198,20 +202,23 @@ namespace MMSL.Server.Core
             builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
             builder.RegisterType<MeasurementsRepositoriesFactory>().As<IMeasurementsRepositoriesFactory>();
             builder.RegisterType<ProductCategoryRepositoriesFactory>().As<IProductCategoryRepositoriesFactory>();
-            
+            builder.RegisterType<DeliveryTimelineRepositoriesFactory>().As<IDeliveryTimelineRepositoriesFactory>();            
+
             // Services.
             builder.RegisterType<StoreService>().As<IStoreService>();
             builder.RegisterType<AccountService>().As<IAccountService>();
             builder.RegisterType<OptionUnitService>().As<IOptionUnitService>();
             builder.RegisterType<OptionGroupService>().As<IOptionGroupService>();            
+            builder.RegisterType<FittingTypeService>().As<IFittingTypeService>();
+            builder.RegisterType<MeasurementService>().As<IMeasurementService>();
             builder.RegisterType<PaymentTypeService>().As<IPaymentTypeService>();
             builder.RegisterType<UserIdentityService>().As<IUserIdentityService>();
             builder.RegisterType<CurrencyTypeService>().As<ICurrencyTypeService>();
             builder.RegisterType<DealerAccountService>().As<IDealerAccountService>();
             builder.RegisterType<StoreCustomerService>().As<IStoreCustomerService>();
             builder.RegisterType<ProductCategoryService>().As<IProductCategoryService>();
-            builder.RegisterType<MeasurementService>().As<IMeasurementService>();
             builder.RegisterType<MeasurementSizeService>().As<IMeasurementSizeService>();
+            builder.RegisterType<DeliveryTimelineService>().As<IDeliveryTimelineService>();
             builder.RegisterType<MeasurementDefinitionService>().As<IMeasurementDefinitionService>();
 
             builder.RegisterType<SqlDbContext>().As<ISqlDbContext>();

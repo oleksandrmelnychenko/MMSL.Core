@@ -74,7 +74,7 @@ namespace MMSL.Services.OptionServices {
                  }
              });
 
-        public Task DeleteOptionGroupAsunc(long optionGroupId) =>
+        public Task DeleteOptionGroupAsync(long optionGroupId) =>
               Task.Run(() => {
                   using (var connection = _connectionFactory.NewSqlConnection()) {
                       IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);

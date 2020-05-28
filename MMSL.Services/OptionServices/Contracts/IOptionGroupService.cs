@@ -14,6 +14,6 @@ namespace MMSL.Services.OptionServices.Contracts {
 
         Task UpdateOptionGroupAsync(OptionGroup optionGroup);
 
-        Task DeleteOptionGroupAsunc(long optionGroupId);
+        Task DeleteOptionGroupAsync(long optionGroupId);
     }
 }
