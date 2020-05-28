@@ -6,5 +6,7 @@
         public const string ADD_MEASUREMENT_SIZE = "add";
 
         public const string UPDATE_MEASUREMENT_SIZE = "update";
+
+        public const string DELETE_MEASUREMENT_SIZE = "delete";
     }
 }

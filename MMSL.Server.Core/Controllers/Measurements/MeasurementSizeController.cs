@@ -58,7 +58,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
 
         [HttpPut]
         [AssignActionRoute(MeasurementSizeSegments.UPDATE_MEASUREMENT_SIZE)]
-        public async Task<IActionResult> UpdateSize([FromBody] MeasurementSize measurementSize) {
+        public async Task<IActionResult> UpdateSize([FromBody] UpdateMeasuremetSizeDataContract measurementSize) {
             try {
                 if (measurementSize == null) {
                     throw new ArgumentNullException("MeasurementSize");
@@ -67,6 +67,25 @@ namespace MMSL.Server.Core.Controllers.Measurements {
                 return Ok(SuccessResponseBody(await _measurementSizeService.UpdateMeasurementSizeAsync(measurementSize), Localizer["Successfully completed"]));
             }
             catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpDelete]
+        [AssignActionRoute(MeasurementSizeSegments.DELETE_MEASUREMENT_SIZE)]
+        public async Task<IActionResult> DeleteSize([FromQuery] long measurementId, long sizeId) {
+            try {
+                if (measurementId == default(long)) {
+                    throw new ArgumentNullException("measurementId");
+                }
+
+                if (sizeId == default(long)) {
+                    throw new ArgumentNullException("sizeId");
+                }
+
+                return Ok(SuccessResponseBody(await _measurementSizeService.DeleteMeasurementSizeAsync(measurementId, sizeId), Localizer["Successfully completed"]));
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }

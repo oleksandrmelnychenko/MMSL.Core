@@ -57,33 +57,46 @@ namespace MMSL.Services.MeasurementServices {
                 }
             });
 
-        public Task<MeasurementSize> DeleteMeasurementSizeAsync(long measurementSizeId) =>
+        public Task<MeasurementSize> DeleteMeasurementSizeAsync(long measurementId, long measurementSizeId) =>
             Task.Run(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
+                    IMeasurementMapSizeRepository sizeMapRepository = _measurementsRepositoriesFactory.NewMeasurementMapSizeRepository(connection);
 
                     MeasurementSize size = sizeRepository.GetById(measurementSizeId);
 
-                    size.IsDeleted = true;
+                    MeasurementMapSize sizeMap = sizeMapRepository.Get(measurementId, measurementSizeId);
 
-                    sizeRepository.UpdateMeasurementSize(size);
+                    size.IsDeleted = true;
+                    sizeMap.IsDeleted = true;
+
+                    sizeMapRepository.Update(sizeMap);
+                    //sizeRepository.UpdateMeasurementSize(size);
 
                     return size;
                 }
             });
 
-        public Task<MeasurementSize> UpdateMeasurementSizeAsync(MeasurementSize measurementSize) =>
+        public Task<MeasurementSize> UpdateMeasurementSizeAsync(UpdateMeasuremetSizeDataContract measurementSize) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
-                  
-                    sizeRepository.UpdateMeasurementSize(measurementSize);                   
+                    IMeasurementMapSizeRepository measurementMapSizeRepository = _measurementsRepositoriesFactory.NewMeasurementMapSizeRepository(connection);
+
+                    MeasurementMapSize mapSize = measurementSize.GetEntity();
+
+                    measurementMapSizeRepository.Update(mapSize);
+
+                    //TODO: check if base size AND RESOLVE that
+                    //MeasurementSize size = sizeRepository.GetById(mapSize.MeasurementSizeId);
+
+                    sizeRepository.UpdateMeasurementSize(mapSize.MeasurementSize);                   
 
                     return sizeRepository.GetById(measurementSize.Id);
                 }
             });
 
-        //TODO: update this
+        //TODO: update this OR delete if unused
         private void CheckMeasurementValues(IDbConnection connection, long sizeId, long measurementId, IEnumerable<MeasurementMapValue> values) {
             IMeasurementDefinitionRepository definitionRepository = _measurementsRepositoriesFactory.NewMeasurementDefinitionRepository(connection);
             IMeasurementMapValueRepository valueRepository = _measurementsRepositoriesFactory.NewMeasurementMapValueRepository(connection);

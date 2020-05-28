@@ -16,6 +16,10 @@ namespace MMSL.Domain.Repositories.Measurements {
             _connection = connection;
         }
 
+        public MeasurementMapSize Get(long measurementId, long measurementSizeId) {
+            throw new NotImplementedException();
+        }
+
         public MeasurementMapSize New(long measurementId, long measurementSizeId) =>
             _connection.Query<MeasurementMapSize>(
                 "INSERT INTO [MeasurementMapSizes] ([IsDeleted],[MeasurementId],[MeasurementSizeId]) " +
