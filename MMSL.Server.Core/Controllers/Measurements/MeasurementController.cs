@@ -44,8 +44,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         public async Task<IActionResult> GetAll([FromQuery]string searchPhrase) {
             try {
                 return Ok(SuccessResponseBody(await _measurementService.GetMeasurementsAsync(searchPhrase), Localizer["Successfully completed"]));
-            }
-            catch (Exception exc) {
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
@@ -85,8 +84,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
                 if (string.IsNullOrEmpty(newMeasurementDataContract.Name)) throw new ArgumentNullException(nameof(newMeasurementDataContract.Name));
 
                 return Ok(SuccessResponseBody(await _measurementService.NewMeasurementAsync(newMeasurementDataContract), Localizer["New Measurement has been created successfully"]));
-            }
-            catch (Exception exc) {
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
@@ -99,11 +97,10 @@ namespace MMSL.Server.Core.Controllers.Measurements {
             try {
                 if (measurement == null) throw new ArgumentNullException("UpdateMeasurement");
 
-                await _measurementService.UpdateMeasurementAsync(measurement);
+                var updated = await _measurementService.UpdateMeasurementAsync(measurement);
 
-                return Ok(SuccessResponseBody(measurement, Localizer["Measurement successfully updated"]));
-            }
-            catch (Exception exc) {
+                return Ok(SuccessResponseBody(updated, Localizer["Measurement successfully updated"]));
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
@@ -119,8 +116,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
                 await _measurementService.DeleteMeasurementAsync(measurementId);
 
                 return Ok(SuccessResponseBody(measurementId, Localizer["Measurement successfully deleted"]));
-            }
-            catch (Exception exc) {
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }

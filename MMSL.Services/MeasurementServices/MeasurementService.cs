@@ -73,12 +73,12 @@ namespace MMSL.Services.MeasurementServices {
                  }
              });
 
-        public Task UpdateMeasurementAsync(UpdateMeasurementDataContract measurement) =>
+        public Task<Measurement> UpdateMeasurementAsync(UpdateMeasurementDataContract measurement) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementRepository measurementRepository = _measurementsRepositoriesFactory.NewMeasurementRepository(connection);
-
-                    measurementRepository.UpdateMeasurement(measurement.GetEntity());
+                    Measurement measurementEntity = measurement.GetEntity();
+                    measurementRepository.UpdateMeasurement(measurementEntity);
 
                     if (measurement.MeasurementDefinitions.Any()) {
                         IMeasurementDefinitionRepository definitionRepository = _measurementsRepositoriesFactory.NewMeasurementDefinitionRepository(connection);
@@ -92,15 +92,21 @@ namespace MMSL.Services.MeasurementServices {
 
                             if (definitionMap.IsNew()) {
                                 if (definition.IsNew()) {
-                                    definitionRepository.NewMeasurementDefinition(definition);
+                                    definition = definitionRepository.NewMeasurementDefinition(definition);
+                                    definitionMap.MeasurementDefinition = definition;
+                                    definitionMap.MeasurementDefinitionId = definition.Id;
                                 }
 
                                 definitionMap.Id = mapDefinitionRepository.AddMeasurementMapDefinition(definitionMap);
                             } else {
                                 definitionMap = mapDefinitionRepository.UpdateMeasurementMapDefinition(definitionMap);
                             }
+
+                            measurementEntity.MeasurementMapDefinitions.Add(definitionMap);
                         }
                     }
+
+                    return measurementEntity;
                 }
             });
 
