@@ -119,7 +119,7 @@ namespace MMSL.Server.Core.Controllers.Options {
         [AssignActionRoute(OptionGroupSegments.DELETE_OPTION_GROUP)]
         public async Task<IActionResult> DeleteStore([FromQuery]long optionGroupId) {
             try {
-                await _optionGroupService.DeleteOptionGroupAsunc(optionGroupId);
+                await _optionGroupService.DeleteOptionGroupAsync(optionGroupId);
 
                 return Ok(SuccessResponseBody(optionGroupId, Localizer["OptionGroup successfully deleted"]));
             }

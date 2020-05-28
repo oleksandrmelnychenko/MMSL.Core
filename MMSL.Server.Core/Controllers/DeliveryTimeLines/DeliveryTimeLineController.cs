@@ -91,5 +91,26 @@ namespace MMSL.Server.Core.Controllers.DeliveryTimeLines {
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
         }
+
+        [HttpDelete]
+        [Authorize]
+        [AssignActionRoute(DeliveryTimelineSegments.DELETE_DELIVERY_TIMELINE)]
+        public async Task<IActionResult> DeleteDeliveryTimeline([FromQuery]long deliveryTimelineId) {
+            try {
+                if (deliveryTimelineId == default(long)) throw new ArgumentNullException("DeleteDeliveryTimeline");
+
+                await _deliveryTimelineService.DeleteDeliveryTimelineAsync(deliveryTimelineId);
+
+                return Ok(SuccessResponseBody(deliveryTimelineId, Localizer["DeliveryTimeline successfully deleted"]));
+            }
+            catch (NotFoundValueException exc) {
+                Log.Error(exc.GetUserMessageException);
+                return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
     }
 }

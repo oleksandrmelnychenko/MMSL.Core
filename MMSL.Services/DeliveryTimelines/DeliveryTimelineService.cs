@@ -22,6 +22,7 @@ namespace MMSL.Services.DeliveryTimelines {
             _deliveryTimelineRepositoriesFactory = deliveryTimelineRepositoriesFactory;
         }
 
+
         public Task<List<DeliveryTimeline>> GetDeliveryTimelinesAsync(string searchPhrase) =>
               Task.Run(() => {
                   using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
@@ -51,6 +52,22 @@ namespace MMSL.Services.DeliveryTimelines {
 
                     if (existed != null) {
                         int rowAffected = deliveryTimelineRepository.Update(deliveryTimeline);
+                    } else {
+                        UserExceptionCreator<NotFoundValueException>.Create(NotFoundValueException.VALUE_NOT_FOUND).Throw();
+                    }
+                }
+            });
+
+        public Task DeleteDeliveryTimelineAsync(long deliveryId) =>
+            Task.Run(() => {
+                using (var connection = _connectionFactory.NewSqlConnection()) {
+                    IDeliveryTimelineRepository deliveryTimelineRepository = _deliveryTimelineRepositoriesFactory.NewDeliveryTimelineRepository(connection);
+
+                    DeliveryTimeline existed = deliveryTimelineRepository.GetById(deliveryId);
+
+                    if (existed != null) {
+                        existed.IsDeleted = true;
+                        deliveryTimelineRepository.Update(existed);
                     } else {
                         UserExceptionCreator<NotFoundValueException>.Create(NotFoundValueException.VALUE_NOT_FOUND).Throw();
                     }
