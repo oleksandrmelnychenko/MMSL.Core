@@ -63,7 +63,8 @@ namespace MMSL.Services.MeasurementServices {
 
                          MeasurementMapDefinition definitionMap = new MeasurementMapDefinition() {
                              MeasurementDefinitionId = definitionEntity.Id,
-                             MeasurementId = measurement.Id
+                             MeasurementId = measurement.Id,
+                             OrderIndex = definition.OrderIndex
                          };
 
                          definitionMap.Id = mapDefinitionRepository.AddMeasurementMapDefinition(definitionMap);
