@@ -9,6 +9,8 @@ namespace MMSL.Domain.DataContracts.Measurements {
 
         public long MapId { get; set; }
 
+        public int OrderIndex { get; set; }
+
         public override MeasurementMapDefinition GetEntity() {
             return new MeasurementMapDefinition {
                 Id = MapId,
