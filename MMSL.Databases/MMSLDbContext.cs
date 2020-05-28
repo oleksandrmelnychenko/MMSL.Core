@@ -20,6 +20,8 @@ using MMSL.Domain.Entities.Products;
 using MMSL.Databases.TableMaps.Products;
 using MMSL.Domain.Entities.Measurements;
 using MMSL.Databases.TableMaps.Measurements;
+using MMSL.Databases.TableMaps.DeliveryTimelines;
+using MMSL.Domain.Entities.DeliveryTimelines;
 
 namespace MMSL.Databases {
     public class MMSLDbContext : DbContext {       
@@ -62,6 +64,8 @@ namespace MMSL.Databases {
 
         public DbSet<FittingType> FittingTypes { get; set; }
 
+        public DbSet<DeliveryTimeline> DeliveryTimelines { get; set; }
+
         /// <summary>
         ///     ctor().
         /// </summary>
@@ -93,6 +97,7 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new MeasurementMapSizeMap());
             modelBuilder.AddConfiguration(new MeasurementMapValueMap());
             modelBuilder.AddConfiguration(new FittingTypeMap());
+            modelBuilder.AddConfiguration(new DeliveryTimelineMap());
         }
     }
 }
