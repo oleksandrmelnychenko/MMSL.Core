@@ -127,5 +127,17 @@ namespace MMSL.Services.MeasurementServices {
                         .GetAllByProduct(productCategoryId);
                  }
              });
+
+        public Task<Measurement> GetMeasurementChartAsync(long measurementId) =>
+             Task.Run(() => {
+                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                     var repository = _measurementsRepositoriesFactory.NewMeasurementRepository(connection);
+
+                     Measurement measurement = repository.GetByIdWithDefinitions(measurementId);
+                     measurement.MeasurementMapSizes = repository.GetSizesByMeasurementId(measurement.Id, measurement.ParentMeasurementId);
+
+                     return measurement;
+                 }
+             });
     }
 }

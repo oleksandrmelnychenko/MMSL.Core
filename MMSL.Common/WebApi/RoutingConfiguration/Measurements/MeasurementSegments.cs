@@ -4,6 +4,8 @@
 
         public const string GET_MEASUREMENT = "get/measurement";
 
+        public const string GET_MEASUREMENT_CHART = "get/chart";
+
         public const string GET_PRODUCT_MEASUREMENTS = "by/product";
 
         public const string NEW_MEASUREMENT = "new/measurement";
