@@ -4,7 +4,6 @@ using Microsoft.Extensions.Localization;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
-using MMSL.Common.WebApi.RoutingConfiguration.MeasurementDefinitions;
 using MMSL.Common.WebApi.RoutingConfiguration.Measurements;
 using MMSL.Domain.DataContracts;
 using MMSL.Domain.Entities.Measurements;
@@ -15,7 +14,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace MMSL.Server.Core.Controllers.Measurements {    
+namespace MMSL.Server.Core.Controllers.Measurements {
     [AssignControllerLocalizedRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.MeasurementDefinitions)]
     [AssignControllerRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.MeasurementDefinitions)]
     public class MeasurementDefinitionController : WebApiControllerBase {

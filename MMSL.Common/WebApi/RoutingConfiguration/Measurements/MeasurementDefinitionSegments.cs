@@ -1,4 +1,4 @@
-﻿namespace MMSL.Common.WebApi.RoutingConfiguration.MeasurementDefinitions {
+﻿namespace MMSL.Common.WebApi.RoutingConfiguration.Measurements {
     public class MeasurementDefinitionSegments {
         public const string GET_MEASUREMENT_DEFINITIONS = "get/all";
 

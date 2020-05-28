@@ -204,13 +204,14 @@ namespace MMSL.Server.Core
             builder.RegisterType<AccountService>().As<IAccountService>();
             builder.RegisterType<OptionUnitService>().As<IOptionUnitService>();
             builder.RegisterType<OptionGroupService>().As<IOptionGroupService>();            
+            builder.RegisterType<FittingTypeService>().As<IFittingTypeService>();
+            builder.RegisterType<MeasurementService>().As<IMeasurementService>();
             builder.RegisterType<PaymentTypeService>().As<IPaymentTypeService>();
             builder.RegisterType<UserIdentityService>().As<IUserIdentityService>();
             builder.RegisterType<CurrencyTypeService>().As<ICurrencyTypeService>();
             builder.RegisterType<DealerAccountService>().As<IDealerAccountService>();
             builder.RegisterType<StoreCustomerService>().As<IStoreCustomerService>();
             builder.RegisterType<ProductCategoryService>().As<IProductCategoryService>();
-            builder.RegisterType<MeasurementService>().As<IMeasurementService>();
             builder.RegisterType<MeasurementSizeService>().As<IMeasurementSizeService>();
             builder.RegisterType<MeasurementDefinitionService>().As<IMeasurementDefinitionService>();
 
