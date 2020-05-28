@@ -5,6 +5,8 @@ namespace MMSL.Domain.DataContracts.Measurements {
 
         public string Name { get; set; }
 
+        public int OrderIndex { get; set; }
+
         public override MeasurementDefinition GetEntity() {
             return new MeasurementDefinition {
                 Id = Id,

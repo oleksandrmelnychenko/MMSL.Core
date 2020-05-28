@@ -216,7 +216,7 @@ namespace MMSL.Domain.Repositories.Measurements {
         }
 
         public Measurement GetByIdWithDefinitions(long measurementId) {
-            Measurement result = new Measurement();
+            Measurement result = null;
 
             string query = "SELECT [Measurements].*, [MeasurementMapDefinitions].*, [MeasurementDefinitions].* " +
                 "FROM [Measurements] " +
@@ -243,6 +243,48 @@ namespace MMSL.Domain.Repositories.Measurements {
                 new { Id = measurementId });
 
             return result;
+        }
+
+        public List<MeasurementMapSize> GetSizesByMeasurementId(long measurementId, long? parentMeasurementId) {
+            List<MeasurementMapSize> results = new List<MeasurementMapSize>();
+
+            string query = 
+                "SELECT [MeasurementMapSizes].*, " +
+                "[MeasurementSizes].*, " +
+                "[MeasurementMapValues].*, " +
+                "[MeasurementDefinitions].* " +
+                "FROM [MeasurementMapSizes] " +
+                "LEFT JOIN [MeasurementSizes] ON [MeasurementMapSizes].MeasurementSizeId = [MeasurementSizes].Id " +
+                "LEFT JOIN [MeasurementMapValues] ON [MeasurementMapValues].MeasurementSizeId = [MeasurementSizes].Id " +
+                "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapValues].MeasurementDefinitionId " +
+                "WHERE [MeasurementMapSizes].MeasurementId = @Id OR [MeasurementMapSizes].MeasurementId = @ParentId";
+
+            _connection.Query<MeasurementMapSize, MeasurementSize, MeasurementMapValue, MeasurementDefinition, MeasurementMapSize>(
+                query,
+                (mapSize, size, value, definition) => {
+
+                    if (results.Any(x => x.Id.Equals(mapSize.Id))) {
+                        mapSize = results.First(x => x.Id.Equals(mapSize.Id));
+                        size = mapSize.MeasurementSize;
+                    } else {
+                        results.Add(mapSize);
+                        mapSize.MeasurementSize = size;
+                    }
+
+                    if (value != null) {
+                        value.MeasurementDefinition = definition;
+                     
+                        size.MeasurementMapValues.Add(value);
+                    }
+
+                    return mapSize;
+                },
+                new { 
+                    Id = measurementId,
+                    ParentId = parentMeasurementId
+                });
+
+            return results;
         }
     }
 }
