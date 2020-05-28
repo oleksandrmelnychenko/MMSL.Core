@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MMSL.Domain.Entities.Measurements;
 
 namespace MMSL.Databases.TableMaps.Measurements {
-    public class MeasurementMapValueMap : EntityBaseMap<MeasurementMapValue> {
+    internal class MeasurementMapValueMap : EntityBaseMap<MeasurementMapValue> {
         public override void Map(EntityTypeBuilder<MeasurementMapValue> entity) {
             base.Map(entity);
 
@@ -22,6 +22,11 @@ namespace MMSL.Databases.TableMaps.Measurements {
             entity.HasOne(x => x.MeasurementDefinition)
                 .WithMany(x => x.MeasurementMapValues)
                 .HasForeignKey(x => x.MeasurementDefinitionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(x => x.FittingType)
+                .WithMany(x => x.MeasurementMapValues)
+                .HasForeignKey(x => x.FittingTypeId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

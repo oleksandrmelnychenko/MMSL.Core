@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MMSL.Domain.Entities.Measurements;
 
 namespace MMSL.Databases.TableMaps.Measurements {
-    class MeasurementMapDefinitionMap : EntityBaseMap<MeasurementMapDefinition> {
+    internal class MeasurementMapDefinitionMap : EntityBaseMap<MeasurementMapDefinition> {
         public override void Map(EntityTypeBuilder<MeasurementMapDefinition> entity) {
             base.Map(entity);
 
