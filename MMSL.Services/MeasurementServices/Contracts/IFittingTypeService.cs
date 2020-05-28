@@ -10,5 +10,7 @@ namespace MMSL.Services.MeasurementServices.Contracts {
         Task<List<FittingType>> GetFittingTypesAsync(string searchPhrase);
         Task<FittingType> AddFittingTypeAsync(FittingTypeDataContract fittingTypeDataContract);
         Task<FittingType> GetFittingTypeByIdAsync(long fittingTypeId);
+        Task<FittingType> UpdateFittingTypeAsync(FittingType fittingType);
+        Task DeleteFittingTypeAsync(long fittingTypeId);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using MMSL.Common.Exceptions.UserExceptions;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
@@ -76,6 +77,40 @@ namespace MMSL.Server.Core.Controllers.Measurements {
                 }
 
                 return Ok(SuccessResponseBody(await _fittingTypeService.AddFittingTypeAsync(fittingTypeDataContract), Localizer["Successfully completed"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpPut]
+        [Authorize]
+        [AssignActionRoute(FittingTypeSegments.UPDATE_FITTING_TYPE)]
+        public async Task<IActionResult> UpdateSize([FromBody] FittingType fittingType) {
+            try {
+                if (fittingType == null) throw new ArgumentNullException("FittingType");
+
+                return Ok(SuccessResponseBody(await _fittingTypeService.UpdateFittingTypeAsync(fittingType), Localizer["Successfully completed"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [AssignActionRoute(FittingTypeSegments.DELETE_FITTING_TYPE)]
+        public async Task<IActionResult> DeleteStore([FromQuery]long fittingTypeId) {
+            try {
+                await _fittingTypeService.DeleteFittingTypeAsync(fittingTypeId);
+
+                return Ok(SuccessResponseBody(fittingTypeId, Localizer["FittingType successfully deleted"]));
+            }
+            catch (NotFoundValueException exc) {
+                Log.Error(exc.GetUserMessageException);
+                return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);

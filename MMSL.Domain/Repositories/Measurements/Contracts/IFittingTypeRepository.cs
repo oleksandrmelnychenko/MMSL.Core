@@ -9,5 +9,6 @@ namespace MMSL.Domain.Repositories.Measurements.Contracts {
         List<FittingType> GetAll(string searchPhrase);
         FittingType Add(string type, string unit, long dealerAccountId);
         FittingType GetById(long fittingTypeId);
+        void Update(FittingType fittingType);
     }
 }

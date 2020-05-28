@@ -39,3 +39,4 @@
 {"Timestamp":"2020-05-28T15:08:52.8418573+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
 {"Timestamp":"2020-05-28T15:09:30.7541064+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
 {"Timestamp":"2020-05-28T15:10:58.5881612+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'FittingTypeDataContract')"}
+{"Timestamp":"2020-05-28T17:18:17.3914544+03:00","Level":"Error","MessageTemplate":"value not found"}

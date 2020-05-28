@@ -1,4 +1,5 @@
-﻿using MMSL.Domain.DataContracts.FittingTypes;
+﻿using MMSL.Common.Exceptions.UserExceptions;
+using MMSL.Domain.DataContracts.FittingTypes;
 using MMSL.Domain.DataContracts.Measurements;
 using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Measurements;
@@ -45,7 +46,6 @@ namespace MMSL.Services.MeasurementServices {
              Task.Run(() => {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                      var fittingTypeRepository = _measurementsRepositoriesFactory.NewFittingTypeRepository(connection);
-                     IMeasurementMapSizeRepository measurementMapSizeRepository = _measurementsRepositoriesFactory.NewMeasurementMapSizeRepository(connection);
                      IMeasurementMapValueRepository measurementMapValueRepository = _measurementsRepositoriesFactory.NewMeasurementMapValueRepository(connection);
 
                      FittingType newFittingType =
@@ -67,5 +67,32 @@ namespace MMSL.Services.MeasurementServices {
                  }
              });
 
+        public Task<FittingType> UpdateFittingTypeAsync(FittingType fittingType)=>
+             Task.Run(() => {
+                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                     var fittingTypeRepository = _measurementsRepositoriesFactory.NewFittingTypeRepository(connection);
+                     IMeasurementMapValueRepository measurementMapValueRepository = _measurementsRepositoriesFactory.NewMeasurementMapValueRepository(connection);
+
+                     fittingTypeRepository.Update(fittingType);
+
+                     return fittingTypeRepository.GetById(fittingType.Id);
+                 }
+             });
+
+        public Task DeleteFittingTypeAsync(long fittingTypeId)=>
+             Task.Run(() => {
+                 using (var connection = _connectionFactory.NewSqlConnection()) {
+                     var fittingTypeRepository = _measurementsRepositoriesFactory.NewFittingTypeRepository(connection);
+
+                     FittingType existed = fittingTypeRepository.GetById(fittingTypeId);
+
+                     if (existed != null) {
+                         existed.IsDeleted = true;
+                         fittingTypeRepository.Update(existed);
+                     } else {
+                         UserExceptionCreator<NotFoundValueException>.Create(NotFoundValueException.VALUE_NOT_FOUND).Throw();
+                     }
+                 }
+             });
     }
 }

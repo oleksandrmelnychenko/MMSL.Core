@@ -61,5 +61,11 @@ namespace MMSL.Domain.Repositories.Measurements {
                     Unit = unit,
                     DealerAccountId = dealerAccountId
                 });
+
+        public void Update(FittingType fittingType) =>
+            _connection.Execute(
+                "UPDATE [FittingTypes] " +
+                "SET [IsDeleted]=@IsDeleted,[Type]=@Type,[Unit]=@Unit,[LastModified]=getutcdate() " +
+                "WHERE [FittingTypes].Id = @Id", fittingType);
     }
 }

@@ -4,7 +4,10 @@
 
         public const string GET_FITTING_TYPE = "get";
 
-        public const string ADD_FITTING_TYPE = "add";       
+        public const string ADD_FITTING_TYPE = "add";
 
+        public const string UPDATE_FITTING_TYPE = "update";
+
+        public const string DELETE_FITTING_TYPE = "delete";        
     }
 }
