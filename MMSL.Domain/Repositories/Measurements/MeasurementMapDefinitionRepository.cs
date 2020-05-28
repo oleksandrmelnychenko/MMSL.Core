@@ -34,7 +34,8 @@ namespace MMSL.Domain.Repositories.Measurements {
                 "UPDATE [MeasurementMapDefinitions] " +
                 "SET [IsDeleted] = @IsDeleted," +
                 "[MeasurementId] = @MeasurementId," +
-                "[MeasurementDefinitionId] = @MeasurementDefinitionId",
+                "[MeasurementDefinitionId] = @MeasurementDefinitionId " +
+                "WHERE [MeasurementMapDefinitions].Id = @Id",
                 measurementMapDefinition);
     }
 }
