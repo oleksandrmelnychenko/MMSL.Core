@@ -15,8 +15,8 @@ namespace MMSL.Domain.Repositories.Measurements {
         public long AddValue(MeasurementMapValue value) =>
             _connection.QuerySingleOrDefault<long>(
                 "INSERT INTO [MeasurementMapValues] " +
-                "([IsDeleted], [Value], [MeasurementId], [MeasurementDefinitionId], [MeasurementSizeId]) " +
-                "VALUES (0, @Value, @MeasurementId, @MeasurementDefinitionId, @MeasurementSizeId);" +
+                "([IsDeleted], [Value], [MeasurementId], [MeasurementDefinitionId], [MeasurementSizeId], [FittingTypeId]) " +
+                "VALUES (0, @Value, @MeasurementId, @MeasurementDefinitionId, @MeasurementSizeId,@FittingTypeId);" +
                 "SELECT SCOPE_IDENTITY()",
                 value);
 

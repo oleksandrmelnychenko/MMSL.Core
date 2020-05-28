@@ -5,6 +5,7 @@ using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.Measurements;
+using MMSL.Domain.DataContracts.FittingTypes;
 using MMSL.Domain.Entities.Measurements;
 using MMSL.Services.MeasurementServices.Contracts;
 using Serilog;
@@ -43,6 +44,23 @@ namespace MMSL.Server.Core.Controllers.Measurements {
                 List<FittingType> fittingTypes = await _fittingTypeService.GetFittingTypesAsync(searchPhrase);
 
                 return Ok(SuccessResponseBody(fittingTypes, Localizer["Successfully completed"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [AssignActionRoute(FittingTypeSegments.ADD_FITTING_TYPE)]
+        public async Task<IActionResult> AddFittingType([FromBody] FittingTypeDataContract fittingTypeDataContract) {
+            try {
+                if (fittingTypeDataContract == null || string.IsNullOrEmpty(fittingTypeDataContract.Type)) {
+                    throw new ArgumentNullException("FittingTypeDataContract");
+                }
+
+                return Ok(SuccessResponseBody(await _fittingTypeService.AddFittingTypeAsync(fittingTypeDataContract), Localizer["Successfully completed"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);

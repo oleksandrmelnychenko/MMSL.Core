@@ -9,11 +9,5 @@ namespace MMSL.Domain.DataContracts.Measurements {
         public long MeasurementId { get; set; }
 
         public List<ValueDataContract> ValueDataContracts { get; set; }
-    }
-
-    public class ValueDataContract {
-        public long MeasurementDefinitionId { get; set; }
-        
-        public float Value { get; set; }
-    }
+    }   
 }

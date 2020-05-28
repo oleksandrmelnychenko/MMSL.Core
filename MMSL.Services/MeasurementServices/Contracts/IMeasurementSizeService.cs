@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace MMSL.Services.MeasurementServices.Contracts {
     public interface IMeasurementSizeService {
-        Task<List<MeasurementSize>> GetMeasurementSizes(long measurementId);
-        Task<MeasurementSize> AddMeasurementSize(MeasurementSizeDataContract measurementSizeDataContract);
-        Task<MeasurementSize> UpdateMeasurementSize(MeasurementSize measurementSize);
-        Task<MeasurementSize> DeleteMeasurementSize(long measurementSizeId);
+        Task<List<MeasurementSize>> GetMeasurementSizesAsync(long measurementId);
+        Task<MeasurementSize> AddMeasurementSizeAsync(MeasurementSizeDataContract measurementSizeDataContract);
+        Task<MeasurementSize> UpdateMeasurementSizeAsync(MeasurementSize measurementSize);
+        Task<MeasurementSize> DeleteMeasurementSizeAsync(long measurementSizeId);
     }
 }

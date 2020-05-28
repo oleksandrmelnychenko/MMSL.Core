@@ -32,7 +32,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [AssignActionRoute(MeasurementSizeSegments.GET_MEASUREMENT_SIZES)]
         public async Task<IActionResult> GetSizes([FromQuery] long measurementId) {
             try {
-                return Ok(SuccessResponseBody(await _measurementSizeService.GetMeasurementSizes(measurementId), Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(await _measurementSizeService.GetMeasurementSizesAsync(measurementId), Localizer["Successfully completed"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);
@@ -44,11 +44,11 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [AssignActionRoute(MeasurementSizeSegments.ADD_MEASUREMENT_SIZE)]
         public async Task<IActionResult> AddSize([FromBody] MeasurementSizeDataContract measurementSizeDataContract) {
             try {
-                if (measurementSizeDataContract == null && string.IsNullOrEmpty(measurementSizeDataContract.Name)) {
+                if (measurementSizeDataContract == null || string.IsNullOrEmpty(measurementSizeDataContract.Name)) {
                     throw new ArgumentNullException("MeasurementSizeDataContract");
                 }
 
-                return Ok(SuccessResponseBody(await _measurementSizeService.AddMeasurementSize(measurementSizeDataContract), Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(await _measurementSizeService.AddMeasurementSizeAsync(measurementSizeDataContract), Localizer["Successfully completed"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);
@@ -64,7 +64,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
                     throw new ArgumentNullException("MeasurementSize");
                 }
 
-                return Ok(SuccessResponseBody(await _measurementSizeService.UpdateMeasurementSize(measurementSize), Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(await _measurementSizeService.UpdateMeasurementSizeAsync(measurementSize), Localizer["Successfully completed"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);

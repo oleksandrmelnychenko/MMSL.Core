@@ -28,5 +28,18 @@ namespace MMSL.Domain.Repositories.Measurements {
                 "WHERE [FittingTypes].Id = 0 AND PATINDEX('%' + @SearchTerm + '%', [FittingTypes].Type) > 0 ",
                 new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase })
             .ToList();
+
+        public FittingType Add(string type, string unit, long dealerAccountId) =>
+            _connection.QuerySingleOrDefault<FittingType>(
+                "INSERT INTO [FittingTypes]([IsDeleted],[Type],[Unit],[DealerAccountId]) " +
+                "VALUES (0,@Type,@Unit,@DealerAccountId) " +
+                "SELECT * " +
+                "FROM [FittingTypes] " +
+                "WHERE [FittingTypes].Id = SCOPE_IDENTITY()",
+                new {
+                    Type = type,
+                    Unit = unit,
+                    DealerAccountId = dealerAccountId
+                });
     }
 }

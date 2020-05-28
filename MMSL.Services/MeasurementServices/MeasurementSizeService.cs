@@ -21,7 +21,7 @@ namespace MMSL.Services.MeasurementServices {
             _connectionFactory = connectionFactory;
         }
 
-        public Task<List<MeasurementSize>> GetMeasurementSizes(long measurementId) =>
+        public Task<List<MeasurementSize>> GetMeasurementSizesAsync(long measurementId) =>
             Task.Run(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     return _measurementsRepositoriesFactory
@@ -30,7 +30,7 @@ namespace MMSL.Services.MeasurementServices {
                 }
             });
 
-        public Task<MeasurementSize> AddMeasurementSize(MeasurementSizeDataContract measurementSizeDataContract) =>
+        public Task<MeasurementSize> AddMeasurementSizeAsync(MeasurementSizeDataContract measurementSizeDataContract) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
@@ -57,7 +57,7 @@ namespace MMSL.Services.MeasurementServices {
                 }
             });
 
-        public Task<MeasurementSize> DeleteMeasurementSize(long measurementSizeId) =>
+        public Task<MeasurementSize> DeleteMeasurementSizeAsync(long measurementSizeId) =>
             Task.Run(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
@@ -72,7 +72,7 @@ namespace MMSL.Services.MeasurementServices {
                 }
             });
 
-        public Task<MeasurementSize> UpdateMeasurementSize(MeasurementSize measurementSize) =>
+        public Task<MeasurementSize> UpdateMeasurementSizeAsync(MeasurementSize measurementSize) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
