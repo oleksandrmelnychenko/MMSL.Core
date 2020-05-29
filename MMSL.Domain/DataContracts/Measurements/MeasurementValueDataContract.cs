@@ -1,7 +1,6 @@
 ﻿using MMSL.Domain.Entities.Measurements;
 
 namespace MMSL.Domain.DataContracts.Measurements {
-    //TODO: update this
     public class MeasurementValueDataContract : EntityDataContractBase<MeasurementMapValue> {
         public float Value { get; set; }
 

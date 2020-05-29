@@ -20,6 +20,14 @@ namespace MMSL.Domain.Repositories.Measurements {
                 "SELECT SCOPE_IDENTITY()",
                 value);
 
+        public MeasurementMapValue GetValue(long id) =>
+            _connection.QuerySingleOrDefault<MeasurementMapValue>(
+                "SELECT * FROM [MeasurementMapValues] " +
+                "WHERE [MeasurementMapValues].[Id] = @Id",
+                new {
+                    Id = id
+                });
+
         public MeasurementMapValue UpdateValue(MeasurementMapValue measurementValue) =>
             _connection.QuerySingleOrDefault<MeasurementMapValue>(
                 "UPDATE [MeasurementMapValues] " +

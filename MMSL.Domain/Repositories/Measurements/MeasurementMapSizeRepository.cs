@@ -17,7 +17,13 @@ namespace MMSL.Domain.Repositories.Measurements {
         }
 
         public MeasurementMapSize Get(long measurementId, long measurementSizeId) {
-            throw new NotImplementedException();
+            return _connection.QuerySingleOrDefault<MeasurementMapSize>(
+                "SELECT * FROM [MeasurementMapSizes] " +
+                "WHERE [MeasurementId] = @MeasurementId AND [MeasurementSizeId] = @MeasurementSizeId",
+                new {
+                    MeasurementId = measurementId,
+                    MeasurementSizeId = measurementSizeId
+                });
         }
 
         public MeasurementMapSize New(long measurementId, long measurementSizeId) =>
