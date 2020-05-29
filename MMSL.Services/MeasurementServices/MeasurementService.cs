@@ -70,6 +70,20 @@ namespace MMSL.Services.MeasurementServices {
                          definitionMap.Id = mapDefinitionRepository.AddMeasurementMapDefinition(definitionMap);
                      }
 
+                     if (measurement.ParentMeasurementId.HasValue) {
+                         IEnumerable<MeasurementSize> sizes = measurementRepository
+                            .GetSizesByMeasurementId(measurement.Id, measurement.ParentMeasurementId.Value)?
+                            .Select(x => x.MeasurementSize);
+
+                         if (sizes != null) {
+                             IMeasurementMapSizeRepository mapSizeRepository = _measurementsRepositoriesFactory.NewMeasurementMapSizeRepository(connection);
+
+                             foreach (MeasurementSize size in sizes) {
+                                 MeasurementMapSize mapSize = mapSizeRepository.New(measurement.Id, size.Id);
+                             }
+                         }
+                     }
+
                      return measurement;
                  }
              });
