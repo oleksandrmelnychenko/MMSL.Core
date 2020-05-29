@@ -109,7 +109,7 @@ namespace MMSL.Services.MeasurementServices {
 
                     // update values
                     foreach (UpdateValueDataContract valueModel in measurementSize.ValueDataContracts) {
-                        if (valueModel.Id != default(long) && !valueModel.Value.HasValue) {
+                        if (valueModel.Id != default(long) && valueModel.Value.HasValue) {
                             MeasurementMapValue valEntity = sizeValueRepository.GetValue(valueModel.Id);
 
                             if (valEntity == null || valEntity.MeasurementId != measurement.Id) {
