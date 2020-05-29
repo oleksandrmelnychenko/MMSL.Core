@@ -12,6 +12,7 @@ namespace MMSL.Domain.Repositories.DeliveryTimelines.Contracts {
         DeliveryTimeline New(NewDeliveryTimelineDataContract newDeliveryTimelineDataContract);
 
         DeliveryTimeline GetById(long id);
+
         int Update(DeliveryTimeline deliveryTimeline);
     }
 }
