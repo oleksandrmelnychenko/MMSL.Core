@@ -20,6 +20,13 @@ namespace MMSL.Domain.Repositories.Measurements {
             _connection = connection;
         }
 
+        public int CountDefinitionReferences(long measurementDefinitionId) =>
+            _connection.QuerySingleOrDefault("SELECT COUNT(DISTINCT MeasurementId) " +
+                "FROM [MeasurementMapDefinitions] " +
+                "WHERE IsDeleted = 0 " +
+                "AND MeasurementDefinitionId = @Id",
+                new { Id = measurementDefinitionId });
+
         public List<MeasurementDefinition> GetAll(string searchPhrase, bool? isDefault) {
             string query = 
                 "SELECT * " +

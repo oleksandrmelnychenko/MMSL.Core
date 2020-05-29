@@ -11,5 +11,7 @@ namespace MMSL.Domain.Repositories.Measurements.Contracts {
         void UpdateMeasurementDefinition(MeasurementDefinition measurementDefinition);
 
         MeasurementDefinition GetById(long measurementDefinitionId);
+
+        int CountDefinitionReferences(long measurementDefinitionId);
     }
 }

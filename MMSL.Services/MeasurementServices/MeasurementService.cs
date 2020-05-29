@@ -78,6 +78,7 @@ namespace MMSL.Services.MeasurementServices {
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IMeasurementRepository measurementRepository = _measurementsRepositoriesFactory.NewMeasurementRepository(connection);
+
                     Measurement measurementEntity = measurement.GetEntity();
                     measurementRepository.UpdateMeasurement(measurementEntity);
 
@@ -92,14 +93,37 @@ namespace MMSL.Services.MeasurementServices {
                             MeasurementDefinition definition = definitionMap.MeasurementDefinition;
 
                             if (definitionMap.IsNew()) {
-                                if (definition.IsNew()) {
-                                    definition = definitionRepository.NewMeasurementDefinition(definition);
-                                    definitionMap.MeasurementDefinition = definition;
-                                    definitionMap.MeasurementDefinitionId = definition.Id;
-                                }
+                                // TODO: check this 'if(definition.IsNew())' if definition selection possible 
+                                // (ex. for child measurement carts)
+                                definition = definitionRepository.NewMeasurementDefinition(definition);
+                                definitionMap.MeasurementDefinition = definition;
+                                definitionMap.MeasurementDefinitionId = definition.Id;
 
                                 definitionMap.Id = mapDefinitionRepository.AddMeasurementMapDefinition(definitionMap);
+                            } else if (definitionMap.IsDeleted) {
+
+                                definitionMap = mapDefinitionRepository.UpdateMeasurementMapDefinition(definitionMap);
                             } else {
+
+                                Measurement mapOwner = measurementRepository.GetById(measurement.Id);
+                                MeasurementDefinition originalDefinition = definitionRepository.GetById(definition.Id);
+
+                                if (originalDefinition.Name != definition.Name) {
+                                    if (mapOwner.ParentMeasurementId.HasValue) {
+
+                                        definition = definitionRepository.NewMeasurementDefinition(
+                                            new MeasurementDefinition {
+                                                Name = definition.Name,
+                                                Description = definition.Description
+                                            });
+
+                                        definitionMap.MeasurementDefinitionId = definition.Id;
+
+                                    } else {
+                                        definitionRepository.UpdateMeasurementDefinition(definition);
+                                    }
+                                }
+
                                 definitionMap = mapDefinitionRepository.UpdateMeasurementMapDefinition(definitionMap);
                             }
 
