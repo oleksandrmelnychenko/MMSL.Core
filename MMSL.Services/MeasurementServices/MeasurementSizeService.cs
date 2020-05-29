@@ -122,44 +122,10 @@ namespace MMSL.Services.MeasurementServices {
                             valEntity.Value = valueModel.Value;
                             sizeValueRepository.UpdateValue(valEntity);
                         }
-
-                        sizeValueRepository.UpdateValue(valEntity);
                     }
 
                     return sizeRepository.GetById(measurementSize.Id);
                 }
             });
-
-        //TODO: update this OR delete if unused
-        private void CheckMeasurementValues(IDbConnection connection, long sizeId, long measurementId, IEnumerable<MeasurementMapValue> values) {
-            IMeasurementDefinitionRepository definitionRepository = _measurementsRepositoriesFactory.NewMeasurementDefinitionRepository(connection);
-            IMeasurementMapValueRepository valueRepository = _measurementsRepositoriesFactory.NewMeasurementMapValueRepository(connection);
-            IMeasurementMapDefinitionRepository mapRepository = _measurementsRepositoriesFactory.NewMeasurementMapDefinitionRepository(connection);
-
-
-            foreach (MeasurementMapValue measurementValue in values) {
-                if (measurementValue.MeasurementDefinition.IsNew()) {
-
-                    MeasurementDefinition definition = definitionRepository.NewMeasurementDefinition(measurementValue.MeasurementDefinition);
-
-                    MeasurementMapDefinition map = new MeasurementMapDefinition {
-                        MeasurementDefinitionId = definition.Id,
-                        MeasurementId = measurementId
-                    };
-
-                    measurementValue.MeasurementDefinitionId = definition.Id;
-
-                    map.Id = mapRepository.AddMeasurementMapDefinition(map);
-                }
-
-                measurementValue.MeasurementSizeId = sizeId;
-
-                if (measurementValue.IsNew()) {
-                    measurementValue.Id = valueRepository.AddValue(measurementValue);
-                } else {
-                    valueRepository.UpdateValue(measurementValue);
-                }
-            }
-        }
     }
 }

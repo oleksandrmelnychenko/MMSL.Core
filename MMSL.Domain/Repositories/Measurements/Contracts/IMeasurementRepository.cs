@@ -12,12 +12,6 @@ namespace MMSL.Domain.Repositories.Measurements.Contracts {
         void UpdateMeasurement(Measurement measurement);
         Measurement GetById(long measurementId);
         Measurement GetByIdWithDefinitions(long measurementId);
-        /// <summary>
-        /// Deprecated
-        /// </summary>
-        /// <param name="measurementId"></param>
-        /// <returns></returns>
-        Measurement GetByIdWithDependencies(long measurementId);
         List<MeasurementMapSize> GetSizesByMeasurementId(long measurementId, long? parentMeasurementId);
     }
 }

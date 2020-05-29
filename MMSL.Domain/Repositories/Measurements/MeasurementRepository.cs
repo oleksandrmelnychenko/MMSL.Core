@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 
 namespace MMSL.Domain.Repositories.Measurements {
-    //TODO: update this
     public class MeasurementRepository : IMeasurementRepository {
 
         private readonly IDbConnection _connection;
@@ -83,72 +82,6 @@ namespace MMSL.Domain.Repositories.Measurements {
                   "WHERE Id = @Id",
                   new { Id = measurementId })
               .SingleOrDefault();
-
-        //TODO: update this
-        public Measurement GetByIdWithDependencies(long measurementId) {
-            List<Measurement> measurementsResult = new List<Measurement>();
-
-            IEnumerable<Measurement> middleResult = _connection.Query<Measurement, MeasurementMapDefinition, MeasurementDefinition, MeasurementSize, MeasurementMapValue, MeasurementDefinition, Measurement>(
-               "SELECT [Measurements].*, " +
-               "[MeasurementMapDefinitions].*, [MeasurementDefinitions].*, " +
-               "[MeasurementSizes].*, [MeasurementValues].*, [ValueDefinition].*" +
-               "FROM [Measurements] " +
-               "LEFT JOIN [MeasurementMapDefinitions] ON [MeasurementMapDefinitions].MeasurementId = [Measurements].Id " +
-               "AND [MeasurementMapDefinitions].IsDeleted = 0 " +
-               "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapDefinitions].MeasurementDefinitionId " +
-               "AND [MeasurementDefinitions].IsDeleted = 0 " +
-               "LEFT JOIN [MeasurementSizes] ON [MeasurementSizes].MeasurementId = [Measurements].Id " +
-               "AND [MeasurementSizes].IsDeleted = 0 " +
-               "LEFT JOIN [MeasurementValues] ON [MeasurementValues].MeasurementSizeId = [MeasurementSizes].Id " +
-               "AND [MeasurementValues].IsDeleted = 0 " +
-               "LEFT JOIN [MeasurementDefinitions] AS [ValueDefinition] ON [ValueDefinition].Id = [MeasurementValues].MeasurementDefinitionId " +
-               "AND [ValueDefinition].IsDeleted = 0 " +
-               "WHERE [Measurements].Id = @Id AND [Measurements].IsDeleted = 0",
-               (measurement, measurementMapDefinition, measurementDefinition, measurementSize, measurementValue, valueDefinition) => {
-
-                   if (measurementsResult.Any(x => x.Id == measurement.Id)) {
-                       measurement = measurementsResult.First(x => x.Id == measurement.Id);
-                   } else {
-                       measurementsResult.Add(measurement);
-                   }
-
-                   if (measurementMapDefinition != null) {
-                       if (measurement.MeasurementMapDefinitions.Any(x => x.Id == measurementMapDefinition.Id)) {
-                           measurementMapDefinition = measurement.MeasurementMapDefinitions.First(x => x.Id == measurementMapDefinition.Id);
-                       } else {
-                           measurement.MeasurementMapDefinitions.Add(measurementMapDefinition);
-                       }
-
-                       measurementMapDefinition.MeasurementDefinition = measurementDefinition;
-                       measurement.MeasurementMapDefinitions.Add(measurementMapDefinition);
-                   }
-
-                   //if (measurementSize != null) {
-                   //    if (measurement.MeasurementSizes.Any(x => x.Id == measurementSize.Id)) {
-                   //        measurementSize = measurement.MeasurementSizes.First(x => x.Id == measurementSize.Id);
-                   //    } else {
-                   //        measurement.MeasurementSizes.Add(measurementSize);
-                   //    }
-
-                   //    if (measurementValue != null) {
-                   //        if (measurementSize.Values.Any(x => x.Id == measurementValue.Id)) {
-                   //            measurementValue = measurementSize.Values.First(x => x.Id == measurementValue.Id);
-                   //        } else {
-                   //            measurementSize.Values.Add(measurementValue);
-                   //        }
-
-                   //        measurementValue.MeasurementDefinition = valueDefinition;
-                   //        measurementSize.Values.Add(measurementValue);
-                   //    }
-
-                   //}
-
-                   return measurement;
-               },
-               new { Id = measurementId });
-
-            return measurementsResult.FirstOrDefault();
-        }
 
         public List<Measurement> GetAllByProduct(long productCategoryId) {
             List<Measurement> measurementsResult = new List<Measurement>();
