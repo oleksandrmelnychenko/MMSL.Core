@@ -19,6 +19,7 @@ namespace MMSL.Domain.DataContracts.Measurements {
 
     public class UpdateValueDataContract {
         public long Id { get; set; }
+        public long MeasurementDefinitionId { get; set; }
         public float? Value { get; set; }
     }
 }

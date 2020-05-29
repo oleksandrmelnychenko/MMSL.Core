@@ -109,23 +109,21 @@ namespace MMSL.Services.MeasurementServices {
 
                     // update values
                     foreach (UpdateValueDataContract valueModel in measurementSize.ValueDataContracts) {
-                        if (valueModel.Id != default(long) && valueModel.Value.HasValue) {
-                            MeasurementMapValue valEntity = sizeValueRepository.GetValue(valueModel.Id);
+                        MeasurementMapValue valEntity = sizeValueRepository.GetValue(valueModel.Id);
 
-                            if (valEntity == null || valEntity.MeasurementId != measurement.Id) {
-                                sizeValueRepository.AddValue(new MeasurementMapValue {
-                                    MeasurementId = measurement.Id,
-                                    MeasurementSizeId = originalSize.Id,
-                                    MeasurementDefinitionId = valEntity.MeasurementDefinitionId,
-                                    Value = valueModel.Value
-                                });
-                            } else {
-                                valEntity.Value = valueModel.Value;
-                                sizeValueRepository.UpdateValue(valEntity);
-                            }
-
+                        if (valEntity == null || valEntity.MeasurementId != measurement.Id) {
+                            sizeValueRepository.AddValue(new MeasurementMapValue {
+                                MeasurementId = measurement.Id,
+                                MeasurementSizeId = originalSize.Id,
+                                MeasurementDefinitionId = valueModel.MeasurementDefinitionId,
+                                Value = valueModel.Value
+                            });
+                        } else {
+                            valEntity.Value = valueModel.Value;
                             sizeValueRepository.UpdateValue(valEntity);
                         }
+
+                        sizeValueRepository.UpdateValue(valEntity);
                     }
 
                     return sizeRepository.GetById(measurementSize.Id);
