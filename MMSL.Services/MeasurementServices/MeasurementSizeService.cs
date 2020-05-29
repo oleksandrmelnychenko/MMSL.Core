@@ -107,7 +107,6 @@ namespace MMSL.Services.MeasurementServices {
                         //  TODO: investigate this
                     }
 
-                    // update values
                     foreach (UpdateValueDataContract valueModel in measurementSize.ValueDataContracts) {
                         MeasurementMapValue valEntity = sizeValueRepository.GetValue(valueModel.Id);
 
