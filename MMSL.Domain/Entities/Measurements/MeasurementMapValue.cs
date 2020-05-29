@@ -14,6 +14,6 @@ namespace MMSL.Domain.Entities.Measurements {
         public long MeasurementDefinitionId { get; set; }
         public MeasurementDefinition MeasurementDefinition { get; set; }
 
-        public float Value { get; set; }
+        public float? Value { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using MMSL.Services.MeasurementServices.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -86,30 +87,43 @@ namespace MMSL.Services.MeasurementServices {
         public Task<MeasurementSize> UpdateMeasurementSizeAsync(UpdateMeasuremetSizeDataContract measurementSize) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    IMeasurementRepository measurementRepository = _measurementsRepositoriesFactory.NewMeasurementRepository(connection);
                     IMeasurementSizeRepository sizeRepository = _measurementsRepositoriesFactory.NewMeasurementSizeRepository(connection);
-                    IMeasurementMapSizeRepository measurementMapSizeRepository = _measurementsRepositoriesFactory.NewMeasurementMapSizeRepository(connection);
-
+                    IMeasurementMapSizeRepository sizeMapRepository = _measurementsRepositoriesFactory.NewMeasurementMapSizeRepository(connection);
                     IMeasurementMapValueRepository sizeValueRepository = _measurementsRepositoriesFactory.NewMeasurementMapValueRepository(connection);
 
-                    MeasurementSize size = measurementSize.GetEntity();
-                    MeasurementSize original = sizeRepository.GetById(size.Id);
-                    //  TODO: update OR create size
-                    //  AND resolve parentel measurement charts
+                    Measurement measurement = measurementRepository.GetById(measurementSize.MeasurementId);
+                    MeasurementSize originalSize = sizeRepository.GetById(measurementSize.Id);
 
-                    //sizeRepository.UpdateMeasurementSize(size.MeasurementSize);
+                    if (!measurement.ParentMeasurementId.HasValue) {
+                        originalSize.Name = measurementSize.Name;
+                        sizeRepository.UpdateMeasurementSize(originalSize);
+                    } else {
+                        //MeasurementMapSize sizeMap = sizeMapRepository.Get(measurement.Id, originalSize.Id);
 
-                    foreach (UpdateValueDataContract value in measurementSize.ValueDataContracts) {
-                        long id = value.Id;
-                        float? val = value.Value;
+                        //  TODO: update OR create size
+                        //  AND resolve parentel measurement charts
 
-                        //var valEntity = sizeValueRepository.GetValue();
+                        //  TODO: investigate this
+                    }
 
-                        if (!val.HasValue) {
+                    // update values
+                    foreach (UpdateValueDataContract valueModel in measurementSize.ValueDataContracts) {
+                        MeasurementMapValue valEntity = sizeValueRepository.GetValue(valueModel.Id);
 
+                        if (valEntity.MeasurementId != measurement.Id) {
+                            sizeValueRepository.AddValue(new MeasurementMapValue {
+                                MeasurementId = measurement.Id,
+                                MeasurementSizeId = originalSize.Id,
+                                MeasurementDefinitionId = valEntity.MeasurementDefinitionId,
+                                Value = valueModel.Value
+                            });
                         } else {
-
+                            valEntity.Value = valueModel.Value;
+                            sizeValueRepository.UpdateValue(valEntity);
                         }
 
+                        sizeValueRepository.UpdateValue(valEntity);
                     }
 
                     return sizeRepository.GetById(measurementSize.Id);

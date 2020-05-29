@@ -2,25 +2,17 @@
 using System.Collections.Generic;
 
 namespace MMSL.Domain.DataContracts.Measurements {
-    public class UpdateMeasuremetSizeDataContract : EntityDataContractBase<MeasurementMapSize> {
+    public class UpdateMeasuremetSizeDataContract : EntityDataContractBase<MeasurementSize> {
 
-        public long SizeMapId { get; set; }
-
-        public bool IsDeleted { get; set; }
-
+        public long MeasurementId { get; set; }
         public string Name { get; set; }
 
         public List<UpdateValueDataContract> ValueDataContracts { get; set; }
 
-        public override MeasurementMapSize GetEntity() {
-            return new MeasurementMapSize {
-                Id = SizeMapId,
-                IsDeleted = IsDeleted,
-                MeasurementSizeId = Id,
-                MeasurementSize = new MeasurementSize {
-                    Id = Id,
-                    Name = Name
-                }
+        public override MeasurementSize GetEntity() {
+            return new MeasurementSize {
+                Id = Id,
+                Name = Name
             };
         }
     }
