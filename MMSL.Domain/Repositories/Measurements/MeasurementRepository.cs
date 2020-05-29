@@ -248,7 +248,7 @@ namespace MMSL.Domain.Repositories.Measurements {
         public List<MeasurementMapSize> GetSizesByMeasurementId(long measurementId, long? parentMeasurementId) {
             List<MeasurementMapSize> results = new List<MeasurementMapSize>();
 
-            string query = 
+            string query =
                 "SELECT [MeasurementMapSizes].*, " +
                 "[MeasurementSizes].*, " +
                 "[MeasurementMapValues].*, " +
@@ -257,7 +257,9 @@ namespace MMSL.Domain.Repositories.Measurements {
                 "LEFT JOIN [MeasurementSizes] ON [MeasurementMapSizes].MeasurementSizeId = [MeasurementSizes].Id " +
                 "LEFT JOIN [MeasurementMapValues] ON [MeasurementMapValues].MeasurementSizeId = [MeasurementSizes].Id " +
                 "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapValues].MeasurementDefinitionId " +
-                "WHERE [MeasurementMapSizes].MeasurementId = @Id OR [MeasurementMapSizes].MeasurementId = @ParentId";
+                "WHERE [MeasurementMapSizes].MeasurementId = @Id " +
+                (parentMeasurementId.HasValue ? "OR [MeasurementMapSizes].MeasurementId = @ParentId " : string.Empty) +
+                "AND [MeasurementMapSizes].IsDeleted = 0";
 
             _connection.Query<MeasurementMapSize, MeasurementSize, MeasurementMapValue, MeasurementDefinition, MeasurementMapSize>(
                 query,
@@ -273,13 +275,13 @@ namespace MMSL.Domain.Repositories.Measurements {
 
                     if (value != null) {
                         value.MeasurementDefinition = definition;
-                     
+
                         size.MeasurementMapValues.Add(value);
                     }
 
                     return mapSize;
                 },
-                new { 
+                new {
                     Id = measurementId,
                     ParentId = parentMeasurementId
                 });
