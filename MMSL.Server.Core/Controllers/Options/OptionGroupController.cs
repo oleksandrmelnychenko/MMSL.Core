@@ -85,7 +85,7 @@ namespace MMSL.Server.Core.Controllers.Options {
 
                 OptionGroup optionGroup = await _optionGroupService.NewOptionGroupAsync(newOptionGroupDataContract);
 
-                return Ok(SuccessResponseBody(optionGroup, Localizer["New OptionGroup has been created successfully"]));
+                return Ok(SuccessResponseBody(optionGroup, Localizer["Style has been created successfully"]));
             }           
             catch (Exception exc) {
                 Log.Error(exc.Message);
@@ -102,7 +102,7 @@ namespace MMSL.Server.Core.Controllers.Options {
 
                 await _optionGroupService.UpdateOptionGroupAsync(optionGroup);
 
-                return Ok(SuccessResponseBody(optionGroup, Localizer["OptionGroup successfully updated"]));
+                return Ok(SuccessResponseBody(optionGroup, Localizer["Style successfully updated"]));
             }
             catch (NotFoundValueException exc) {
                 Log.Error(exc.GetUserMessageException);
@@ -121,7 +121,7 @@ namespace MMSL.Server.Core.Controllers.Options {
             try {
                 await _optionGroupService.DeleteOptionGroupAsync(optionGroupId);
 
-                return Ok(SuccessResponseBody(optionGroupId, Localizer["OptionGroup successfully deleted"]));
+                return Ok(SuccessResponseBody(optionGroupId, Localizer["Style successfully deleted"]));
             }
             catch (NotFoundValueException exc) {
                 Log.Error(exc.GetUserMessageException);

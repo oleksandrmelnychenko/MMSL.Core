@@ -63,7 +63,7 @@ namespace MMSL.Server.Core.Controllers.DeliveryTimeLines {
 
                 DeliveryTimeline deliveryTimeLine = await _deliveryTimelineService.NewDeliveryTimelineAsync(newDeliveryTimelineDataContract);
 
-                return Ok(SuccessResponseBody(deliveryTimeLine, Localizer["New DeliveryTimeLine has been created successfully"]));
+                return Ok(SuccessResponseBody(deliveryTimeLine, Localizer["Delivery timeline has been created successfully"]));
             }          
             catch (Exception exc) {
                 Log.Error(exc.Message);
