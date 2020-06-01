@@ -77,18 +77,6 @@ namespace MMSL.Services.ProductCategories {
                         }
                     }
 
-                    // TODO: default delivery timelines adding
-                    // maybe this is unnecessary, need to clarify
-                    if (product != null) {
-                        IDeliveryTimelineRepository timelineRepository = _deliveryTimelineRepositoriesFactory.NewDeliveryTimelineRepository(connection);
-                        IDeliveryTimelineProductMapRepository timelineMapRepository = _deliveryTimelineRepositoriesFactory.NewDeliveryTimelineProductMapRepository(connection);
-
-                        List<DeliveryTimeline> defaults = timelineRepository.GetAll(string.Empty, true);
-                        foreach (DeliveryTimeline timeline in defaults) {
-                            timelineMapRepository.New(product.Id, timeline.Id);
-                        }
-                    }
-
                     return product;
                 }
             });
