@@ -81,7 +81,7 @@ namespace MMSL.Server.Core.Controllers.DeliveryTimeLines {
 
                 await _deliveryTimelineService.AssignDeliveryTimelineAsync(assignDeliveryTimelineDataContract);
 
-                return Ok(SuccessResponseBody("Assign", Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody("", Localizer["Successfully completed"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);
