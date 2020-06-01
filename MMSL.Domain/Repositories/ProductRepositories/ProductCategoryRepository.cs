@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MMSL.Domain.DataContracts;
+using MMSL.Domain.Entities.DeliveryTimelines;
 using MMSL.Domain.Entities.Options;
 using MMSL.Domain.Entities.Products;
 using MMSL.Domain.Repositories.ProductRepositories.Contracts;
@@ -76,8 +77,8 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
         public ProductCategory GetDetailedById(long productCategoryId) {
             ProductCategory result = null;
 
-            _connection.Query<ProductCategory, ProductCategoryMapOptionGroup, OptionGroup, OptionUnit, ProductCategory>(
-                "SELECT [ProductCategories].*, [ProductCategoryMapOptionGroups].*, [OptionGroups].*, [OptionUnits].* " +
+            _connection.Query<ProductCategory, ProductCategoryMapOptionGroup, OptionGroup, OptionUnit, DeliveryTimelineProductMap, DeliveryTimeline, ProductCategory>(
+                "SELECT [ProductCategories].*, [ProductCategoryMapOptionGroups].*, [OptionGroups].*, [OptionUnits].*, [DeliveryTimelineProductMaps].*, [DeliveryTimelines].*  " +
                 "FROM [ProductCategories] " +
                 "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].ProductCategoryId = [ProductCategories].Id " +
                 "AND [ProductCategoryMapOptionGroups].IsDeleted = 0 " +
@@ -86,9 +87,13 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "AND [OptionGroups].IsDeleted = 0 " +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id " +
                 "AND [OptionUnits].IsDeleted = 0 " +
+                "LEFT JOIN [DeliveryTimelineProductMaps] ON [DeliveryTimelineProductMaps].ProductCategoryId = [ProductCategories].Id " +
+                "AND [DeliveryTimelineProductMaps].IsDeleted = 0 " +
+                "LEFT JOIN [DeliveryTimelines] ON [DeliveryTimelines].Id = [DeliveryTimelineProductMaps].DeliveryTimelineId " +
+                "AND [DeliveryTimelines].IsDeleted = 0 " +
                 "WHERE [ProductCategories].Id = @Id AND [ProductCategories].IsDeleted = 0 " +
                 "ORDER BY [ProductCategories].Id, [OptionGroups].Id, [OptionUnits].OrderIndex",
-                (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit) => {
+                (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit, deliveryTimelineProductMap, deliveryTimeline) => {
                     if (result == null) {
                         result = productCategory;
                     } else {
@@ -105,6 +110,15 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
 
                         if (optionUnit != null) {
                             productCategoryMapOptionGroup.OptionGroup.OptionUnits.Add(optionUnit);
+                        }
+                    }
+                   
+                    if (deliveryTimelineProductMap != null) {
+                        if (productCategory.DeliveryTimelineProductMaps.Any(x => x.Id == deliveryTimelineProductMap.Id)) {
+                            deliveryTimelineProductMap = productCategory.DeliveryTimelineProductMaps.First(x => x.Id == deliveryTimelineProductMap.Id);
+                        } else {
+                            productCategory.DeliveryTimelineProductMaps.Add(deliveryTimelineProductMap);
+                            deliveryTimelineProductMap.DeliveryTimeline = deliveryTimeline;
                         }
                     }
 
