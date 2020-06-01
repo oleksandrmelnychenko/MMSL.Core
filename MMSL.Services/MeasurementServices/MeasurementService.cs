@@ -167,9 +167,15 @@ namespace MMSL.Services.MeasurementServices {
         public Task<List<Measurement>> GetProductMeasurementsAsync(long productCategoryId) =>
              Task.Run(() => {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
-                     return _measurementsRepositoriesFactory
-                        .NewMeasurementRepository(connection)
-                        .GetAllByProduct(productCategoryId);
+                     IMeasurementRepository repository = _measurementsRepositoriesFactory.NewMeasurementRepository(connection);
+
+                     List<Measurement> result = repository.GetAllByProduct(productCategoryId);
+
+                     foreach (var measurement in result) {
+                         measurement.MeasurementMapSizes = repository.GetSizesByMeasurementId(measurement.Id, measurement.ParentMeasurementId);
+                     }
+
+                     return result;
                  }
              });
 

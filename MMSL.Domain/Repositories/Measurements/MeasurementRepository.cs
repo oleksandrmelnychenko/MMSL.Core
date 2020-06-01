@@ -86,64 +86,38 @@ namespace MMSL.Domain.Repositories.Measurements {
         public List<Measurement> GetAllByProduct(long productCategoryId) {
             List<Measurement> measurementsResult = new List<Measurement>();
 
-            //_connection.Query<Measurement, MeasurementMapDefinition, MeasurementDefinition, MeasurementSize, MeasurementValue, MeasurementDefinition, Measurement>(
-            //   "SELECT [Measurements].*, " +
-            //   "[MeasurementMapDefinitions].*, [MeasurementDefinitions].*, " +
-            //   "[MeasurementSizes].*, [MeasurementValues].*, [ValueDefinition].*" +
-            //   "FROM [Measurements] " +
-            //   "LEFT JOIN [MeasurementMapDefinitions] ON [MeasurementMapDefinitions].MeasurementId = [Measurements].Id " +
-            //   "AND [MeasurementMapDefinitions].IsDeleted = 0 " +
-            //   "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapDefinitions].MeasurementDefinitionId " +
-            //   "AND [MeasurementDefinitions].IsDeleted = 0 " +
-            //   "LEFT JOIN [MeasurementSizes] ON [MeasurementSizes].MeasurementId = [Measurements].Id " +
-            //   "AND [MeasurementSizes].IsDeleted = 0 " +
-            //   "LEFT JOIN [MeasurementValues] ON [MeasurementValues].MeasurementSizeId = [MeasurementSizes].Id " +
-            //   "AND [MeasurementValues].IsDeleted = 0 " +
-            //   "LEFT JOIN [MeasurementDefinitions] AS [ValueDefinition] ON [ValueDefinition].Id = [MeasurementValues].MeasurementDefinitionId " +
-            //   "AND [ValueDefinition].IsDeleted = 0 " +
-            //   "WHERE [Measurements].ProductCategoryId = @ProductCategoryId AND [Measurements].IsDeleted = 0",
-            //   (measurement, measurementMapDefinition, measurementDefinition, measurementSize, measurementValue, valueDefinition) => {
+            _connection.Query<Measurement, MeasurementMapDefinition, MeasurementDefinition, Measurement>(
+               "SELECT [Measurements].* " +
+               ",[MeasurementMapDefinitions].* " +
+               ",[MeasurementDefinitions].* " +
+               "FROM [Measurements] " +
+               "LEFT JOIN [MeasurementMapDefinitions] ON [MeasurementMapDefinitions].MeasurementId = [Measurements].Id " +
+               "AND [MeasurementMapDefinitions].IsDeleted = 0 " +
+               "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapDefinitions].MeasurementDefinitionId " +
+               "AND [MeasurementDefinitions].IsDeleted = 0 " +
+               "WHERE [Measurements].ProductCategoryId = 1 AND [Measurements].IsDeleted = 0",
+               (measurement, measurementMapDefinition, measurementDefinition) => {
 
-            //       if (measurementsResult.Any(x => x.Id == measurement.Id)) {
-            //           measurement = measurementsResult.First(x => x.Id == measurement.Id);
-            //       } else {
-            //           measurementsResult.Add(measurement);
-            //       }
+                   if (measurementsResult.Any(x => x.Id == measurement.Id)) {
+                       measurement = measurementsResult.First(x => x.Id == measurement.Id);
+                   } else {
+                       measurementsResult.Add(measurement);
+                   }
 
-            //       if (measurementMapDefinition != null) {
-            //           if (measurement.MeasurementMapDefinitions.Any(x => x.Id == measurementMapDefinition.Id)) {
-            //               measurementMapDefinition = measurement.MeasurementMapDefinitions.First(x => x.Id == measurementMapDefinition.Id);
-            //           } else {
-            //               measurement.MeasurementMapDefinitions.Add(measurementMapDefinition);
-            //           }
+                   if (measurementMapDefinition != null) {
+                       if (measurement.MeasurementMapDefinitions.Any(x => x.Id == measurementMapDefinition.Id)) {
+                           measurementMapDefinition = measurement.MeasurementMapDefinitions.First(x => x.Id == measurementMapDefinition.Id);
+                       } else {
+                           measurement.MeasurementMapDefinitions.Add(measurementMapDefinition);
+                       }
 
-            //           measurementMapDefinition.MeasurementDefinition = measurementDefinition;
-            //           measurement.MeasurementMapDefinitions.Add(measurementMapDefinition);
-            //       }
+                       measurementMapDefinition.MeasurementDefinition = measurementDefinition;
+                       measurement.MeasurementMapDefinitions.Add(measurementMapDefinition);
+                   }
 
-            //       if (measurementSize != null) {
-            //           if (measurement.MeasurementSizes.Any(x => x.Id == measurementSize.Id)) {
-            //               measurementSize = measurement.MeasurementSizes.First(x => x.Id == measurementSize.Id);
-            //           } else {
-            //               measurement.MeasurementSizes.Add(measurementSize);
-            //           }
-
-            //           if (measurementValue != null) {
-            //               if (measurementSize.Values.Any(x => x.Id == measurementValue.Id)) {
-            //                   measurementValue = measurementSize.Values.First(x => x.Id == measurementValue.Id);
-            //               } else {
-            //                   measurementSize.Values.Add(measurementValue);
-            //               }
-
-            //               measurementValue.MeasurementDefinition = valueDefinition;
-            //               measurementSize.Values.Add(measurementValue);
-            //           }
-
-            //       }
-
-            //       return measurement;
-            //   },
-            //   new { ProductCategoryId = productCategoryId });
+                   return measurement;
+               },
+               new { ProductCategoryId = productCategoryId });
 
             return measurementsResult;
         }
