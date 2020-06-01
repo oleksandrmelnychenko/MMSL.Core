@@ -56,7 +56,7 @@ namespace MMSL.Domain.Repositories.Measurements {
 
         public Measurement NewMeasurement(NewMeasurementDataContract newMeasurementDataContract) =>
             _connection.Query<Measurement>(
-                "INSERT INTO [Measurements]([IsDeleted],[Name],[Description],[ParentMeasurementId]) " +
+                "INSERT INTO [Measurements]([IsDeleted],[Name],[ProductCategoryId],[ParentMeasurementId]) " +
                 "VALUES(0,@Name,@ProductCategoryId, @ParentMeasurementId)" +
                 "SELECT * " +
                 "FROM [Measurements]" +
