@@ -1,6 +1,8 @@
 ﻿using MMSL.Domain.DataContracts;
 using MMSL.Domain.DbConnectionFactory;
+using MMSL.Domain.Entities.DeliveryTimelines;
 using MMSL.Domain.Entities.Products;
+using MMSL.Domain.Repositories.DeliveryTimelines.Contracts;
 using MMSL.Domain.Repositories.Options.Contracts;
 using MMSL.Domain.Repositories.ProductRepositories.Contracts;
 using MMSL.Services.ProductCategories.Contracts;
@@ -18,6 +20,8 @@ namespace MMSL.Services.ProductCategories {
 
         private readonly IOptionRepositoriesFactory _optionRepositoriesFactory;
 
+        private readonly IDeliveryTimelineRepositoriesFactory _deliveryTimelineRepositoriesFactory;
+
         private readonly IDbConnectionFactory _connectionFactory;
 
         /// <summary>
@@ -29,11 +33,13 @@ namespace MMSL.Services.ProductCategories {
         public ProductCategoryService(
             IProductCategoryRepositoriesFactory productCategoryRepositoriesFactory,
             IDbConnectionFactory connectionFactory,
-            IOptionRepositoriesFactory optionRepositoriesFactory) {
+            IOptionRepositoriesFactory optionRepositoriesFactory,
+            IDeliveryTimelineRepositoriesFactory deliveryTimelineRepositoriesFactory) {
 
             _productCategoryRepositoriesFactory = productCategoryRepositoriesFactory;
             _optionRepositoriesFactory = optionRepositoriesFactory;
             _connectionFactory = connectionFactory;
+            _deliveryTimelineRepositoriesFactory = deliveryTimelineRepositoriesFactory;
         }
 
         public Task<List<ProductCategory>> GetProductCategoriesAsync(string searchPhrase) =>
@@ -68,6 +74,18 @@ namespace MMSL.Services.ProductCategories {
                     if (groupIds != null && groupIds.Any() && product != null) {
                         foreach (long optionGroupId in groupIds) {
                             productCategoryMapOptionGroupsRepository.NewMap(product.Id, optionGroupId);
+                        }
+                    }
+
+                    // TODO: default delivery timelines adding
+                    // maybe this is unnecessary, need to clarify
+                    if (product != null) {
+                        IDeliveryTimelineRepository timelineRepository = _deliveryTimelineRepositoriesFactory.NewDeliveryTimelineRepository(connection);
+                        IDeliveryTimelineProductMapRepository timelineMapRepository = _deliveryTimelineRepositoriesFactory.NewDeliveryTimelineProductMapRepository(connection);
+
+                        List<DeliveryTimeline> defaults = timelineRepository.GetAll(string.Empty, true);
+                        foreach (DeliveryTimeline timeline in defaults) {
+                            timelineMapRepository.New(product.Id, timeline.Id);
                         }
                     }
 
