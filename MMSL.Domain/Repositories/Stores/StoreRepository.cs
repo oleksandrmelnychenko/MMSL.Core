@@ -21,7 +21,8 @@ namespace MMSL.Domain.Repositories.Stores {
             List<Store> stores = _connection.Query<Store>(
                 "SELECT *" +
                 "FROM Stores " +
-                "WHERE IsDeleted = 0 AND PATINDEX('%' + @SearchTerm + '%', [Stores].Name) > 0",
+                "WHERE IsDeleted = 0 AND PATINDEX('%' + @SearchTerm + '%', [Stores].Name) > 0 " +
+                "ORDER BY [Stores].[Name]",
                 new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase }).ToList();
             return stores;
         }
