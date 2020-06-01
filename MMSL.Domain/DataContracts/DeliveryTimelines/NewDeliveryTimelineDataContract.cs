@@ -13,5 +13,7 @@ namespace MMSL.Domain.DataContracts.DeliveryTimelines {
         public string Black { get; set; }
 
         public string Gold { get; set; }
+
+        public bool IsDefault { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace MMSL.Domain.Repositories.DeliveryTimelines.Contracts {
     public interface IDeliveryTimelineRepository {
         List<DeliveryTimeline> GetAll(string searchPhrase, bool isDefault);
 
-        DeliveryTimeline New(NewDeliveryTimelineDataContract newDeliveryTimelineDataContract);
+        DeliveryTimeline New(DeliveryTimeline deliveryTimeline);
 
         DeliveryTimeline GetById(long id);
 

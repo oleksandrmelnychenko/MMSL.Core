@@ -12,5 +12,7 @@ namespace MMSL.Services.DeliveryTimelines.Contracts {
         Task UpdateDeliveryTimelineAsync(DeliveryTimeline deliveryTimeline);
 
         Task DeleteDeliveryTimelineAsync(long deliveryId);
+
+        Task AssignDeliveryTimelineAsync(AssignDeliveryTimelineDataContract assignDeliveryTimelineDataContract);
     }
 }

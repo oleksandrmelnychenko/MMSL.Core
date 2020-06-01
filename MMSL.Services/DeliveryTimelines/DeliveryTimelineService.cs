@@ -37,7 +37,14 @@ namespace MMSL.Services.DeliveryTimelines {
                   using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                       IDeliveryTimelineRepository deliveryTimelineRepository = _deliveryTimelineRepositoriesFactory.NewDeliveryTimelineRepository(connection);
 
-                      DeliveryTimeline deliveryTimeline = deliveryTimelineRepository.New(newDeliveryTimelineDataContract);
+                      DeliveryTimeline deliveryTimeline = deliveryTimelineRepository.New(new DeliveryTimeline {
+                          Name = newDeliveryTimelineDataContract.Name,
+                          Ivory = newDeliveryTimelineDataContract.Ivory,
+                          Silver = newDeliveryTimelineDataContract.Silver,
+                          Black = newDeliveryTimelineDataContract.Black,
+                          Gold = newDeliveryTimelineDataContract.Gold,
+                          IsDefault = newDeliveryTimelineDataContract.IsDefault
+                      });
 
                       return deliveryTimeline;
                   }
@@ -73,5 +80,24 @@ namespace MMSL.Services.DeliveryTimelines {
                     }
                 }
             });
+
+        public Task AssignDeliveryTimelineAsync(AssignDeliveryTimelineDataContract assignDeliveryTimelineDataContract) =>
+             Task.Run(() => {
+                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                     IDeliveryTimelineRepository deliveryTimelineRepository = _deliveryTimelineRepositoriesFactory.NewDeliveryTimelineRepository(connection);
+                     var deliveryTimelineProductMapRepository = _deliveryTimelineRepositoriesFactory.NewDeliveryTimelineProductMapRepository(connection);
+
+                     foreach (DeliveryTimeline deliveryTimeline in assignDeliveryTimelineDataContract.DeliveryTimelines) {
+                         if (deliveryTimeline.IsNew()) {
+                             var created = deliveryTimelineRepository.New(deliveryTimeline);
+                             if (created != null) {
+                                 deliveryTimelineProductMapRepository.New(assignDeliveryTimelineDataContract.ProductCategoryId, created.Id);
+                             }
+                         } else {
+                             deliveryTimelineProductMapRepository.New(assignDeliveryTimelineDataContract.ProductCategoryId, deliveryTimeline.Id);
+                         }
+                     }
+                 }
+             });
     }
 }

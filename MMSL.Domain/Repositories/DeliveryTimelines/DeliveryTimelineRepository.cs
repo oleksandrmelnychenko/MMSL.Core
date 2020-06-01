@@ -12,6 +12,7 @@ namespace MMSL.Domain.Repositories.DeliveryTimelines {
     public class DeliveryTimelineRepository : IDeliveryTimelineRepository {
 
         private readonly IDbConnection _connection;
+
         public DeliveryTimelineRepository(IDbConnection connection) {
             _connection = connection;
         }
@@ -33,13 +34,13 @@ namespace MMSL.Domain.Repositories.DeliveryTimelines {
                  "WHERE Id = @Id",
                  new { Id = id });
 
-        public DeliveryTimeline New(NewDeliveryTimelineDataContract newDeliveryTimelineDataContract) =>
+        public DeliveryTimeline New(DeliveryTimeline deliveryTimeline) =>
             _connection.QuerySingleOrDefault<DeliveryTimeline>(
-                "INSERT INTO [DeliveryTimelines]([IsDeleted],[Name],[Ivory],[Silver],[Black],[Gold]) " +
-                "VALUES(0,@Name,@Ivory,@Silver,@Black,@Gold) " +
+                "INSERT INTO [DeliveryTimelines]([IsDeleted],[Name],[Ivory],[Silver],[Black],[Gold],[IsDefault]) " +
+                "VALUES(0,@Name,@Ivory,@Silver,@Black,@Gold,@IsDefault) " +
                 "SELECT * " +
                 "FROM [DeliveryTimelines] " +
-                "WHERE [DeliveryTimelines].Id = SCOPE_IDENTITY()", newDeliveryTimelineDataContract);
+                "WHERE [DeliveryTimelines].Id = SCOPE_IDENTITY()", deliveryTimeline);
 
         public int Update(DeliveryTimeline deliveryTimeline) =>
             _connection.Execute(

@@ -40,3 +40,6 @@
 {"Timestamp":"2020-05-28T15:09:30.7541064+03:00","Level":"Error","MessageTemplate":"The method or operation is not implemented."}
 {"Timestamp":"2020-05-28T15:10:58.5881612+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'FittingTypeDataContract')"}
 {"Timestamp":"2020-05-28T17:18:17.3914544+03:00","Level":"Error","MessageTemplate":"value not found"}
+{"Timestamp":"2020-06-01T14:40:28.2846096+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'AssignDeliveryTimelineDataContract')"}
+{"Timestamp":"2020-06-01T14:42:36.2968440+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'AssignDeliveryTimelineDataContract')"}
+{"Timestamp":"2020-06-01T14:42:53.8384766+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'AssignDeliveryTimelineDataContract')"}

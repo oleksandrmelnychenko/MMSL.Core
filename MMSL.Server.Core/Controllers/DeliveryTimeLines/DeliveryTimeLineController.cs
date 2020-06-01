@@ -71,6 +71,24 @@ namespace MMSL.Server.Core.Controllers.DeliveryTimeLines {
             }
         }
 
+        [HttpPost]
+        [Authorize]
+        [AssignActionRoute(DeliveryTimelineSegments.ASSIGN_DELIVERY_TIMELINE)]
+        public async Task<IActionResult> AssignDeliveryTimeline([FromBody]AssignDeliveryTimelineDataContract assignDeliveryTimelineDataContract) {
+            try {
+                if (assignDeliveryTimelineDataContract == null || assignDeliveryTimelineDataContract.DeliveryTimelines == null) 
+                    throw new ArgumentNullException("AssignDeliveryTimelineDataContract");
+
+                await _deliveryTimelineService.AssignDeliveryTimelineAsync(assignDeliveryTimelineDataContract);
+
+                return Ok(SuccessResponseBody("Assign", Localizer["Successfully completed"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
         [HttpPut]
         [Authorize]
         [AssignActionRoute(DeliveryTimelineSegments.UPDATE_DELIVERY_TIMELINE)]
