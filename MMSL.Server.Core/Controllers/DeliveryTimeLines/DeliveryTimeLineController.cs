@@ -41,9 +41,9 @@ namespace MMSL.Server.Core.Controllers.DeliveryTimeLines {
         [HttpGet]
         [Authorize]
         [AssignActionRoute(DeliveryTimelineSegments.GET_DELIVERY_TIMELINES)]
-        public async Task<IActionResult> GetAll([FromQuery]string searchPhrase) {
+        public async Task<IActionResult> GetAll([FromQuery]string searchPhrase, [FromQuery]bool isDefault) {
             try {
-                List<DeliveryTimeline> deliveryTimeLines = await _deliveryTimelineService.GetDeliveryTimelinesAsync(searchPhrase);
+                List<DeliveryTimeline> deliveryTimeLines = await _deliveryTimelineService.GetDeliveryTimelinesAsync(searchPhrase, isDefault);
 
                 return Ok(SuccessResponseBody(deliveryTimeLines, Localizer["Successfully completed"]));
             }

@@ -16,13 +16,15 @@ namespace MMSL.Domain.Repositories.DeliveryTimelines {
             _connection = connection;
         }
 
-        public List<DeliveryTimeline> GetAll(string searchPhrase) =>
+        public List<DeliveryTimeline> GetAll(string searchPhrase, bool isDefault) =>
              _connection.Query<DeliveryTimeline>(
                 "SELECT * " +
                 "FROM [DeliveryTimelines] " +
-                "WHERE [DeliveryTimelines].[IsDeleted] = 0 AND PATINDEX('%' + @SearchTerm + '%', [DeliveryTimelines].Name) > 0 ",
-                new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase })
-            .ToList();
+                "WHERE [DeliveryTimelines].[IsDeleted] = 0 AND IsDefault = @IsDefault AND PATINDEX('%' + @SearchTerm + '%', [DeliveryTimelines].Name) > 0 ",
+                new {
+                    SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase,
+                    IsDefault = isDefault
+                }).ToList();
 
         public DeliveryTimeline GetById(long id) =>
              _connection.QuerySingleOrDefault<DeliveryTimeline>(

@@ -23,12 +23,12 @@ namespace MMSL.Services.DeliveryTimelines {
         }
 
 
-        public Task<List<DeliveryTimeline>> GetDeliveryTimelinesAsync(string searchPhrase) =>
+        public Task<List<DeliveryTimeline>> GetDeliveryTimelinesAsync(string searchPhrase, bool isDefault) =>
               Task.Run(() => {
                   using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                       IDeliveryTimelineRepository deliveryTimelineRepository = _deliveryTimelineRepositoriesFactory.NewDeliveryTimelineRepository(connection);
 
-                      return deliveryTimelineRepository.GetAll(searchPhrase); ;
+                      return deliveryTimelineRepository.GetAll(searchPhrase, isDefault); ;
                   }
               });
 

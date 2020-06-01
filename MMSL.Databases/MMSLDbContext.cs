@@ -66,6 +66,8 @@ namespace MMSL.Databases {
 
         public DbSet<DeliveryTimeline> DeliveryTimelines { get; set; }
 
+        public DbSet<DeliveryTimelineProductMap> DeliveryTimelineProductMaps { get; set; }
+
         /// <summary>
         ///     ctor().
         /// </summary>
@@ -98,6 +100,7 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new MeasurementMapValueMap());
             modelBuilder.AddConfiguration(new FittingTypeMap());
             modelBuilder.AddConfiguration(new DeliveryTimelineMap());
+            modelBuilder.AddConfiguration(new DeliveryTimelineProductMapMap());
         }
     }
 }
