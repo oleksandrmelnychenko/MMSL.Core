@@ -94,7 +94,24 @@ namespace MMSL.Services.DeliveryTimelines {
                                  deliveryTimelineProductMapRepository.New(assignDeliveryTimelineDataContract.ProductCategoryId, created.Id);
                              }
                          } else {
-                             deliveryTimelineProductMapRepository.New(assignDeliveryTimelineDataContract.ProductCategoryId, deliveryTimeline.Id);
+                             if (deliveryTimeline.IsDefault) {
+                                 DeliveryTimelineProductMap existedDeliveryTimelineProductMap = deliveryTimelineProductMapRepository.GetByIds(assignDeliveryTimelineDataContract.ProductCategoryId, deliveryTimeline.Id);
+                                 if (existedDeliveryTimelineProductMap != null) {
+                                     var created = deliveryTimelineRepository.New(new DeliveryTimeline {
+                                         Name = deliveryTimeline.Name,
+                                         Ivory = deliveryTimeline.Ivory,
+                                         Silver = deliveryTimeline.Silver,
+                                         Black = deliveryTimeline.Black,
+                                         Gold = deliveryTimeline.Gold,
+                                         IsDefault = false
+                                     });
+                                     existedDeliveryTimelineProductMap.DeliveryTimelineId = created.Id;
+                                     deliveryTimelineProductMapRepository.Update(existedDeliveryTimelineProductMap);
+                                 }
+
+                             } else {                                 
+                                 deliveryTimelineRepository.Update(deliveryTimeline);
+                             }
                          }
                      }
                  }
