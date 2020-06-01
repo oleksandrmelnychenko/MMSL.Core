@@ -95,7 +95,7 @@ namespace MMSL.Domain.Repositories.Measurements {
                "AND [MeasurementMapDefinitions].IsDeleted = 0 " +
                "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapDefinitions].MeasurementDefinitionId " +
                "AND [MeasurementDefinitions].IsDeleted = 0 " +
-               "WHERE [Measurements].ProductCategoryId = 1 AND [Measurements].IsDeleted = 0",
+               "WHERE [Measurements].ProductCategoryId = @ProductCategoryId AND [Measurements].IsDeleted = 0",
                (measurement, measurementMapDefinition, measurementDefinition) => {
 
                    if (measurementsResult.Any(x => x.Id == measurement.Id)) {
