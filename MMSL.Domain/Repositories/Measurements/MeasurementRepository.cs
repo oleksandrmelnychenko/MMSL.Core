@@ -95,7 +95,8 @@ namespace MMSL.Domain.Repositories.Measurements {
                "AND [MeasurementMapDefinitions].IsDeleted = 0 " +
                "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapDefinitions].MeasurementDefinitionId " +
                "AND [MeasurementDefinitions].IsDeleted = 0 " +
-               "WHERE [Measurements].ProductCategoryId = @ProductCategoryId AND [Measurements].IsDeleted = 0",
+               "WHERE [Measurements].ProductCategoryId = @ProductCategoryId AND [Measurements].IsDeleted = 0 " +
+               "ORDER BY [Measurements].Id, [MeasurementMapDefinitions].OrderIndex",
                (measurement, measurementMapDefinition, measurementDefinition) => {
 
                    if (measurementsResult.Any(x => x.Id == measurement.Id)) {
@@ -130,7 +131,8 @@ namespace MMSL.Domain.Repositories.Measurements {
                 "LEFT JOIN [MeasurementMapDefinitions] ON [MeasurementMapDefinitions].MeasurementId = [Measurements].Id " +
                 "AND [MeasurementMapDefinitions].IsDeleted = 0 " +
                 "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapDefinitions].MeasurementDefinitionId " +
-                "WHERE [Measurements].Id = @Id AND [Measurements].IsDeleted = 0";
+                "WHERE [Measurements].Id = @Id AND [Measurements].IsDeleted = 0 " +
+                "ORDER BY [MeasurementMapDefinitions].OrderIndex";
 
             _connection.Query<Measurement, MeasurementMapDefinition, MeasurementDefinition, Measurement>(
                 query,
