@@ -64,6 +64,18 @@ namespace MMSL.Server.Core.Controllers.Measurements {
 
         [HttpGet]
         [Authorize]
+        [AssignActionRoute(MeasurementSegments.GET_PRODUCT_MEASUREMENTS)]
+        public async Task<IActionResult> GetByProduct([FromQuery] long productId) {
+            try {
+                return Ok(SuccessResponseBody(await _measurementService.GetProductMeasurementsAsync(productId), Localizer["Successfully completed"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
         [AssignActionRoute(MeasurementSegments.GET_MEASUREMENT_CHART)]
         public async Task<IActionResult> GetChart([FromQuery]long measurementId) {
             try {
