@@ -54,6 +54,7 @@ namespace MMSL.Services.MeasurementServices {
                             }
                         }
                     }
+
                     return newMeasurementSize;
                 }
             });
@@ -124,6 +125,15 @@ namespace MMSL.Services.MeasurementServices {
                     }
 
                     return sizeRepository.GetById(measurementSize.Id);
+                }
+            });
+
+        public Task<MeasurementSize> GetMeasurementSizeByIdAsync(long measurementSizeId) =>
+            Task.Run(() => {
+                using (var connection = _connectionFactory.NewSqlConnection()) {
+                    return _measurementsRepositoriesFactory
+                        .NewMeasurementSizeRepository(connection)
+                        .GetById(measurementSizeId);
                 }
             });
     }

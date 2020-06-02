@@ -25,13 +25,28 @@ namespace MMSL.Domain.Repositories.Measurements {
         }
 
         public MeasurementSize GetById(long measurementSizeId) {
-            return _connection.QuerySingleOrDefault<MeasurementSize>(
-                    "SELECT s.* " +
+            MeasurementSize result = null;
+
+            _connection.Query<MeasurementSize, MeasurementMapValue, MeasurementSize>(
+                    "SELECT s.*, [MeasurementMapValues].* " +
                     "FROM [MeasurementSizes] AS s " +
+                    "LEFT JOIN [MeasurementMapValues] ON [MeasurementMapValues].MeasurementSizeId = s.Id " +
                     "WHERE s.Id = @MeasurementSizeId AND s.IsDeleted = 0",
+                    (size, value) => {
+                        if (result == null) {
+                            result = size;
+                        }
+
+                        if (value != null)
+                            result.MeasurementMapValues.Add(value);
+
+                        return size;
+                    },
                     new {
                         MeasurementSizeId = measurementSizeId
                     });
+
+            return result;
         }
 
         public List<MeasurementSize> GetAllByMeasurementId(long measurementId) {

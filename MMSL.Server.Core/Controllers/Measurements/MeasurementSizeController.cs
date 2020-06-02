@@ -33,8 +33,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         public async Task<IActionResult> GetSizes([FromQuery] long measurementId) {
             try {
                 return Ok(SuccessResponseBody(await _measurementSizeService.GetMeasurementSizesAsync(measurementId), Localizer["Successfully completed"]));
-            }
-            catch (Exception exc) {
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
@@ -48,9 +47,10 @@ namespace MMSL.Server.Core.Controllers.Measurements {
                     throw new ArgumentNullException("MeasurementSizeDataContract");
                 }
 
-                return Ok(SuccessResponseBody(await _measurementSizeService.AddMeasurementSizeAsync(measurementSizeDataContract), Localizer["Successfully completed"]));
-            }
-            catch (Exception exc) {
+                MeasurementSize added = await _measurementSizeService.AddMeasurementSizeAsync(measurementSizeDataContract);
+
+                return Ok(SuccessResponseBody(_measurementSizeService.GetMeasurementSizesAsync(added.Id), Localizer["Successfully completed"]));
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
@@ -65,8 +65,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
                 }
 
                 return Ok(SuccessResponseBody(await _measurementSizeService.UpdateMeasurementSizeAsync(measurementSize), Localizer["Successfully completed"]));
-            }
-            catch (Exception exc) {
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
