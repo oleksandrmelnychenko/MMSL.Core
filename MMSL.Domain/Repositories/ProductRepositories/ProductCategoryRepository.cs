@@ -91,7 +91,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "AND [DeliveryTimelineProductMaps].IsDeleted = 0 " +
                 "LEFT JOIN [DeliveryTimelines] ON [DeliveryTimelines].Id = [DeliveryTimelineProductMaps].DeliveryTimelineId " +
                 "AND [DeliveryTimelines].IsDeleted = 0 " +
-                "WHERE [ProductCategories].Id = @Id AND [ProductCategories].IsDeleted = 0 " +
+                "WHERE [ProductCategories].Id = @Id AND [ProductCategories].IsDeleted = 0 AND [DeliveryTimelines].IsDeleted = 0 " +
                 "ORDER BY [ProductCategories].Id, [OptionGroups].Id, [OptionUnits].OrderIndex",
                 (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit, deliveryTimelineProductMap, deliveryTimeline) => {
                     if (result == null) {
