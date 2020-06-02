@@ -79,9 +79,9 @@ namespace MMSL.Server.Core.Controllers.DeliveryTimeLines {
                 if (assignDeliveryTimelineDataContract == null || assignDeliveryTimelineDataContract.DeliveryTimelines == null) 
                     throw new ArgumentNullException("AssignDeliveryTimelineDataContract");
 
-                await _deliveryTimelineService.AssignDeliveryTimelineAsync(assignDeliveryTimelineDataContract);
+                var deliveryTimlines = await _deliveryTimelineService.AssignDeliveryTimelineAsync(assignDeliveryTimelineDataContract);
 
-                return Ok(SuccessResponseBody("", Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(deliveryTimlines, Localizer["Successfully completed"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);
