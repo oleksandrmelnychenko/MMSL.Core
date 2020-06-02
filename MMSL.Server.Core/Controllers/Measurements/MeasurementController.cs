@@ -41,7 +41,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [HttpGet]
         [Authorize]
         [AssignActionRoute(MeasurementSegments.GET_MEASUREMENTS)]
-        public async Task<IActionResult> GetAll([FromQuery]string searchPhrase) {
+        public async Task<IActionResult> GetAll([FromQuery] string searchPhrase) {
             try {
                 return Ok(SuccessResponseBody(await _measurementService.GetMeasurementsAsync(searchPhrase), Localizer["Successfully completed"]));
             } catch (Exception exc) {
@@ -53,7 +53,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [HttpGet]
         [Authorize]
         [AssignActionRoute(MeasurementSegments.GET_MEASUREMENT)]
-        public async Task<IActionResult> GetSingle([FromQuery]long measurementId) {
+        public async Task<IActionResult> GetSingle([FromQuery] long measurementId) {
             try {
                 return Ok(SuccessResponseBody(await _measurementService.GetMeasurementDetailsAsync(measurementId), Localizer["Successfully completed"]));
             } catch (Exception exc) {
@@ -77,7 +77,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [HttpGet]
         [Authorize]
         [AssignActionRoute(MeasurementSegments.GET_MEASUREMENT_CHART)]
-        public async Task<IActionResult> GetChart([FromQuery]long measurementId) {
+        public async Task<IActionResult> GetChart([FromQuery] long measurementId) {
             try {
                 return Ok(SuccessResponseBody(await _measurementService.GetMeasurementChartAsync(measurementId), Localizer["Successfully completed"]));
             } catch (Exception exc) {
@@ -95,7 +95,9 @@ namespace MMSL.Server.Core.Controllers.Measurements {
 
                 if (string.IsNullOrEmpty(newMeasurementDataContract.Name)) throw new ArgumentNullException(nameof(newMeasurementDataContract.Name));
 
-                return Ok(SuccessResponseBody(await _measurementService.NewMeasurementAsync(newMeasurementDataContract), Localizer["New Measurement has been created successfully"]));
+                Measurement created = await _measurementService.NewMeasurementAsync(newMeasurementDataContract);
+
+                return Ok(SuccessResponseBody(await _measurementService.GetMeasurementChartAsync(created.Id), Localizer["New Measurement has been created successfully"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
@@ -105,13 +107,13 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [HttpPut]
         [Authorize]
         [AssignActionRoute(MeasurementSegments.UPDATE_MEASUREMENT)]
-        public async Task<IActionResult> UpdateMeasurement([FromBody]UpdateMeasurementDataContract measurement) {
+        public async Task<IActionResult> UpdateMeasurement([FromBody] UpdateMeasurementDataContract measurement) {
             try {
                 if (measurement == null) throw new ArgumentNullException("UpdateMeasurement");
 
                 var updated = await _measurementService.UpdateMeasurementAsync(measurement);
 
-                return Ok(SuccessResponseBody(updated, Localizer["Measurement successfully updated"]));
+                return Ok(SuccessResponseBody(await _measurementService.GetMeasurementChartAsync(updated.Id), Localizer["Measurement successfully updated"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
@@ -121,7 +123,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [HttpDelete]
         [Authorize]
         [AssignActionRoute(MeasurementSegments.DELETE_MEASUREMENT)]
-        public async Task<IActionResult> DeleteMeasurement([FromQuery]long measurementId) {
+        public async Task<IActionResult> DeleteMeasurement([FromQuery] long measurementId) {
             try {
                 if (measurementId == default(long)) throw new ArgumentNullException("DeleteMeasurement");
 
