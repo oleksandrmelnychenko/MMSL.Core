@@ -53,6 +53,21 @@ namespace MMSL.Server.Core.Controllers.DeliveryTimeLines {
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [AssignActionRoute(DeliveryTimelineSegments.GET_DELIVERY_TIMELINES_BY_PRODUCT)]
+        public async Task<IActionResult> GetAllByProduct([FromQuery]long id) {
+            try {
+                List<DeliveryTimeline> deliveryTimeLines = await _deliveryTimelineService.GetDeliveryTimelinesByProductAsync(id);
+
+                return Ok(SuccessResponseBody(deliveryTimeLines, Localizer["Successfully completed"]));
+            }
+            catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
         [HttpPost]
         [Authorize]
         [AssignActionRoute(DeliveryTimelineSegments.NEW_DELIVERY_TIMELINE)]

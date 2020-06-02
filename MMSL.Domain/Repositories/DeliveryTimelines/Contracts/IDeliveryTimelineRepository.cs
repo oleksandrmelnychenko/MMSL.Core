@@ -14,5 +14,7 @@ namespace MMSL.Domain.Repositories.DeliveryTimelines.Contracts {
         DeliveryTimeline GetById(long id);
 
         int Update(DeliveryTimeline deliveryTimeline);
+
+        List<DeliveryTimeline> GetAllByProductId(long id);
     }
 }

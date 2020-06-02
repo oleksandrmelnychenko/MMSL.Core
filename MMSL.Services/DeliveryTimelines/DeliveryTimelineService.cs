@@ -32,6 +32,15 @@ namespace MMSL.Services.DeliveryTimelines {
                   }
               });
 
+        public Task<List<DeliveryTimeline>> GetDeliveryTimelinesByProductAsync(long id) =>
+              Task.Run(() => {
+                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                      IDeliveryTimelineRepository deliveryTimelineRepository = _deliveryTimelineRepositoriesFactory.NewDeliveryTimelineRepository(connection);
+
+                      return deliveryTimelineRepository.GetAllByProductId(id); ;
+                  }
+              });
+
         public Task<DeliveryTimeline> NewDeliveryTimelineAsync(NewDeliveryTimelineDataContract newDeliveryTimelineDataContract) =>
               Task.Run(() => {
                   using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
@@ -124,6 +133,6 @@ namespace MMSL.Services.DeliveryTimelines {
                     }
                 }
                 return deliveryTimelines;
-            });
+            });      
     }
 }

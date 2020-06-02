@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MMSL.Domain.Repositories.DeliveryTimelines {
     public class DeliveryTimelineRepository : IDeliveryTimelineRepository {
@@ -26,6 +27,14 @@ namespace MMSL.Domain.Repositories.DeliveryTimelines {
                     SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase,
                     IsDefault = isDefault
                 }).ToList();
+
+        public List<DeliveryTimeline> GetAllByProductId(long id) =>
+            _connection.Query<DeliveryTimeline>(
+                "SELECT * " +
+                "FROM [DeliveryTimelines] AS d " +
+                "LEFT JOIN [DeliveryTimelineProductMaps] AS dpm ON dpm.DeliveryTimelineId = d.Id	AND dpm.IsDeleted = 0 " +
+                "WHERE d.IsDeleted = 0 AND dpm.ProductCategoryId = @Id",
+                new { Id = id }).ToList();
 
         public DeliveryTimeline GetById(long id) =>
              _connection.QuerySingleOrDefault<DeliveryTimeline>(
