@@ -96,17 +96,22 @@ namespace MMSL.Services.MeasurementServices {
                     Measurement measurement = measurementRepository.GetById(measurementSize.MeasurementId);
                     MeasurementSize originalSize = sizeRepository.GetById(measurementSize.Id);
 
-                    if (!measurement.ParentMeasurementId.HasValue) {
+                    if (originalSize.Name != measurementSize.Name) {
                         originalSize.Name = measurementSize.Name;
                         sizeRepository.UpdateMeasurementSize(originalSize);
-                    } else {
-                        //MeasurementMapSize sizeMap = sizeMapRepository.Get(measurement.Id, originalSize.Id);
-
-                        //  TODO: update OR create size
-                        //  AND resolve parentel measurement charts
-
-                        //  TODO: investigate this
                     }
+
+                    //if (!measurement.ParentMeasurementId.HasValue) {
+                    //    originalSize.Name = measurementSize.Name;
+                    //    sizeRepository.UpdateMeasurementSize(originalSize);
+                    //} else {
+                    //    //MeasurementMapSize sizeMap = sizeMapRepository.Get(measurement.Id, originalSize.Id);
+
+                    //    //  TODO: update OR create size
+                    //    //  AND resolve parentel measurement charts
+
+                    //    //  TODO: investigate this
+                    //}
 
                     foreach (UpdateValueDataContract valueModel in measurementSize.ValueDataContracts) {
                         MeasurementMapValue valEntity = sizeValueRepository.GetValue(valueModel.Id);

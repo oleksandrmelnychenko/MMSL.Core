@@ -42,8 +42,7 @@ namespace MMSL.Domain.Repositories.Options {
         public List<OptionGroup> GetAllMapped(string search, long? productCategoryId = null) {
             List<OptionGroup> optionGroups = new List<OptionGroup>();
 
-            _connection.Query<OptionGroup, OptionUnit, OptionGroup>(
-                "SELECT og.*, u.* " +
+            string query = "SELECT og.*, u.* " +
                 "FROM [OptionGroups] AS og " +
                 "LEFT JOIN [OptionUnits] AS u ON u.[OptionGroupId] = og.Id AND u.IsDeleted = 0 " +
                 (
@@ -53,9 +52,16 @@ namespace MMSL.Domain.Repositories.Options {
                     : string.Empty
                 ) +
                 "WHERE og.[IsDeleted] = 0 " +
-                (string.IsNullOrEmpty(search) ? string.Empty : "AND PATINDEX('%' + @Search + '%', og.[Name]) > 0") +
+                (
+                string.IsNullOrEmpty(search)
+                ? string.Empty
+                : "AND (PATINDEX('%' + @Search + '%', og.[Name]) > 0 OR PATINDEX('%' + @Search + '%', u.[Value]) > 0) "
+                ) +
                 (productCategoryId.HasValue ? "AND [ProductCategoryMapOptionGroups].ProductCategoryId = @ProductCategoryId " : string.Empty) +
-                "ORDER BY og.Id, u.OrderIndex ",
+                "ORDER BY og.Id, u.OrderIndex ";
+
+            _connection.Query<OptionGroup, OptionUnit, OptionGroup>(
+                query,
                 (optionGroup, optionUnit) => {
                     if (optionGroups.Any(x => x.Id == optionGroup.Id)) {
                         optionGroup = optionGroups.First(x => x.Id == optionGroup.Id);
