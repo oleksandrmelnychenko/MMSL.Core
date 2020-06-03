@@ -68,6 +68,10 @@ namespace MMSL.Databases {
 
         public DbSet<DeliveryTimelineProductMap> DeliveryTimelineProductMaps { get; set; }
 
+        public DbSet<ProductPermissionSettings> ProductPermissionSettings { get; set; }
+
+        public DbSet<PermissionSettings> PermissionSettings { get; set; }
+
         /// <summary>
         ///     ctor().
         /// </summary>
@@ -101,6 +105,8 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new FittingTypeMap());
             modelBuilder.AddConfiguration(new DeliveryTimelineMap());
             modelBuilder.AddConfiguration(new DeliveryTimelineProductMapMap());
+            modelBuilder.AddConfiguration(new ProductPermissionSettingsMap());
+            modelBuilder.AddConfiguration(new PermissionSettingsMap());
         }
     }
 }

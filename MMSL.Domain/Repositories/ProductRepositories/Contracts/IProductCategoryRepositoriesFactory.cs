@@ -5,5 +5,9 @@ namespace MMSL.Domain.Repositories.ProductRepositories.Contracts {
         IProductCategoryRepository NewProductCategoryRepository(IDbConnection connection);
 
         IProductCategoryMapOptionGroupsRepository NewProductCategoryMapOptionGroupsRepository(IDbConnection connection);
+
+        IProductPermissionSettingsRepository NewProductPermissionSettingsRepository(IDbConnection connection);
+        
+        IPermissionSettingsRepository NewPermissionSettingsRepository(IDbConnection connection);
     }
 }
