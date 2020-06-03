@@ -1,10 +1,12 @@
-﻿using MMSL.Domain.DataContracts;
+﻿using Microsoft.EntityFrameworkCore.Internal;
+using MMSL.Domain.DataContracts;
 using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Options;
 using MMSL.Domain.Repositories.Options.Contracts;
 using MMSL.Services.OptionServices.Contracts;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MMSL.Services.OptionServices {
@@ -39,9 +41,15 @@ namespace MMSL.Services.OptionServices {
         public Task<OptionUnit> AddOptionUnit(OptionUnit optionUnit) =>
             Task.Factory.StartNew(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
-                    optionUnit.Id = _optionRepositoriesFactory
-                        .NewOptionUnitRepository(connection)
-                        .AddOptionUnit(optionUnit);
+                    IOptionGroupRepository groupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
+                    IOptionUnitRepository unitRepository = _optionRepositoriesFactory.NewOptionUnitRepository(connection);
+
+                    List<OptionUnit> units = unitRepository.GetOptionUnitsByGroup(optionUnit.OptionGroupId);
+                    if (units.Any()) {
+                        optionUnit.OrderIndex = units.Count;
+                    }
+
+                    optionUnit.Id = unitRepository.AddOptionUnit(optionUnit);
 
                     return optionUnit;
                 }
