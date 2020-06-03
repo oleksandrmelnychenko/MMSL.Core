@@ -80,19 +80,22 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
             _connection.Query<ProductCategory, ProductCategoryMapOptionGroup, OptionGroup, OptionUnit, DeliveryTimelineProductMap, DeliveryTimeline, ProductCategory>(
                 "SELECT [ProductCategories].*, [ProductCategoryMapOptionGroups].*, [OptionGroups].*, [OptionUnits].*, [DeliveryTimelineProductMaps].*, [DeliveryTimelines].*  " +
                 "FROM [ProductCategories] " +
+
                 "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].ProductCategoryId = [ProductCategories].Id " +
                 "AND [ProductCategoryMapOptionGroups].IsDeleted = 0 " +
-                "AND (SELECT COUNT([OptionGroups].Id) FROM [OptionGroups] WHERE [OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId AND [OptionGroups].IsDeleted = 0) > 0 " +
                 "LEFT JOIN [OptionGroups] ON [OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId " +
                 "AND [OptionGroups].IsDeleted = 0 " +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id " +
                 "AND [OptionUnits].IsDeleted = 0 " +
+                
                 "LEFT JOIN [DeliveryTimelineProductMaps] ON [DeliveryTimelineProductMaps].ProductCategoryId = [ProductCategories].Id " +
                 "AND [DeliveryTimelineProductMaps].IsDeleted = 0 " +
-                "AND ( SELECT COUNT(Id) FROM [DeliveryTimelines] WHERE [DeliveryTimelineProductMaps].DeliveryTimelineId = [DeliveryTimelines].Id AND [DeliveryTimelines].IsDeleted = 0 ) > 0 " +
                 "LEFT JOIN [DeliveryTimelines] ON [DeliveryTimelines].Id = [DeliveryTimelineProductMaps].DeliveryTimelineId " +
                 "AND [DeliveryTimelines].IsDeleted = 0 " +
-                "WHERE [ProductCategories].Id = @Id AND [ProductCategories].IsDeleted = 0 AND [DeliveryTimelines].IsDeleted = 0 " +
+                
+                "WHERE [ProductCategories].Id = @Id AND [ProductCategories].IsDeleted = 0 " +
+                "AND ( [ProductCategoryMapOptionGroups].Id IS NULL OR ([ProductCategoryMapOptionGroups].Id IS NOT NULL AND [OptionGroups].Id IS NOT NULL) ) " +
+                "AND ( [DeliveryTimelineProductMaps].Id IS NULL OR ([DeliveryTimelineProductMaps].Id IS NOT NULL AND [DeliveryTimelines].Id IS NOT NULL) )" +
                 "ORDER BY [ProductCategories].Id, [OptionGroups].Id, [OptionUnits].OrderIndex",
                 (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit, deliveryTimelineProductMap, deliveryTimeline) => {
                     if (result == null) {
