@@ -2,7 +2,9 @@
 using MMSL.Domain.DataContracts;
 using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Options;
+using MMSL.Domain.Entities.Products;
 using MMSL.Domain.Repositories.Options.Contracts;
+using MMSL.Domain.Repositories.ProductRepositories.Contracts;
 using MMSL.Services.OptionServices.Contracts;
 using System;
 using System.Collections.Generic;
@@ -16,21 +18,25 @@ namespace MMSL.Services.OptionServices {
         private readonly IDbConnectionFactory _connectionFactory;
 
         private readonly IOptionRepositoriesFactory _optionRepositoriesFactory;
+        private readonly IProductCategoryRepositoriesFactory _productRepositoriesFactory;
 
         /// <summary>
         ///     ctor().
         /// </summary>
         /// <param name="connectionFactory"></param>
         /// <param name="optionRepositoriesFactory"></param>
-        public OptionGroupService(IDbConnectionFactory connectionFactory, IOptionRepositoriesFactory optionRepositoriesFactory) {
+        public OptionGroupService(IDbConnectionFactory connectionFactory, IOptionRepositoriesFactory optionRepositoriesFactory, IProductCategoryRepositoriesFactory productRepositoriesFactory) {
             _connectionFactory = connectionFactory;
             _optionRepositoriesFactory = optionRepositoriesFactory;
+            _productRepositoriesFactory = productRepositoriesFactory;
         }
 
-        public Task<List<OptionGroup>> GetOptionGroupsAsync(string search) =>
+        public Task<List<OptionGroup>> GetOptionGroupsAsync(string search, long? productCategoryId = null) =>
             Task.Run(() => {
-                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {                   
-                    return _optionRepositoriesFactory.NewOptionGroupRepository(connection).GetAllMapped(search);
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    return _optionRepositoriesFactory
+                        .NewOptionGroupRepository(connection)
+                        .GetAllMapped(search, productCategoryId);
                 }
             });
 
@@ -47,6 +53,13 @@ namespace MMSL.Services.OptionServices {
              Task.Run(() => {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                      IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
+                     IProductCategoryRepository productRepository = _productRepositoriesFactory.NewProductCategoryRepository(connection);
+                     IProductCategoryMapOptionGroupsRepository productMapsRepository = _productRepositoriesFactory.NewProductCategoryMapOptionGroupsRepository(connection);
+
+                     ProductCategory prod = productRepository.GetById(newOptionGroupDataContract.ProductId);
+
+                     if (prod == null || prod.IsDeleted)
+                         throw new Exception("Product not found");
 
                      OptionGroup optionGroup = new OptionGroup {
                          Name = newOptionGroupDataContract.Name,
@@ -54,6 +67,8 @@ namespace MMSL.Services.OptionServices {
                      };
 
                      optionGroup = optionGroupRepository.NewOptionGroup(optionGroup);
+
+                     productMapsRepository.NewMap(newOptionGroupDataContract.ProductId, optionGroup.Id);
 
                      return optionGroup;
                  }
@@ -86,7 +101,7 @@ namespace MMSL.Services.OptionServices {
                           optionGroupRepository.UpdateOptionGroup(existed);
                       } else {
                           UserExceptionCreator<NotFoundValueException>.Create(NotFoundValueException.VALUE_NOT_FOUND).Throw();
-                      }                      
+                      }
                   }
               });
 

@@ -6,9 +6,9 @@ using System.Text;
 namespace MMSL.Domain.Repositories.Options.Contracts {
     public interface IOptionGroupRepository {
 
-        List<OptionGroup> GetAll(string search);
+        List<OptionGroup> GetAll(string search, long? productCategoryId = null);
 
-        List<OptionGroup> GetAllMapped(string search);
+        List<OptionGroup> GetAllMapped(string search, long? productCategoryId = null);
 
         OptionGroup NewOptionGroup(OptionGroup optionGroup);
 

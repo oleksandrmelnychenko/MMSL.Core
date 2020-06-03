@@ -41,11 +41,9 @@ namespace MMSL.Server.Core.Controllers.Options {
         [HttpGet]
         [Authorize]
         [AssignActionRoute(OptionGroupSegments.GET_OPTION_GROUPS)]
-        public async Task<IActionResult> GetAll([FromQuery]string search) {
+        public async Task<IActionResult> GetAll([FromQuery]string search, [FromQuery] long productCategoryId) {
             try {
-                List<OptionGroup> optionGroups = await _optionGroupService.GetOptionGroupsAsync(search);
-
-                return Ok(SuccessResponseBody(optionGroups, Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(await _optionGroupService.GetOptionGroupsAsync(search, productCategoryId), Localizer["Successfully completed"]));
             }
             catch (InvalidIdentityException exc) {
                 return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));
@@ -79,13 +77,16 @@ namespace MMSL.Server.Core.Controllers.Options {
         [AssignActionRoute(OptionGroupSegments.NEW_OPTION_GROUP)]
         public async Task<IActionResult> NewOptionGroup([FromBody] NewOptionGroupDataContract newOptionGroupDataContract) {
             try {
-                if (newOptionGroupDataContract == null) throw new ArgumentNullException("NewOptionGroupDataContract");
+                if (newOptionGroupDataContract == null)
+                    throw new ArgumentNullException("NewOptionGroupDataContract");
 
-                if (string.IsNullOrEmpty(newOptionGroupDataContract.Name)) throw new ArgumentNullException("NewOptionGroupDataContract");
+                if (string.IsNullOrEmpty(newOptionGroupDataContract.Name))
+                    throw new ArgumentNullException("Name");
 
-                OptionGroup optionGroup = await _optionGroupService.NewOptionGroupAsync(newOptionGroupDataContract);
+                if (newOptionGroupDataContract.ProductId == default(long))
+                    throw new ArgumentNullException("ProductId");
 
-                return Ok(SuccessResponseBody(optionGroup, Localizer["Style has been created successfully"]));
+                return Ok(SuccessResponseBody(await _optionGroupService.NewOptionGroupAsync(newOptionGroupDataContract), Localizer["Style has been created successfully"]));
             }           
             catch (Exception exc) {
                 Log.Error(exc.Message);

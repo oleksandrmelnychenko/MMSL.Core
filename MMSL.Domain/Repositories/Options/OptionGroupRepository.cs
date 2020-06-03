@@ -20,22 +20,41 @@ namespace MMSL.Domain.Repositories.Options {
             _connection = connection;
         }
 
-        public List<OptionGroup> GetAll(string search) =>
+        public List<OptionGroup> GetAll(string search, long? productCategoryId = null) =>
             _connection.Query<OptionGroup>(
-                "SELECT * " +
-                "FROM [OptionGroups]" +
-                "WHERE [OptionGroups].IsDeleted = 0 " +
-                (string.IsNullOrEmpty(search) ? string.Empty : "AND PATINDEX('%' + @Search + '%', og.[Name]) > 0")).ToList();
+                    "SELECT [OptionGroups].* " +
+                    "FROM [OptionGroups] " +
+                    (
+                        productCategoryId.HasValue
+                        ? "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].OptionGroupId = [OptionGroups].Id " +
+                        "AND [ProductCategoryMapOptionGroups].IsDeleted = 0 "
+                        : string.Empty
+                    ) +
+                    "WHERE [OptionGroups].IsDeleted = 0 " +
+                    (string.IsNullOrEmpty(search) ? string.Empty : "AND PATINDEX('%' + @Search + '%', og.[Name]) > 0") +
+                    (productCategoryId.HasValue ? "AND [ProductCategoryMapOptionGroups].ProductCategoryId = @ProductCategoryId " : string.Empty),
+                    new { 
+                        ProductCategoryId = productCategoryId.HasValue ? productCategoryId.Value : default(long),
+                        Search = search
+                    }
+                ).ToList();
 
-        public List<OptionGroup> GetAllMapped(string search) {
+        public List<OptionGroup> GetAllMapped(string search, long? productCategoryId = null) {
             List<OptionGroup> optionGroups = new List<OptionGroup>();
 
             _connection.Query<OptionGroup, OptionUnit, OptionGroup>(
-                "SELECT * " +
+                "SELECT og.*, u.* " +
                 "FROM [OptionGroups] AS og " +
                 "LEFT JOIN [OptionUnits] AS u ON u.[OptionGroupId] = og.Id AND u.IsDeleted = 0 " +
+                (
+                    productCategoryId.HasValue
+                    ? "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].OptionGroupId = og.Id " +
+                    "AND [ProductCategoryMapOptionGroups].IsDeleted = 0 "
+                    : string.Empty
+                ) +
                 "WHERE og.[IsDeleted] = 0 " +
                 (string.IsNullOrEmpty(search) ? string.Empty : "AND PATINDEX('%' + @Search + '%', og.[Name]) > 0") +
+                (productCategoryId.HasValue ? "AND [ProductCategoryMapOptionGroups].ProductCategoryId = @ProductCategoryId " : string.Empty) +
                 "ORDER BY og.Id, u.OrderIndex ",
                 (optionGroup, optionUnit) => {
                     if (optionGroups.Any(x => x.Id == optionGroup.Id)) {
@@ -50,7 +69,10 @@ namespace MMSL.Domain.Repositories.Options {
 
                     return optionGroup;
                 },
-                new { Search = search });
+                new {
+                    ProductCategoryId = productCategoryId.HasValue ? productCategoryId.Value : default(long),
+                    Search = search
+                });
 
             return optionGroups;
         }
