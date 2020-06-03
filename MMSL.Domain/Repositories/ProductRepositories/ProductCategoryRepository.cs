@@ -89,6 +89,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "AND [OptionUnits].IsDeleted = 0 " +
                 "LEFT JOIN [DeliveryTimelineProductMaps] ON [DeliveryTimelineProductMaps].ProductCategoryId = [ProductCategories].Id " +
                 "AND [DeliveryTimelineProductMaps].IsDeleted = 0 " +
+                "AND ( SELECT COUNT(Id) FROM [DeliveryTimelines] WHERE [DeliveryTimelineProductMaps].DeliveryTimelineId = [DeliveryTimelines].Id AND [DeliveryTimelines].IsDeleted = 0 ) > 0 " +
                 "LEFT JOIN [DeliveryTimelines] ON [DeliveryTimelines].Id = [DeliveryTimelineProductMaps].DeliveryTimelineId " +
                 "AND [DeliveryTimelines].IsDeleted = 0 " +
                 "WHERE [ProductCategories].Id = @Id AND [ProductCategories].IsDeleted = 0 AND [DeliveryTimelines].IsDeleted = 0 " +
