@@ -6,6 +6,6 @@ namespace MMSL.Domain.Entities.Products {
         public long ProductCategoryId { get; set; }
         public ProductCategory ProductCategory { get; set; }
 
-        public ICollection<PermissionSettings> PermissionSettings { get; set; }
+        public ICollection<PermissionSettings> PermissionSettings { get; set; } = new HashSet<PermissionSettings>();
     }
 }

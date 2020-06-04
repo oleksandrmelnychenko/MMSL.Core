@@ -7,6 +7,7 @@ namespace MMSL.Domain.Entities.Options {
 
         public OptionGroup() {
             OptionUnits = new HashSet<OptionUnit>();
+            ProductCategoryMaps = new HashSet<ProductCategoryMapOptionGroup>();
         }
 
         public string Name { get; set; }

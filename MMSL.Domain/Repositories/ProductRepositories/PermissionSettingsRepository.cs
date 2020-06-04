@@ -1,4 +1,5 @@
-﻿using MMSL.Domain.Entities.Products;
+﻿using Dapper;
+using MMSL.Domain.Entities.Products;
 using MMSL.Domain.Repositories.ProductRepositories.Contracts;
 using System.Data;
 
@@ -11,19 +12,35 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
         }
 
         public PermissionSettings AddPermissionSettings(PermissionSettings settings) {
-            throw new System.NotImplementedException();
+            long settingId = _connection.QuerySingleOrDefault<long>(
+                "INSERT INTO [PermissionSettings] ([IsDeleted], [IsAllow], [ProductPermissionSettingsId], [OptionGroupId], [OptionUnitId]) " +
+                "VALUES (0, @IsAllow, @ProductPermissionSettingsId, @OptionGroupId, @OptionUnitId);" +
+                "SELECT SCOPE_IDENTITY()",
+                settings);
+
+            return GetPermissionSettingsById(settingId);
         }
 
-        public PermissionSettings GetPermissionSettings(long productSettingsId) {
-            throw new System.NotImplementedException();
-        }
+        //public PermissionSettings GetPermissionSettings(long productSettingsId) {
+        //    throw new System.NotImplementedException();
+        //}
 
-        public PermissionSettings GetPermissionSettingsById(long settingsId) {
-            throw new System.NotImplementedException();
-        }
+        public PermissionSettings GetPermissionSettingsById(long settingsId) =>
+            _connection.QuerySingleOrDefault<PermissionSettings>(
+                "SELECT [PermissionSettings].* " +
+                "FROM [PermissionSettings] " +
+                "WHERE [PermissionSettings].Id = @PermissionSettingId",
+                new { PermissionSettingId = settingsId }
+                );
 
-        public PermissionSettings UpdatePermissionSettings(long settingsId) {
-            throw new System.NotImplementedException();
+        public PermissionSettings UpdatePermissionSettings(PermissionSettings settings) {
+            _connection.Execute(
+                "UPDATE [PermissionSettings] " +
+                "SET [LastModified] = GETUTCDATE(), [IsDeleted] = @IsDeleted, [IsAllow] = @IsAllow " +
+                "WHERE [PermissionSettings].Id = @Id",
+                settings);
+
+            return GetPermissionSettingsById(settings.Id);
         }
     }
 }
