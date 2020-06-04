@@ -1,4 +1,4 @@
-﻿namespace MMSL.Domain.DataContracts {
+﻿namespace MMSL.Domain.DataContracts.Measurements {
     public class NewMeasurementDefinitionDataContract {
         public string Name { get; set; }
 

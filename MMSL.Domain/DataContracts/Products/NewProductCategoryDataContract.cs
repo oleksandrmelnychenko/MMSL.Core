@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using MMSL.Domain.Entities.Products;
+﻿using MMSL.Domain.Entities.Products;
 using System.Collections.Generic;
 
-namespace MMSL.Domain.DataContracts {
+namespace MMSL.Domain.DataContracts.Measurements {
     public class NewProductCategoryDataContract : NamedEntityDataContractBase<ProductCategory> {
         public List<long> OptionGroupIds { get; set; }
 

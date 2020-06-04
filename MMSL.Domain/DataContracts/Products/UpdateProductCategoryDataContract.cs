@@ -1,6 +1,6 @@
 ﻿using MMSL.Domain.Entities.Products;
 
-namespace MMSL.Domain.DataContracts {
+namespace MMSL.Domain.DataContracts.Measurements {
     public class UpdateProductCategoryDataContract : NamedEntityDataContractBase<ProductCategory> {
 
         public string ImageUrl { get; set; }

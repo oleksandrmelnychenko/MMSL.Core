@@ -1,7 +1,7 @@
 ﻿using MMSL.Domain.DataContracts.Measurements;
 using System.Collections.Generic;
 
-namespace MMSL.Domain.DataContracts {
+namespace MMSL.Domain.DataContracts.Measurements {
     public class NewMeasurementDataContract {
         public long? ProductCategoryId { get; set; }
 

@@ -2,7 +2,7 @@
 using MMSL.Domain.Entities.Measurements;
 using System.Collections.Generic;
 
-namespace MMSL.Domain.DataContracts {
+namespace MMSL.Domain.DataContracts.Measurements {
     public class UpdateMeasurementDataContract : EntityDataContractBase<Measurement> {
 
         public string Name { get; set; }

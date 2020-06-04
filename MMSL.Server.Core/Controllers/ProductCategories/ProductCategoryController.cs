@@ -2,19 +2,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using MMSL.Common;
-using MMSL.Common.Exceptions.UserExceptions;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.ProductCategories;
-using MMSL.Domain.DataContracts;
+using MMSL.Domain.DataContracts.Measurements;
 using MMSL.Domain.Entities.Products;
 using MMSL.Server.Core.Helpers;
 using MMSL.Services.ProductCategories.Contracts;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
