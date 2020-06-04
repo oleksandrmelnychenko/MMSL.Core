@@ -16,6 +16,8 @@
 
         public const string ProductCategory = "product/category";
 
+        public const string ProductPermissions = "product/permissions";
+
         public const string Measurements = "measurements";
 
         public const string MeasurementDefinitions = "measurements/definitions";

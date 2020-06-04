@@ -52,18 +52,14 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
             return result;
         }
 
-        public ProductPermissionSettings GetProductPermissionSettingsById(long productSettingsId, bool includeAll = false) {
+        public ProductPermissionSettings GetProductPermissionSettingsById(long productSettingsId) {
             ProductPermissionSettings result = null;
 
             _connection.Query<ProductPermissionSettings, PermissionSettings, ProductPermissionSettings>(
                 "SELECT [ProductPermissionSettings].*, [PermissionSettings].* " +
                 "FROM [ProductPermissionSettings] " +
-                (
-                    includeAll
-                    ? "LEFT JOIN [PermissionSettings] ON [PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
-                    "AND [PermissionSettings].IsDeleted = 0 "
-                    : string.Empty
-                ) +
+                "LEFT JOIN [PermissionSettings] ON [PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
+                "AND [PermissionSettings].IsDeleted = 0 " +
                 "WHERE [ProductPermissionSettings].Id = @Id " +
                 "AND [ProductPermissionSettings].IsDeleted = 0",
                 (productPermissionSettings, permissionSettings) => {
@@ -72,7 +68,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                     }
 
                     if (permissionSettings != null) {
-                        productPermissionSettings.PermissionSettings.Add(permissionSettings);
+                        result.PermissionSettings.Add(permissionSettings);
                     }
 
                     return productPermissionSettings;

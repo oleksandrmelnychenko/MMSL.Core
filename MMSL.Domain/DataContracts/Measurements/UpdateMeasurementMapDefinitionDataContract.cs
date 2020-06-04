@@ -16,6 +16,7 @@ namespace MMSL.Domain.DataContracts.Measurements {
                 Id = MapId,
                 MeasurementDefinitionId = Id,
                 IsDeleted = IsDeleted,
+                OrderIndex = OrderIndex,
                 MeasurementDefinition = new MeasurementDefinition { 
                     Id = Id,
                     Name = Name

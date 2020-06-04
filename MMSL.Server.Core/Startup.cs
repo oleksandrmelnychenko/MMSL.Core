@@ -220,6 +220,7 @@ namespace MMSL.Server.Core
             builder.RegisterType<MeasurementSizeService>().As<IMeasurementSizeService>();
             builder.RegisterType<DeliveryTimelineService>().As<IDeliveryTimelineService>();
             builder.RegisterType<MeasurementDefinitionService>().As<IMeasurementDefinitionService>();
+            builder.RegisterType<ProductPermissionSettingService>().As<IProductPermissionSettingService>();
 
             builder.RegisterType<SqlDbContext>().As<ISqlDbContext>();
             builder.RegisterType<SqlContextFactory>().As<ISqlContextFactory>();
