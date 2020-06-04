@@ -1,4 +1,5 @@
 ﻿using MMSL.Domain.DataContracts;
+using MMSL.Domain.DataContracts.Measurements;
 using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Measurements;
 using MMSL.Domain.Repositories.Measurements.Contracts;

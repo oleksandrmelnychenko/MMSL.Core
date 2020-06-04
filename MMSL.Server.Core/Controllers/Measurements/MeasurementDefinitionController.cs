@@ -6,6 +6,7 @@ using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.Measurements;
 using MMSL.Domain.DataContracts;
+using MMSL.Domain.DataContracts.Measurements;
 using MMSL.Domain.Entities.Measurements;
 using MMSL.Services.MeasurementServices.Contracts;
 using Serilog;

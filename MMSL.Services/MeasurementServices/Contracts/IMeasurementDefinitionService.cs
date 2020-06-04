@@ -1,4 +1,5 @@
 ﻿using MMSL.Domain.DataContracts;
+using MMSL.Domain.DataContracts.Measurements;
 using MMSL.Domain.Entities.Measurements;
 using System.Collections.Generic;
 using System.Threading.Tasks;
