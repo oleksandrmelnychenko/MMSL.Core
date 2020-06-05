@@ -1,6 +1,8 @@
 ﻿using MMSL.Domain.DataContracts.Products;
 using MMSL.Domain.DbConnectionFactory;
+using MMSL.Domain.Entities.Dealer;
 using MMSL.Domain.Entities.Products;
+using MMSL.Domain.Repositories.Dealer.Contracts;
 using MMSL.Domain.Repositories.ProductRepositories.Contracts;
 using MMSL.Services.ProductCategories.Contracts;
 using System;
@@ -12,15 +14,18 @@ namespace MMSL.Services.ProductCategories {
     public class ProductPermissionSettingService : IProductPermissionSettingService {
 
         private readonly IProductCategoryRepositoriesFactory _productCategoryRepositoriesFactory;
+        private readonly IDealerRepositoriesFactory _dealerRepositoriesFactory;
 
         private readonly IDbConnectionFactory _connectionFactory;
 
         public ProductPermissionSettingService(
             IDbConnectionFactory connectionFactory,
-            IProductCategoryRepositoriesFactory productCategoryRepositoriesFactory
+            IProductCategoryRepositoriesFactory productCategoryRepositoriesFactory,
+            IDealerRepositoriesFactory dealerRepositoriesFactory
             ) {
             _connectionFactory = connectionFactory;
             _productCategoryRepositoriesFactory = productCategoryRepositoriesFactory;
+            _dealerRepositoriesFactory = dealerRepositoriesFactory;
         }
 
         public Task<ProductPermissionSettings> AddProductPermissionSetting(NewProductPermissionSettingsDataContract productPermissionSettings) =>
@@ -80,6 +85,18 @@ namespace MMSL.Services.ProductCategories {
                     return _productCategoryRepositoriesFactory
                         .NewProductPermissionSettingsRepository(connection)
                         .GetProductPermissionSettingsByProduct(productCategoryId);
+                }
+            });
+
+        public Task SetDealerToProductPermissionSetting(long dealerId, long productSettingsId) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    return _dealerRepositoriesFactory
+                        .NewDealerAccountProductPermissionRepository(connection)
+                        .Add(new DealerMapProductPermissionSettings {
+                            DealerAccountId = dealerId,
+                            ProductPermissionSettingsId = productSettingsId
+                        });
                 }
             });
 

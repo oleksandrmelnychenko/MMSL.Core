@@ -72,6 +72,8 @@ namespace MMSL.Databases {
 
         public DbSet<PermissionSettings> PermissionSettings { get; set; }
 
+        public DbSet<DealerMapProductPermissionSettings> DealerMapProductPermissionSettings { get; set; }
+
         /// <summary>
         ///     ctor().
         /// </summary>
@@ -107,6 +109,7 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new DeliveryTimelineProductMapMap());
             modelBuilder.AddConfiguration(new ProductPermissionSettingsMap());
             modelBuilder.AddConfiguration(new PermissionSettingsMap());
+            modelBuilder.AddConfiguration(new DealerMapProductPermissionSettingsMap());
         }
     }
 }

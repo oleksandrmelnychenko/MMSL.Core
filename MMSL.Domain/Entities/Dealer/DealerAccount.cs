@@ -8,7 +8,6 @@ using System.ComponentModel.DataAnnotations;
 namespace MMSL.Domain.Entities.Dealer {
     public class DealerAccount : EntityBase {
 
-
         [Required]
         public string Name { get; set; }
 
@@ -49,6 +48,9 @@ namespace MMSL.Domain.Entities.Dealer {
 
         public PaymentType PaymentType { get; set; }
 
-        public ICollection<StoreMapDealerAccount> StoreMapDealerAccounts { get; set; }
+        public ICollection<StoreMapDealerAccount> StoreMapDealerAccounts { get; set; } = new HashSet<StoreMapDealerAccount>();
+
+        public ICollection<DealerMapProductPermissionSettings> DealerMapProductPermissionSettings { get; set; } = new HashSet<DealerMapProductPermissionSettings>();
+
     }
 }
