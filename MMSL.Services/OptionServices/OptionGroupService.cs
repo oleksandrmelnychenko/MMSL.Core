@@ -105,5 +105,13 @@ namespace MMSL.Services.OptionServices {
                   }
               });
 
+        public Task<List<OptionGroup>> GetProductOptionGroupsWithPermissionSettingsAsync(long productId, long productSettingsId) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    return _optionRepositoriesFactory
+                        .NewOptionGroupRepository(connection)
+                        .GetWithPermissionsByProductId(productId, productSettingsId);
+                }
+            });
     }
 }

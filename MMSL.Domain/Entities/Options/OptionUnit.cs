@@ -15,6 +15,9 @@ namespace MMSL.Domain.Entities.Options {
 
         public long OptionGroupId { get; set; }
 
+        [NotMapped]
+        public bool IsAllow { get; set; }
+
         public OptionGroup OptionGroup { get; set; }
     }
 }

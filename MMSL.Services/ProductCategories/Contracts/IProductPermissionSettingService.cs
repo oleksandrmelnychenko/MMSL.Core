@@ -9,6 +9,6 @@ namespace MMSL.Services.ProductCategories.Contracts {
         Task<ProductPermissionSettings> AddProductPermissionSetting(NewProductPermissionSettingsDataContract productPermissionSettings);
         Task<ProductPermissionSettings> GetPermissionSettingsById(long productPermissionSettingId);
         Task<ProductPermissionSettings> DeletePermissionSettingsById(long productPermissionSettingId);
-        Task<ProductPermissionSettings> UpdateProductPermissionSetting(NewProductPermissionSettingsDataContract productPermissionSettings);
+        Task<ProductPermissionSettings> UpdateProductPermissionSetting(UpdateProductPermissionSettingsDataContract productPermissionSettings);
     }
 }

@@ -15,5 +15,7 @@ namespace MMSL.Domain.Repositories.Options.Contracts {
         int UpdateOptionGroup(OptionGroup optionGroup);
 
         OptionGroup GetById(long id);
+
+        List<OptionGroup> GetWithPermissionsByProductId(long id, long productPermissionSettingsId);
     }
 }

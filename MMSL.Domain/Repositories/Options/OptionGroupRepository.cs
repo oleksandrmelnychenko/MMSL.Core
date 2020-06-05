@@ -33,7 +33,7 @@ namespace MMSL.Domain.Repositories.Options {
                     "WHERE [OptionGroups].IsDeleted = 0 " +
                     (string.IsNullOrEmpty(search) ? string.Empty : "AND PATINDEX('%' + @Search + '%', og.[Name]) > 0") +
                     (productCategoryId.HasValue ? "AND [ProductCategoryMapOptionGroups].ProductCategoryId = @ProductCategoryId " : string.Empty),
-                    new { 
+                    new {
                         ProductCategoryId = productCategoryId.HasValue ? productCategoryId.Value : default(long),
                         Search = search
                     }
@@ -104,6 +104,42 @@ namespace MMSL.Domain.Repositories.Options {
                     return group;
                 },
                 new { Id = id });
+
+            return groupResult;
+        }
+
+
+        public List<OptionGroup> GetWithPermissionsByProductId(long productId, long productPermissionSettingsId) {
+            List<OptionGroup> groupResult = new List<OptionGroup>();
+
+            _connection.Query<OptionGroup, OptionUnit, OptionGroup>(
+                "SELECT [OptionGroups].*, [OptionUnits].*, [PermissionSettings].IsAllow " +
+                "FROM [OptionGroups] " +
+                "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].OptionGroupId = [OptionGroups].Id " +
+                "AND [ProductCategoryMapOptionGroups].IsDeleted = 0 " +
+                "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id AND [OptionUnits].IsDeleted = 0 " +
+                "LEFT JOIN [PermissionSettings] ON [PermissionSettings].OptionUnitId = [OptionUnits].Id " +
+                "AND [PermissionSettings].OptionGroupId = [OptionUnits].OptionGroupId " +
+                "AND [PermissionSettings].ProductPermissionSettingsId = @ProductSettingId " +
+                "WHERE [OptionGroups].IsDeleted = 0 " +
+                "AND [ProductCategoryMapOptionGroups].ProductCategoryId = @Id ",
+                (group, unit) => {
+                    if (groupResult.Any(x => x.Id == group.Id)) {
+                        group = groupResult.First(x => x.Id == group.Id);
+                    } else {
+                        groupResult.Add(group);
+                    }
+
+                    if (unit != null) {
+                        group.OptionUnits.Add(unit);
+                    }
+
+                    return group;
+                },
+                new {
+                    Id = productId,
+                    ProductSettingId = productPermissionSettingsId
+                });
 
             return groupResult;
         }
