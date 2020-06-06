@@ -109,14 +109,26 @@ namespace MMSL.Services.ProductCategories {
                     ProductPermissionSettings productSettings = productSettingsRepository.UpdateProductPermissionSettings(productPermissionSettings.GetEntity());
 
                     foreach (UpdatePermissionSettingDataContract settings in productPermissionSettings.PermissionSettings) {
-                        var updatedEntity = settingsRepository
-                            .UpdatePermissionSettings(
-                                new PermissionSettings {
-                                    Id = settings.Id,
-                                    IsAllow = settings.IsAllow
-                                });
+                        if (settings.Id == default) {
+                            var newEntity = settingsRepository
+                                .AddPermissionSettings(
+                                    new PermissionSettings {
+                                        IsAllow = settings.IsAllow,
+                                        OptionGroupId = settings.OptionGroupId,
+                                        OptionUnitId = settings.OptionUnitId,
+                                        ProductPermissionSettingsId = productSettings.Id
+                                    });
+                        } else {
+                            var updatedEntity = settingsRepository
+                                .UpdatePermissionSettings(
+                                    new PermissionSettings {
+                                        Id = settings.Id,
+                                        IsAllow = settings.IsAllow
+                                    });
 
-                        productSettings.PermissionSettings.Add(updatedEntity);
+                            productSettings.PermissionSettings.Add(updatedEntity);
+                        }
+
                     }
 
                     return productSettings;
