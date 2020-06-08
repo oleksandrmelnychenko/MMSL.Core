@@ -146,7 +146,8 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "FROM [DealerAccount] " +
                 "LEFT JOIN [DealerMapProductPermissionSettings] ON [DealerMapProductPermissionSettings].DealerAccountId = [DealerAccount].Id " +
                 "WHERE [DealerAccount].IsDeleted = 0 " +
-                "AND DealerMapProductPermissionSettings.Id = @ProductPermissionSettingId",
+                "AND [DealerMapProductPermissionSettings].IsDeleted = 0" +
+                "AND DealerMapProductPermissionSettings.ProductPermissionSettingsId = @ProductPermissionSettingId",
                 new {
                     ProductPermissionSettingId = productPermissionSettingId
                 })

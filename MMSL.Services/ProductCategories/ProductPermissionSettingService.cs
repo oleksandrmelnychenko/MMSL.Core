@@ -97,7 +97,7 @@ namespace MMSL.Services.ProductCategories {
                     List<DealerMapProductPermissionSettings> bindings = repository.GetByProductPermissionSetting(productPermissionToDealersBinding.ProductPermissionSettingId);
 
                     foreach (DealerIdDataContract dealerIdDataContract in productPermissionToDealersBinding.Dealers) {
-                        DealerMapProductPermissionSettings current = bindings.FirstOrDefault(x => x.Id == dealerIdDataContract.DealerAccountId);
+                        DealerMapProductPermissionSettings current = bindings.FirstOrDefault(x => x.DealerAccountId == dealerIdDataContract.DealerAccountId);
 
                         if (current != null) {
                             current.IsDeleted = dealerIdDataContract.IsDeleted;

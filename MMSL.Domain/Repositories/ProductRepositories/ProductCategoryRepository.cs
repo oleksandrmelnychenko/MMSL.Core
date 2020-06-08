@@ -91,12 +91,11 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 
                 "LEFT JOIN [DeliveryTimelineProductMaps] ON [DeliveryTimelineProductMaps].ProductCategoryId = [ProductCategories].Id " +
                 "AND [DeliveryTimelineProductMaps].IsDeleted = 0 " +
+                "AND (SELECT COUNT([DeliveryTimelines].Id) FROM [DeliveryTimelines] WHERE [DeliveryTimelines].Id = [DeliveryTimelineProductMaps].DeliveryTimelineId AND [DeliveryTimelines].IsDeleted = 0) > 0 " +
                 "LEFT JOIN [DeliveryTimelines] ON [DeliveryTimelines].Id = [DeliveryTimelineProductMaps].DeliveryTimelineId " +
                 "AND [DeliveryTimelines].IsDeleted = 0 " +
                 
                 "WHERE [ProductCategories].Id = @Id AND [ProductCategories].IsDeleted = 0 " +
-                "AND ( [ProductCategoryMapOptionGroups].Id IS NULL OR ([ProductCategoryMapOptionGroups].Id IS NOT NULL AND [OptionGroups].Id IS NOT NULL) ) " +
-                "AND ( [DeliveryTimelineProductMaps].Id IS NULL OR ([DeliveryTimelineProductMaps].Id IS NOT NULL AND [DeliveryTimelines].Id IS NOT NULL) )" +
                 "ORDER BY [ProductCategories].Id, [OptionGroups].Id, [OptionUnits].OrderIndex",
                 (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit, deliveryTimelineProductMap, deliveryTimeline) => {
                     if (result == null) {

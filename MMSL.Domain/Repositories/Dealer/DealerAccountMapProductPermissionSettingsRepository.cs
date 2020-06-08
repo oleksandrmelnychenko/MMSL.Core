@@ -16,27 +16,27 @@ namespace MMSL.Domain.Repositories.Dealer {
 
         public long Add(DealerMapProductPermissionSettings dealerMapProductPermission) =>
             _connection.QuerySingleOrDefault<long>(
-                "INSERT [DealerMapProductPermissionSettingsMap]([IsDeleted],[DealerAccountId],[ProductPermissionSettingsId]) " +
+                "INSERT [DealerMapProductPermissionSettings]([IsDeleted],[DealerAccountId],[ProductPermissionSettingsId]) " +
                 "VALUES (0, @DealerAccountId, @ProductPermissionSettingsId);" +
                 "SELECT SCOPE_IDENTITY()",
                 dealerMapProductPermission);
 
         public DealerMapProductPermissionSettings Get(long mapId) =>
             _connection.QuerySingleOrDefault<DealerMapProductPermissionSettings>(
-                "SELECT * FROM [DealerMapProductPermissionSettingsMap] " +
+                "SELECT * FROM [DealerMapProductPermissionSettings] " +
                 "WHERE Id = @MapId",
                 new { MapId = mapId });
 
         public List<DealerMapProductPermissionSettings> GetByProductPermissionSetting(long productPermissionSettingsId) =>
             _connection.Query<DealerMapProductPermissionSettings>(
-                "SELECT * FROM [DealerMapProductPermissionSettingsMap] " +
+                "SELECT * FROM [DealerMapProductPermissionSettings] " +
                 "WHERE [ProductPermissionSettingsId] = @ProductPermissionSettingsId",
                 new { ProductPermissionSettingsId = productPermissionSettingsId })
                 .ToList();
 
         public DealerMapProductPermissionSettings Update(DealerMapProductPermissionSettings dealerMapProductPermission) {
             _connection.QuerySingleOrDefault<DealerMapProductPermissionSettings>(
-                "UPDATE [DealerMapProductPermissionSettingsMap] " +
+                "UPDATE [DealerMapProductPermissionSettings] " +
                 "SET IsDeleted = @IsDeleted " +
                 "WHERE Id = @Id;",
                 dealerMapProductPermission);
