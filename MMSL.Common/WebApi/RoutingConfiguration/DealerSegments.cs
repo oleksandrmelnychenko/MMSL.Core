@@ -5,5 +5,7 @@
         public const string ADD_DEALER = "add";
         public const string DELETE_DEALER = "delete";
         public const string UPDATE_DEALER = "update";
+        public const string GET_DEALERS_BY_PERMISSION = "get/by/permission";
+
     }
 }

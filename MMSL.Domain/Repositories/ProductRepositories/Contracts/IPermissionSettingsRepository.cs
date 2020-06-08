@@ -6,5 +6,6 @@ namespace MMSL.Domain.Repositories.ProductRepositories.Contracts {
         //PermissionSettings GetPermissionSettings(long productSettingsId);
         PermissionSettings GetPermissionSettingsById(long settingsId);
         PermissionSettings UpdatePermissionSettings(PermissionSettings settings);
+        PermissionSettings GetPermissionSettingsByOptionUnit(long id, long optionUnitId);
     }
 }

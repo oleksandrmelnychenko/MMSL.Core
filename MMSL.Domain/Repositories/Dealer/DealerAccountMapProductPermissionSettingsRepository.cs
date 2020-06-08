@@ -1,7 +1,9 @@
 ﻿using Dapper;
 using MMSL.Domain.Entities.Dealer;
 using MMSL.Domain.Repositories.Dealer.Contracts;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace MMSL.Domain.Repositories.Dealer {
     class DealerAccountMapProductPermissionSettingsRepository : IDealerAccountMapProductPermissionSettingsRepository {
@@ -24,6 +26,13 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "SELECT * FROM [DealerMapProductPermissionSettingsMap] " +
                 "WHERE Id = @MapId",
                 new { MapId = mapId });
+
+        public List<DealerMapProductPermissionSettings> GetByProductPermissionSetting(long productPermissionSettingsId) =>
+            _connection.Query<DealerMapProductPermissionSettings>(
+                "SELECT * FROM [DealerMapProductPermissionSettingsMap] " +
+                "WHERE [ProductPermissionSettingsId] = @ProductPermissionSettingsId",
+                new { ProductPermissionSettingsId = productPermissionSettingsId })
+                .ToList();
 
         public DealerMapProductPermissionSettings Update(DealerMapProductPermissionSettings dealerMapProductPermission) {
             _connection.QuerySingleOrDefault<DealerMapProductPermissionSettings>(

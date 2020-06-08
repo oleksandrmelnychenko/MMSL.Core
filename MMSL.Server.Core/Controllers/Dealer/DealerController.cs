@@ -44,6 +44,17 @@ namespace MMSL.Server.Core.Controllers.Dealer {
         }
 
         [HttpGet]
+        [AssignActionRoute(DealerSegments.GET_DEALERS_BY_PERMISSION)]
+        public async Task<IActionResult> GetDealersByPermission([FromQuery] long productPermissionId) {
+            try {
+                return Ok(SuccessResponseBody(await _dealerAccountService.GetDealerAccountsByPermissionSetting(productPermissionId), Localizer["All dealers"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpGet]
         [AssignActionRoute(DealerSegments.GET_DEALER)]
         public async Task<IActionResult> GetDealer([FromQuery]long dealerAccountId) {
             try {

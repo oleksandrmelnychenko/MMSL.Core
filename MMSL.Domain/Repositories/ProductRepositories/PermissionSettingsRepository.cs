@@ -33,6 +33,17 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 new { PermissionSettingId = settingsId }
                 );
 
+        public PermissionSettings GetPermissionSettingsByOptionUnit(long id, long optionUnitId) =>
+            _connection.QuerySingleOrDefault<PermissionSettings>(
+                "SELECT [PermissionSettings].* " +
+                "FROM [PermissionSettings] " +
+                "WHERE [PermissionSettings].Id = @PermissionSettingId " +
+                "AND [PermissionSettings].OptionUnitId = @UnitId",
+                new { 
+                    PermissionSettingId = id,
+                    UnitId = optionUnitId
+                });
+
         public PermissionSettings UpdatePermissionSettings(PermissionSettings settings) {
             _connection.Execute(
                 "UPDATE [PermissionSettings] " +

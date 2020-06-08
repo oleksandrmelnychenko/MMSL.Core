@@ -6,5 +6,6 @@
         public const string GET_PRODUCT_PERMISSION_SETTING = "get/by/id";
         public const string GET_PRODUCT_OPTIONS_WITH_PERMISSION_SETTING = "get/options";
         public const string GET_PRODUCT_PERMISSION_SETTINGS = "get/by/product";
+        public const string BIND_SETTING_TO_DEALERS = "bind/dealers";
     }
 }

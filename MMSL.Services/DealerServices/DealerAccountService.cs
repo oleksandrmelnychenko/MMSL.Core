@@ -8,6 +8,8 @@ using MMSL.Domain.Repositories.Addresses.Contracts;
 using MMSL.Domain.Repositories.Dealer.Contracts;
 using MMSL.Services.DealerServices.Contracts;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MMSL.Services.DealerServices {
@@ -113,6 +115,15 @@ namespace MMSL.Services.DealerServices {
                     dealerAccount.IsDeleted = true;
 
                     dealerrepository.UpdateDealerAccount(dealerAccount);
+                }
+            });
+
+        public Task<List<DealerAccount>> GetDealerAccountsByPermissionSetting(long prdouctPermissionSettingId) =>
+            Task.Run(() => {
+                using (var connection = _connectionFactory.NewSqlConnection()) {
+                    return _dealerRepositoriesFactory
+                        .NewDealerAccountRepository(connection)
+                        .GetDealerAccounts(prdouctPermissionSettingId);
                 }
             });
 

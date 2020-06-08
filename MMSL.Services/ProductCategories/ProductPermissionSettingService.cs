@@ -8,6 +8,7 @@ using MMSL.Services.ProductCategories.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MMSL.Services.ProductCategories {
@@ -88,15 +89,26 @@ namespace MMSL.Services.ProductCategories {
                 }
             });
 
-        public Task SetDealerToProductPermissionSetting(long dealerId, long productSettingsId) =>
+        public Task SetDealerToProductPermissionSetting(ProductPermissionToDealersBindingDataContract productPermissionToDealersBinding) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
-                    return _dealerRepositoriesFactory
-                        .NewDealerAccountProductPermissionRepository(connection)
-                        .Add(new DealerMapProductPermissionSettings {
-                            DealerAccountId = dealerId,
-                            ProductPermissionSettingsId = productSettingsId
-                        });
+                    IDealerAccountMapProductPermissionSettingsRepository repository = _dealerRepositoriesFactory.NewDealerAccountProductPermissionRepository(connection);
+
+                    List<DealerMapProductPermissionSettings> bindings = repository.GetByProductPermissionSetting(productPermissionToDealersBinding.ProductPermissionSettingId);
+
+                    foreach (DealerIdDataContract dealerIdDataContract in productPermissionToDealersBinding.Dealers) {
+                        DealerMapProductPermissionSettings current = bindings.FirstOrDefault(x => x.Id == dealerIdDataContract.DealerAccountId);
+
+                        if (current != null) {
+                            current.IsDeleted = dealerIdDataContract.IsDeleted;
+                            repository.Update(current);
+                        } else {
+                            repository.Add(new DealerMapProductPermissionSettings {
+                                DealerAccountId = dealerIdDataContract.DealerAccountId,
+                                ProductPermissionSettingsId = productPermissionToDealersBinding.ProductPermissionSettingId
+                            });
+                        }
+                    }
                 }
             });
 
@@ -108,27 +120,31 @@ namespace MMSL.Services.ProductCategories {
 
                     ProductPermissionSettings productSettings = productSettingsRepository.UpdateProductPermissionSettings(productPermissionSettings.GetEntity());
 
-                    foreach (UpdatePermissionSettingDataContract settings in productPermissionSettings.PermissionSettings) {
-                        if (settings.Id == default) {
+                    foreach (UpdatePermissionSettingDataContract settingsDataContract in productPermissionSettings.PermissionSettings) {
+                        //TODO: get entity by unit ID and PermissionSettingId
+                        PermissionSettings settings = productSettings.PermissionSettings
+                            .FirstOrDefault(x => x.OptionUnitId == settingsDataContract.OptionUnitId);
+
+                        if (settings != null) {
+                            settings.IsAllow = settingsDataContract.IsAllow;
+
+                            settingsRepository.UpdatePermissionSettings(
+                                new PermissionSettings {
+                                    Id = settings.Id,
+                                    IsAllow = settings.IsAllow
+                                });
+                        } else {
                             var newEntity = settingsRepository
                                 .AddPermissionSettings(
                                     new PermissionSettings {
-                                        IsAllow = settings.IsAllow,
-                                        OptionGroupId = settings.OptionGroupId,
-                                        OptionUnitId = settings.OptionUnitId,
+                                        IsAllow = settingsDataContract.IsAllow,
+                                        OptionGroupId = settingsDataContract.OptionGroupId,
+                                        OptionUnitId = settingsDataContract.OptionUnitId,
                                         ProductPermissionSettingsId = productSettings.Id
                                     });
-                        } else {
-                            var updatedEntity = settingsRepository
-                                .UpdatePermissionSettings(
-                                    new PermissionSettings {
-                                        Id = settings.Id,
-                                        IsAllow = settings.IsAllow
-                                    });
 
-                            productSettings.PermissionSettings.Add(updatedEntity);
+                            productSettings.PermissionSettings.Add(newEntity);
                         }
-
                     }
 
                     return productSettings;

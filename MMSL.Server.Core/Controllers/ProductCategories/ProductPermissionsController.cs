@@ -14,6 +14,7 @@ using System.Net;
 using System.Threading.Tasks;
 
 namespace MMSL.Server.Core.Controllers.ProductCategories {
+    [Authorize]
     [AssignControllerLocalizedRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.ProductPermissions)]
     [AssignControllerRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.ProductPermissions)]
     public class ProductPermissionsController : WebApiControllerBase {
@@ -33,7 +34,6 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         }
 
         [HttpGet]
-        [Authorize]
         [AssignActionRoute(ProductPermissionSegments.GET_PRODUCT_PERMISSION_SETTINGS)]
         public async Task<IActionResult> GetAll([FromQuery] long productCategoryId) {
             try {
@@ -45,7 +45,6 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         }
 
         [HttpGet]
-        [Authorize]
         [AssignActionRoute(ProductPermissionSegments.GET_PRODUCT_PERMISSION_SETTING)]
         public async Task<IActionResult> Get([FromQuery] long productPermissionSettingId) {
             try {
@@ -57,7 +56,6 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         }
 
         [HttpGet]
-        [Authorize]
         [AssignActionRoute(ProductPermissionSegments.GET_PRODUCT_OPTIONS_WITH_PERMISSION_SETTING)]
         public async Task<IActionResult> GetPrdouctOptionsWithPermissions([FromQuery] long productId, [FromQuery] long productPermissionSettingId) {
             try {
@@ -69,7 +67,6 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         }
 
         [HttpPost]
-        [Authorize]
         [AssignActionRoute(ProductPermissionSegments.ADD_PRODUCT_PERMISSION_SETTING)]
         public async Task<IActionResult> Add([FromBody] NewProductPermissionSettingsDataContract productPermissionSettings) {
             try {
@@ -80,9 +77,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
             }
         }
 
-
         [HttpPut]
-        [Authorize]
         [AssignActionRoute(ProductPermissionSegments.UPDATE_PRODUCT_PERMISSION_SETTINGS)]
         public async Task<IActionResult> Update([FromBody] UpdateProductPermissionSettingsDataContract productPermissionSettings) {
             try {
@@ -94,7 +89,6 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         }
 
         [HttpDelete]
-        [Authorize]
         [AssignActionRoute(ProductPermissionSegments.DELETE_PRODUCT_PERMISSION_SETTINGS)]
         public async Task<IActionResult> Delete([FromQuery] long productPermissionSettingId) {
             try {
@@ -104,5 +98,18 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
         }
+
+        [HttpPost]
+        [AssignActionRoute(ProductPermissionSegments.BIND_SETTING_TO_DEALERS)]
+        public async Task<IActionResult> BindDealers([FromBody] ProductPermissionToDealersBindingDataContract productPermissionBinding) {
+            try {
+                await _productPermissionSettingService.SetDealerToProductPermissionSetting(productPermissionBinding);
+                return Ok(SuccessResponseBody(null, Localizer["Successfully completed"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
     }
 }

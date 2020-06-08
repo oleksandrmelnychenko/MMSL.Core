@@ -139,5 +139,17 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "[ShippingAddressId]=@ShippingAddressId " +
                 "WHERE [DealerAccount].Id=@Id;",
                 dealerAccount);
+
+        public List<DealerAccount> GetDealerAccounts(long productPermissionSettingId) =>
+            _connection.Query<DealerAccount>(
+                "SELECT [DealerAccount].* " +
+                "FROM [DealerAccount] " +
+                "LEFT JOIN [DealerMapProductPermissionSettings] ON [DealerMapProductPermissionSettings].DealerAccountId = [DealerAccount].Id " +
+                "WHERE [DealerAccount].IsDeleted = 0 " +
+                "AND DealerMapProductPermissionSettings.Id = @ProductPermissionSettingId",
+                new {
+                    ProductPermissionSettingId = productPermissionSettingId
+                })
+                .ToList();
     }
 }
