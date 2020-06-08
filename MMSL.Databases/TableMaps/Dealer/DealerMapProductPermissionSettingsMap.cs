@@ -10,7 +10,7 @@ namespace MMSL.Databases.TableMaps.Dealer {
         public override void Map(EntityTypeBuilder<DealerMapProductPermissionSettings> entity) {
             base.Map(entity);
 
-            entity.ToTable("DealerMapProductPermissionSettingsMap");
+            entity.ToTable("DealerMapProductPermissionSettings");
 
             entity
                 .HasOne(x => x.DealerAccount)
