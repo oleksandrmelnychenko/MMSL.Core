@@ -10,6 +10,8 @@ namespace MMSL.Domain.Repositories.Dealer.Contracts {
 
         List<DealerAccount> GetDealerAccounts(long productPermissionSettingId);
 
+        List<DealerAccount> SearchDealerAccounts(string searchPhrase, long? productId = null, bool? excludeMatchPermission = null);
+
         DealerAccount GetDealerAccount(long dealerAccountId);
 
         long AddDealerAccount(DealerAccount dealerAccount);

@@ -29,11 +29,11 @@ namespace MMSL.Server.Core.Controllers.Dealer {
         [HttpGet]
         [AssignActionRoute(DealerSegments.GET_ALL_DEALERS)]
         public async Task<IActionResult> GetAllDealers(
-            [FromQuery]int pageNumber,
-            [FromQuery]DateTime? from,
-            [FromQuery]DateTime? to,
-            [FromQuery]int limit,
-            [FromQuery]string searchPhrase
+            [FromQuery] int pageNumber,
+            [FromQuery] DateTime? from,
+            [FromQuery] DateTime? to,
+            [FromQuery] int limit,
+            [FromQuery] string searchPhrase
             ) {
             try {
                 return Ok(SuccessResponseBody(await _dealerAccountService.GetDealerAccounts(pageNumber, limit, searchPhrase, from, to), Localizer["All dealers"]));
@@ -55,8 +55,27 @@ namespace MMSL.Server.Core.Controllers.Dealer {
         }
 
         [HttpGet]
+        [AssignActionRoute(DealerSegments.SEARCH_DEALER)]
+        public async Task<IActionResult> SearchDealers(
+            [FromQuery] string searchPhrase,
+            [FromQuery] long? productId,
+            [FromQuery] bool? excludeMatchPermission) {
+            try {
+                return Ok(SuccessResponseBody(
+                    await _dealerAccountService.SearchDealerAccountsByPermissionSetting(
+                        searchPhrase,
+                        productId,
+                        excludeMatchPermission),
+                    Localizer["Dealers found"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpGet]
         [AssignActionRoute(DealerSegments.GET_DEALER)]
-        public async Task<IActionResult> GetDealer([FromQuery]long dealerAccountId) {
+        public async Task<IActionResult> GetDealer([FromQuery] long dealerAccountId) {
             try {
                 return Ok(SuccessResponseBody(await _dealerAccountService.GetDealerAccount(dealerAccountId), Localizer["Dealers account"]));
             } catch (Exception exc) {
@@ -82,7 +101,7 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
         [HttpDelete]
         [AssignActionRoute(DealerSegments.DELETE_DEALER)]
-        public async Task<IActionResult> DeleteDealerAccount([FromQuery]long dealerAccountId) {
+        public async Task<IActionResult> DeleteDealerAccount([FromQuery] long dealerAccountId) {
             try {
                 await _dealerAccountService.DeleteDealerAccount(dealerAccountId);
 
@@ -97,7 +116,7 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
         [HttpPut]
         [AssignActionRoute(DealerSegments.UPDATE_DEALER)]
-        public async Task<IActionResult> UpdateDealerAccount([FromBody]DealerAccount dealerAccount) {
+        public async Task<IActionResult> UpdateDealerAccount([FromBody] DealerAccount dealerAccount) {
             try {
                 if (dealerAccount == null) throw new ArgumentNullException("dealerAccount");
 

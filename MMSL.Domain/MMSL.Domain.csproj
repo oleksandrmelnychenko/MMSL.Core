@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Entities\Styles\**" />
+    <EmbeddedResource Remove="Entities\Styles\**" />
+    <None Remove="Entities\Styles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Entities\Measurements\MeasurementValue.cs" />
   </ItemGroup>
 
@@ -16,10 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MMSL.Common\MMSL.Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Entities\Styles\" />
   </ItemGroup>
 
 </Project>

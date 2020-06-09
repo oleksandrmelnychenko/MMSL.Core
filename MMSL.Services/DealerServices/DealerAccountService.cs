@@ -127,6 +127,15 @@ namespace MMSL.Services.DealerServices {
                 }
             });
 
+        public Task<List<DealerAccount>> SearchDealerAccountsByPermissionSetting(string searchPhrase, long? productId, bool? excludeMatchPermission) =>
+            Task.Run(() => {
+                using (var connection = _connectionFactory.NewSqlConnection()) {
+                    return _dealerRepositoriesFactory
+                        .NewDealerAccountRepository(connection)
+                        .SearchDealerAccounts(searchPhrase, productId, excludeMatchPermission);
+                }
+            });
+
         private void ValidateDealerAccount(DealerAccount dealerAccount) {
             if (string.IsNullOrEmpty(dealerAccount.Email))
                 ExceptionCreator<InvalidDealerModelException>.Create("Email is required")

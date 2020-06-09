@@ -11,6 +11,8 @@ namespace MMSL.Services.DealerServices.Contracts {
         
         Task<List<DealerAccount>> GetDealerAccountsByPermissionSetting(long prdouctPermissionSettingId);
 
+        Task<List<DealerAccount>> SearchDealerAccountsByPermissionSetting(string searchPhrase, long? productId, bool? excludeMatchPermission);
+
         Task<DealerAccount> GetDealerAccount(long dealerAccountId);
 
         Task<long> AddDealerAccount(DealerAccount dealerAccount);

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using MMSL.Domain.Entities.Addresses;
 using MMSL.Domain.Entities.Dealer;
+using MMSL.Domain.Entities.Products;
 using MMSL.Domain.EntityHelpers;
 using MMSL.Domain.Repositories.Dealer.Contracts;
 using System;
@@ -152,5 +153,48 @@ namespace MMSL.Domain.Repositories.Dealer {
                     ProductPermissionSettingId = productPermissionSettingId
                 })
                 .ToList();
+
+        public List<DealerAccount> SearchDealerAccounts(string searchPhrase, long? productId = null, bool? excludeMatchProduct = null) {
+            List<DealerAccount> dealerAccounts = new List<DealerAccount>();
+
+            string query =
+                "SELECT [DealerAccount].*" +
+                ", [DealerMapProductPermissionSettings].*" +
+                ", [ProductPermissionSettings].* " +
+                "FROM [DealerAccount] " +
+                "LEFT JOIN [DealerMapProductPermissionSettings] ON [DealerMapProductPermissionSettings].DealerAccountId = [DealerAccount].Id " +
+                "AND [DealerMapProductPermissionSettings].IsDeleted = 0 " +
+                "LEFT JOIN [ProductPermissionSettings] ON [ProductPermissionSettings].Id = [DealerMapProductPermissionSettings].ProductPermissionSettingsId " +
+                "AND [ProductPermissionSettings].IsDeleted = 0 " +
+                "AND [ProductPermissionSettings].ProductCategoryId = @ProductId " +
+                "WHERE [DealerAccount].IsDeleted = 0 " +
+                (excludeMatchProduct.HasValue && excludeMatchProduct.Value ? "AND [ProductPermissionSettings].Id IS NULL " : string.Empty) +
+                "AND (" +
+                "PATINDEX('%' + @SearchPhrase + '%', [DealerAccount].CompanyName) > 0 " +
+                "OR PATINDEX('%' + @SearchPhrase + '%', [DealerAccount].Email) > 0 " +
+                "OR PATINDEX('%' + @SearchPhrase + '%', [DealerAccount].Name) > 0 " +
+                ")";
+
+            _connection.Query<DealerAccount, DealerMapProductPermissionSettings, ProductPermissionSettings, DealerAccount>(
+                query,
+                (dealerAccount, dealerMapProductPermissionSettings, productPermissionSettings) => {
+                    //TODO: check repeated
+                    dealerAccounts.Add(dealerAccount);
+
+                    if (dealerMapProductPermissionSettings != null && productPermissionSettings != null) {
+                        dealerMapProductPermissionSettings.ProductPermissionSettings = productPermissionSettings;
+                        dealerAccount.DealerMapProductPermissionSettings.Add(dealerMapProductPermissionSettings);
+                    }
+
+                    return dealerAccount;
+                },
+                new {
+                    SearchPhrase = searchPhrase,
+                    ProductId = productId
+                })
+                .ToList();
+
+            return dealerAccounts;
+        }
     }
 }
