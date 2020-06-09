@@ -27,13 +27,20 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
         public List<ProductPermissionSettings> GetProductPermissionSettingsByProduct(long productId) {
             List<ProductPermissionSettings> result = new List<ProductPermissionSettings>();
 
-            _connection.Query<ProductPermissionSettings, PermissionSettings, ProductPermissionSettings>(
-                "SELECT [ProductPermissionSettings].*, [PermissionSettings].* " +
+            string query = 
+                "SELECT [ProductPermissionSettings].*, " +
+                "(SELECT COUNT(Id) " +
+                "FROM [DealerMapProductPermissionSettings] " +
+                "WHERE [DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id) AS [DealersAppliedCount]" +
+                ", [PermissionSettings].* " +
                 "FROM [ProductPermissionSettings] " +
                 "LEFT JOIN [PermissionSettings] ON [PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
                 "AND [PermissionSettings].IsDeleted = 0 " +
                 "WHERE [ProductPermissionSettings].ProductCategoryId = @ProductId " +
-                "AND [ProductPermissionSettings].IsDeleted = 0",
+                "AND [ProductPermissionSettings].IsDeleted = 0";
+
+            _connection.Query<ProductPermissionSettings, PermissionSettings, ProductPermissionSettings>(
+                query,
                 (productPermissionSettings, permissionSettings) => {
                     if (result.Any(x => x.Id == productPermissionSettings.Id)) {
                         productPermissionSettings = result.First(x => x.Id == productPermissionSettings.Id);
