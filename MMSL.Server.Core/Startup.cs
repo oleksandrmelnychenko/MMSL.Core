@@ -206,7 +206,6 @@ namespace MMSL.Server.Core
 
             // Services.
             builder.RegisterType<StoreService>().As<IStoreService>();
-            builder.RegisterType<AccountService>().As<IAccountService>();
             builder.RegisterType<OptionUnitService>().As<IOptionUnitService>();
             builder.RegisterType<OptionGroupService>().As<IOptionGroupService>();            
             builder.RegisterType<FittingTypeService>().As<IFittingTypeService>();
