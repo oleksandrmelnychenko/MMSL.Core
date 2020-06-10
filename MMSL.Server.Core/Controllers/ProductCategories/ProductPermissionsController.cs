@@ -104,7 +104,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         public async Task<IActionResult> BindDealers([FromBody] ProductPermissionToDealersBindingDataContract productPermissionBinding) {
             try {
                 await _productPermissionSettingService.SetDealerToProductPermissionSetting(productPermissionBinding);
-                return Ok(SuccessResponseBody(null, Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(await _productPermissionSettingService.GetPermissionSettingsById(productPermissionBinding.ProductPermissionSettingId), Localizer["Successfully completed"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

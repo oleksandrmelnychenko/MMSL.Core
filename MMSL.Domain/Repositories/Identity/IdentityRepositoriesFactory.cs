@@ -11,11 +11,5 @@ namespace MMSL.Domain.Repositories.Identity
         public IIdentityRolesRepository NewIdentityRolesRepository(IDbConnection connection) =>
             new IdentityRolesRepository(connection);
 
-        public IAccountTypeCompanyInfoRepository NewAccountTypeCompanyInfoRepository(IDbConnection connection) =>
-            new AccountTypeCompanyInfoRepository(connection);
-
-        public IAccountTypeRepository NewAccountTypeRepository(IDbConnection connection) =>
-            new AccountTypeRepository(connection);
-
     }
 }

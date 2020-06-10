@@ -31,7 +31,8 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "SELECT [ProductPermissionSettings].*, " +
                 "(SELECT COUNT(Id) " +
                 "FROM [DealerMapProductPermissionSettings] " +
-                "WHERE [DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id) AS [DealersAppliedCount]" +
+                "WHERE [DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
+                "AND [DealerMapProductPermissionSettings].IsDeleted = 0) AS [DealersAppliedCount]" +
                 ", [PermissionSettings].* " +
                 "FROM [ProductPermissionSettings] " +
                 "LEFT JOIN [PermissionSettings] ON [PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
@@ -63,7 +64,12 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
             ProductPermissionSettings result = null;
 
             _connection.Query<ProductPermissionSettings, PermissionSettings, ProductPermissionSettings>(
-                "SELECT [ProductPermissionSettings].*, [PermissionSettings].* " +
+                "SELECT [ProductPermissionSettings].*" +
+                ", (SELECT COUNT(Id) " +
+                "FROM [DealerMapProductPermissionSettings] " +
+                "WHERE [DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
+                "AND [DealerMapProductPermissionSettings].IsDeleted = 0) AS [DealersAppliedCount]" +
+                ", [PermissionSettings].* " +
                 "FROM [ProductPermissionSettings] " +
                 "LEFT JOIN [PermissionSettings] ON [PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
                 (includeDeletedSettings ? string.Empty : "AND [PermissionSettings].IsDeleted = 0 " ) +

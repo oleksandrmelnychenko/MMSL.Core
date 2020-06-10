@@ -30,8 +30,6 @@ namespace MMSL.Domain.Entities.Identity
         public bool CanUserResetExpiredPassword { get; set; } = true;
 
         public DateTime PasswordExpiresAt { get; set; } = DateTime.UtcNow.AddYears(1);
-        
-        public ICollection<AccountType> AccountTypes { get; set; }
 
     }
 }

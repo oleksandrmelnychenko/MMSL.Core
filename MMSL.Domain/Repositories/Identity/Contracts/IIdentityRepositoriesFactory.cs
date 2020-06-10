@@ -7,9 +7,5 @@ namespace MMSL.Domain.Repositories.Identity.Contracts
         IIdentityRepository NewIdentityRepository(IDbConnection connection);
 
         IIdentityRolesRepository NewIdentityRolesRepository(IDbConnection connection);
-
-        IAccountTypeCompanyInfoRepository NewAccountTypeCompanyInfoRepository(IDbConnection connection);
-
-        IAccountTypeRepository NewAccountTypeRepository(IDbConnection connection);
     }
 }
