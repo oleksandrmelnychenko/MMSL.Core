@@ -166,9 +166,15 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "AND [DealerMapProductPermissionSettings].IsDeleted = 0 " +
                 "LEFT JOIN [ProductPermissionSettings] ON [ProductPermissionSettings].Id = [DealerMapProductPermissionSettings].ProductPermissionSettingsId " +
                 "AND [ProductPermissionSettings].IsDeleted = 0 " +
+                "AND [ProductPermissionSettings].Id IS NOT NULL " +
                 "AND [ProductPermissionSettings].ProductCategoryId = @ProductId " +
                 "WHERE [DealerAccount].IsDeleted = 0 " +
-                (excludeMatchProduct.HasValue && excludeMatchProduct.Value ? "AND [ProductPermissionSettings].Id IS NULL " : string.Empty) +
+                (
+                excludeMatchProduct.HasValue && excludeMatchProduct.Value 
+                    ? "AND [ProductPermissionSettings].Id IS NULL " 
+                    : "AND ([DealerMapProductPermissionSettings].Id IS NULL " +
+                    "OR ([DealerMapProductPermissionSettings].Id IS NOT NULL AND [ProductPermissionSettings].Id IS NOT NULL))"
+                ) +
                 "AND (" +
                 "PATINDEX('%' + @SearchPhrase + '%', [DealerAccount].CompanyName) > 0 " +
                 "OR PATINDEX('%' + @SearchPhrase + '%', [DealerAccount].Email) > 0 " +
@@ -178,8 +184,11 @@ namespace MMSL.Domain.Repositories.Dealer {
             _connection.Query<DealerAccount, DealerMapProductPermissionSettings, ProductPermissionSettings, DealerAccount>(
                 query,
                 (dealerAccount, dealerMapProductPermissionSettings, productPermissionSettings) => {
-                    //TODO: check repeated
-                    dealerAccounts.Add(dealerAccount);
+                    if (dealerAccounts.Any(x => x.Id == dealerAccount.Id)) {
+                        dealerAccount = dealerAccounts.First(x => x.Id == dealerAccount.Id);
+                    } else {
+                        dealerAccounts.Add(dealerAccount);
+                    }
 
                     if (dealerMapProductPermissionSettings != null && productPermissionSettings != null) {
                         dealerMapProductPermissionSettings.ProductPermissionSettings = productPermissionSettings;
