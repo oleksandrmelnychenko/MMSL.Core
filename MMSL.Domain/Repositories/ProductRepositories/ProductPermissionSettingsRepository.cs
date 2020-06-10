@@ -59,14 +59,14 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
             return result;
         }
 
-        public ProductPermissionSettings GetProductPermissionSettingsById(long productSettingsId) {
+        public ProductPermissionSettings GetProductPermissionSettingsById(long productSettingsId, bool includeDeletedSettings = false) {
             ProductPermissionSettings result = null;
 
             _connection.Query<ProductPermissionSettings, PermissionSettings, ProductPermissionSettings>(
                 "SELECT [ProductPermissionSettings].*, [PermissionSettings].* " +
                 "FROM [ProductPermissionSettings] " +
                 "LEFT JOIN [PermissionSettings] ON [PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
-                "AND [PermissionSettings].IsDeleted = 0 " +
+                (includeDeletedSettings ? string.Empty : "AND [PermissionSettings].IsDeleted = 0 " ) +
                 "WHERE [ProductPermissionSettings].Id = @Id " +
                 "AND [ProductPermissionSettings].IsDeleted = 0",
                 (productPermissionSettings, permissionSettings) => {
