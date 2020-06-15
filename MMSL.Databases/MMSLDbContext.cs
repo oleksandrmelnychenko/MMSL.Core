@@ -34,6 +34,10 @@ namespace MMSL.Databases {
 
         public DbSet<OptionGroup> OptionGroups { get; set; }
 
+        public DbSet<UserIdentityRoleType> UserIdentityRoleTypes { get; set; }
+
+        public DbSet<UserRole> UserRoles { get; set; }
+
         public DbSet<UserIdentity> UserIdentities { get; set; }
 
         public DbSet<DealerAccount> DealerAccounts { get; set; }
@@ -82,7 +86,7 @@ namespace MMSL.Databases {
         public MMSLDbContext(DbContextOptions<MMSLDbContext> options) : base(options) { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-            optionsBuilder.UseSqlServer("Data Source=78.152.175.67;Initial Catalog=Mmsl;Integrated Security=False;User ID=ef_migrator;Password=Grimm_jow92;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False;");
+            optionsBuilder.UseSqlServer("Data Source=78.152.175.67;Initial Catalog=MMSL_Identity;Integrated Security=False;User ID=ef_migrator;Password=Grimm_jow92;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
@@ -90,6 +94,8 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new AddressMap());
             modelBuilder.AddConfiguration(new OptionUnitMap());
             modelBuilder.AddConfiguration(new OptionGroupMap());
+            modelBuilder.AddConfiguration(new UserIdentityRoleTypeMap());
+            modelBuilder.AddConfiguration(new UserRoleMap());
             modelBuilder.AddConfiguration(new UserIdentityMap());
             modelBuilder.AddConfiguration(new DealerAccountMap());
             modelBuilder.AddConfiguration(new PaymentTypeMap());

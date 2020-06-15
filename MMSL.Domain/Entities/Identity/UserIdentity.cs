@@ -31,5 +31,7 @@ namespace MMSL.Domain.Entities.Identity
 
         public DateTime PasswordExpiresAt { get; set; } = DateTime.UtcNow.AddYears(1);
 
+        public virtual ICollection<UserRole> UserRoles { get; set; }
+
     }
 }
