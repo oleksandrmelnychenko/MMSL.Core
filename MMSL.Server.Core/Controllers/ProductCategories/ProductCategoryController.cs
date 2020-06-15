@@ -83,7 +83,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
 
                 productCategory = await _productCategoryService.NewProductCategoryAsync(productCategory, newProductCategoryDataContract.OptionGroupIds);
 
-                return Ok(SuccessResponseBody(productCategory, Localizer["New product category has been created successfully"]));
+                return Ok(SuccessResponseBody(productCategory, Localizer["New product has been created successfully"]));
             }          
             catch (Exception exc) {
                 Log.Error(exc.Message);
@@ -112,7 +112,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
                     }
                 }
 
-                return Ok(SuccessResponseBody(productDataContract, Localizer["Product category successfully updated"]));
+                return Ok(SuccessResponseBody(productDataContract, Localizer["Product successfully updated"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);
@@ -129,7 +129,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
 
                 await _productCategoryService.UpdateProductCategoryOptionGroupsAsync(maps);          
 
-                return Ok(SuccessResponseBody("Completed", Localizer["Product category styles successfully updated"]));
+                return Ok(SuccessResponseBody("Completed", Localizer["Product styles successfully updated"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);
@@ -144,7 +144,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
             try {
                 await _productCategoryService.DeleteProductCategoryAsync(productCategoryId);
 
-                return Ok(SuccessResponseBody(productCategoryId, Localizer["Product category successfully deleted"]));
+                return Ok(SuccessResponseBody(productCategoryId, Localizer["Product successfully deleted"]));
             }
             catch (Exception exc) {
                 Log.Error(exc.Message);
