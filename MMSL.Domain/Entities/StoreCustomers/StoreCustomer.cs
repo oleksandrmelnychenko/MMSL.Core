@@ -17,7 +17,7 @@ namespace MMSL.Domain.Entities.StoreCustomers {
 
         public string PhoneNumber { get; set; }
 
-        public DateTime BirthDate { get; set; }
+        public DateTime? BirthDate { get; set; }
 
         public bool UseBillingAsDeliveryAddress { get; set; }
 
