@@ -41,15 +41,15 @@ namespace MMSL.Server.Core.Controllers.Identity {
         }
 
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(Roles = "Manufacturer")]
         [AssignActionRoute(IdentitySegments.NEW_ACCOUNT)]
         public async Task<IActionResult> NewUser([FromBody] NewUserDataContract newUserDataContract) {
             try {
                 if (newUserDataContract == null) throw new ArgumentNullException("NewUserDataContract");
 
-                UserAccount user = await _userIdentityService.NewUser(newUserDataContract);
+                //UserAccount user = await _userIdentityService.NewUser(newUserDataContract);
 
-                return Ok(SuccessResponseBody(user, Localizer["New user has been created successfully"]));
+                return Ok(SuccessResponseBody(null, Localizer["New user has been created successfully"]));
             } catch (InvalidIdentityException exc) {
                 return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));
             } catch (Exception exc) {

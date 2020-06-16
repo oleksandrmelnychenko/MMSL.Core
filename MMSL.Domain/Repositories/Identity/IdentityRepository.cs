@@ -5,14 +5,11 @@ using Dapper;
 using MMSL.Domain.Entities.Identity;
 using MMSL.Domain.Repositories.Identity.Contracts;
 
-namespace MMSL.Domain.Repositories.Identity
-{
-    public class IdentityRepository : IIdentityRepository
-    {
+namespace MMSL.Domain.Repositories.Identity {
+    public class IdentityRepository : IIdentityRepository {
         private readonly IDbConnection _connection;
 
-        public IdentityRepository(IDbConnection connection)
-        {
+        public IdentityRepository(IDbConnection connection) {
             _connection = connection;
         }
 
@@ -29,8 +26,7 @@ namespace MMSL.Domain.Repositories.Identity
                 "UPDATE UserIdentities Set " +
                 "PasswordExpiresAt = @PasswordExpiresAt, IsPasswordExpired = @IsPasswordExpired, PasswordSalt = @PasswordSalt, PasswordHash = @PasswordHash, LastModified = getutcdate() " +
                 "WHERE Id = @Id",
-                new
-                {
+                new {
                     Id = user.Id,
                     PasswordExpiresAt = user.PasswordExpiresAt,
                     IsPasswordExpired = user.IsPasswordExpired,
@@ -38,8 +34,7 @@ namespace MMSL.Domain.Repositories.Identity
                     PasswordHash = user.PasswordHash
                 });
 
-        public void UpdateUserLastLoggedInDate(long userId, DateTime current)
-        {
+        public void UpdateUserLastLoggedInDate(long userId, DateTime current) {
             _connection.Execute(
                 "UPDATE [UserIdentities] " +
                 "SET LastLoggedIn = @Current " +
@@ -48,8 +43,7 @@ namespace MMSL.Domain.Repositories.Identity
             );
         }
 
-        public bool IsEmailAvailable(string email)
-        {
+        public bool IsEmailAvailable(string email) {
             return _connection.Query<bool>(
                 "SELECT IIF(COUNT(1) > 0, 0, 1) " +
                 "FROM [UserIdentities] " +
@@ -59,13 +53,30 @@ namespace MMSL.Domain.Repositories.Identity
             ).Single();
         }
 
-        public UserIdentity GetUserByEmail(string email)
-        {
-            UserIdentity userIdentity = _connection.Query<UserIdentity>(
-               "SELECT * " +
-               "FROM [UserIdentities] " +
-               "WHERE Email = @Email",
-               new { Email = email }
+        public UserIdentity GetUserByEmail(string email) {
+            UserIdentity userIdentity = null;
+
+            _connection.Query<UserIdentity, UserRole, UserIdentityRoleType, UserIdentity>(
+              @"SELECT * 
+                FROM [UserIdentities] 
+                LEFT JOIN [UserRoles] 
+                ON [UserRoles].UserIdentityId = [UserIdentities].Id 
+                AND [UserRoles].IsDeleted = 0 
+                LEFT JOIN [UserIdentityRoleTypes] 
+                ON [UserIdentityRoleTypes].Id = [UserRoles].UserRoleTypeId 
+                WHERE Email = @Email",
+                (identity, role, roleType) => {
+                    if (userIdentity == null)
+                        userIdentity = identity;
+
+                    if (role != null && roleType != null) {
+                        role.UserRoleType = roleType;
+                        userIdentity.UserRoles.Add(role);
+                    }
+
+                    return userIdentity;
+                },
+                new { Email = email }
            ).FirstOrDefault();
 
             return userIdentity;
@@ -82,8 +93,7 @@ namespace MMSL.Domain.Repositories.Identity
                 "INSERT INTO [UserIdentities] (IsDeleted,IsPasswordExpired,CanUserResetExpiredPassword,Email,PasswordHash,PasswordSalt,PasswordExpiresAt) " +
                 "VALUES(0,0,0,@Email,@PasswordHash,@PasswordSalt,@PasswordExpiresAt) " +
                 "SELECT * FROM [UserIdentities] WHERE ID = (SELECT SCOPE_IDENTITY()) ",
-                new
-                {
+                new {
                     Name = name,
                     Description = description,
                     Email = email,
@@ -93,8 +103,7 @@ namespace MMSL.Domain.Repositories.Identity
                 }
             ).SingleOrDefault();
 
-        public UserAccount GetAccountByUserId(long userId)
-        {
+        public UserAccount GetAccountByUserId(long userId) {
             UserAccount userAccount = new UserAccount(_connection.Query<UserIdentity>(
                 "SELECT [UserIdentities].* " +
                 "FROM [UserIdentities] " +
