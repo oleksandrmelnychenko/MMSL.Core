@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 
 namespace MMSL.Common.Helpers {
@@ -8,9 +9,11 @@ namespace MMSL.Common.Helpers {
             return long.Parse(claim.Value);
         }
 
-        //public static string GetUserRole(ClaimsPrincipal currentUser) {
-        //    Claim contactRole = currentUser.Claims.FirstOrDefault(c => c.Type.Equals(@"http://schemas.microsoft.com/ws/2008/06/identity/claims/role"));
-        //    return contactRole.Value;
-        //}
+        public static string[] GetUserRoles(ClaimsPrincipal currentUser) {
+            return currentUser.Claims
+                .Where(c => c.Type.Equals(ClaimTypes.Role))
+                .Select(x => x.Value)
+                .ToArray();
+        }
     }
 }

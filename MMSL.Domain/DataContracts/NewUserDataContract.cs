@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MMSL.Domain.Entities.Identity;
+using System;
+using System.Collections.Generic;
 
 namespace MMSL.Domain.DataContracts
 {
@@ -9,5 +11,7 @@ namespace MMSL.Domain.DataContracts
         public string Password { get; set; }
 
         public DateTime PasswordExpiresAt { get; set; }
+
+        public List<RoleType> Roles { get; set; } = new List<RoleType>();
     }
 }

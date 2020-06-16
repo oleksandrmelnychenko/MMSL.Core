@@ -20,54 +20,46 @@ using MMSL.Domain.Repositories.Identity.Contracts;
 using MMSL.Services.IdentityServices.Contracts;
 
 
-namespace MMSL.Services.IdentityServices
-{
+namespace MMSL.Services.IdentityServices {
 
-    public class UserIdentityService : IUserIdentityService
-    {
+    public class UserIdentityService : IUserIdentityService {
         private readonly IIdentityRepositoriesFactory _identityRepositoriesFactory;
         private readonly IDbConnectionFactory _connectionFactory;
 
         public UserIdentityService(
             IDbConnectionFactory connectionFactory,
-            IIdentityRepositoriesFactory identityRepositoriesFactory)
-        {
+            IIdentityRepositoriesFactory identityRepositoriesFactory) {
             _identityRepositoriesFactory = identityRepositoriesFactory;
             _connectionFactory = connectionFactory;
         }
 
         public Task<UserAccount> SignInAsync(AuthenticationDataContract authenticateDataContract) =>
-              Task.Run(() =>
-              {
+              Task.Run(() => {
                   if (!Validator.IsEmailValid(authenticateDataContract.Email))
                       UserExceptionCreator<InvalidIdentityException>.Create(
                           IdentityValidationMessages.EMAIL_INVALID,
                           SignInErrorResponseModel.New(SignInErrorResponseType.InvalidEmail,
                               IdentityValidationMessages.EMAIL_INVALID)).Throw();
 
-                  using (IDbConnection connection = _connectionFactory.NewSqlConnection())
-                  {
+                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                       IIdentityRepository repository = _identityRepositoriesFactory.NewIdentityRepository(connection);
                       UserIdentity user = repository.GetUserByEmail(authenticateDataContract.Email);
 
-                      if (user == null)
-                      {
+                      if (user == null) {
                           UserExceptionCreator<InvalidIdentityException>.Create(
                               IdentityValidationMessages.INVALID_CREDENTIALS,
                               SignInErrorResponseModel.New(SignInErrorResponseType.InvalidCredentials,
                                   IdentityValidationMessages.INVALID_CREDENTIALS)).Throw();
                       }
 
-                      if (user.IsDeleted)
-                      {
+                      if (user.IsDeleted) {
                           UserExceptionCreator<InvalidIdentityException>.Create(
                               IdentityValidationMessages.USER_DELETED,
                               SignInErrorResponseModel.New(SignInErrorResponseType.UserDeleted,
                                   IdentityValidationMessages.USER_DELETED)).Throw();
                       }
 
-                      if (!CryptoHelper.Validate(authenticateDataContract.Password, user.PasswordSalt, user.PasswordHash))
-                      {
+                      if (!CryptoHelper.Validate(authenticateDataContract.Password, user.PasswordSalt, user.PasswordHash)) {
                           UserExceptionCreator<InvalidIdentityException>.Create(
                               IdentityValidationMessages.INVALID_CREDENTIALS,
                               SignInErrorResponseModel.New(SignInErrorResponseType.InvalidCredentials,
@@ -88,8 +80,7 @@ namespace MMSL.Services.IdentityServices
                       }
                       claims.AddClaim(new Claim(ClaimTypes.Email, user.Email));
 
-                      SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
-                      {
+                      SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor {
                           Issuer = AuthOptions.ISSUER,
                           Audience = AuthOptions.AUDIENCE_LOCAL,
                           Subject = claims,
@@ -101,14 +92,12 @@ namespace MMSL.Services.IdentityServices
                       JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
                       JwtSecurityToken token = tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
 
-                      UserAccount userData = new UserAccount(user)
-                      {
+                      UserAccount userData = new UserAccount(user) {
                           TokenExpiresAt = expiry,
                           Token = tokenHandler.WriteToken(token),
                       };
 
-                      if (IsUserPasswordExpired(user))
-                      {
+                      if (IsUserPasswordExpired(user)) {
                           repository.UpdateUserExperationDate(user.Id, true);
                           UserExceptionCreator<InvalidIdentityException>.Create(
                               IdentityValidationMessages.PASSWORD_EXPIRED,
@@ -116,9 +105,7 @@ namespace MMSL.Services.IdentityServices
                                   userData.CanUserResetExpiredPassword
                                       ? IdentityValidationMessages.PASSWORD_EXPIRED
                                       : IdentityValidationMessages.PASSWORD_EXPIRED_PLEASE_RESET, userData)).Throw();
-                      }
-                      else
-                      {
+                      } else {
                           user.LastLoggedIn = DateTime.Now;
                           userData.LastLoggedIn = user.LastLoggedIn;
 
@@ -130,43 +117,37 @@ namespace MMSL.Services.IdentityServices
               });
 
         public Task<UserAccount> ValidateToken(ClaimsPrincipal userPrincipal) =>
-            Task.Run(() =>
-            {
+            Task.Run(() => {
                 long userId = long.Parse(userPrincipal.FindFirstValue(ClaimTypes.NameIdentifier));
                 string email = userPrincipal.FindFirstValue(ClaimTypes.Email);
 
-                using (IDbConnection connection = _connectionFactory.NewSqlConnection())
-                {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IIdentityRepository repository = _identityRepositoriesFactory.NewIdentityRepository(connection);
 
                     UserIdentity currentUser = repository.GetUserById(userId);
 
-                    if (currentUser == null)
-                    {
+                    if (currentUser == null) {
                         UserExceptionCreator<InvalidIdentityException>.Create(
                             IdentityValidationMessages.TOKEN_INVALID,
                             SignInErrorResponseModel.New(SignInErrorResponseType.InvalidToken,
                                 IdentityValidationMessages.TOKEN_INVALID)).Throw();
                     }
 
-                    if (currentUser.IsDeleted)
-                    {
+                    if (currentUser.IsDeleted) {
                         UserExceptionCreator<InvalidIdentityException>.Create(
                             IdentityValidationMessages.USER_DELETED,
                             SignInErrorResponseModel.New(SignInErrorResponseType.UserDeleted,
                                 IdentityValidationMessages.USER_DELETED)).Throw();
                     }
 
-                    if (email == null || !email.Equals(currentUser.Email, StringComparison.OrdinalIgnoreCase))
-                    {
+                    if (email == null || !email.Equals(currentUser.Email, StringComparison.OrdinalIgnoreCase)) {
                         UserExceptionCreator<InvalidIdentityException>.Create(
                             IdentityValidationMessages.EMAIL_INVALID,
                             SignInErrorResponseModel.New(SignInErrorResponseType.InvalidEmail,
                                 IdentityValidationMessages.EMAIL_INVALID)).Throw();
                     }
 
-                    if (IsUserPasswordExpired(currentUser))
-                    {
+                    if (IsUserPasswordExpired(currentUser)) {
                         UserExceptionCreator<InvalidIdentityException>.Create(
                             IdentityValidationMessages.PASSWORD_EXPIRED,
                             SignInErrorResponseModel.New(SignInErrorResponseType.PasswordExpired,
@@ -175,8 +156,7 @@ namespace MMSL.Services.IdentityServices
 
                     DateTime tokenExpiresAt = new DateTime(long.Parse(userPrincipal.FindFirstValue(ClaimTypes.Expiration)));
 
-                    if ((tokenExpiresAt - DateTime.Now).TotalDays < 1.0)
-                    {
+                    if ((tokenExpiresAt - DateTime.Now).TotalDays < 1.0) {
                         UserExceptionCreator<InvalidIdentityException>.Create(
                             IdentityValidationMessages.TOKEN_EXPIRED,
                             SignInErrorResponseModel.New(SignInErrorResponseType.TokenExpired,
@@ -187,33 +167,27 @@ namespace MMSL.Services.IdentityServices
 
                     repository.UpdateUserLastLoggedInDate(currentUser.Id, currentUser.LastLoggedIn.Value);
 
-                    return new UserAccount(currentUser)
-                    {
+                    return new UserAccount(currentUser) {
                         TokenExpiresAt = tokenExpiresAt,
                     };
                 }
             });
 
         public Task<UserAccount> NewUser(NewUserDataContract newUserDataContract) =>
-             Task.Run(() =>
-             {
-                 using (IDbConnection connection = _connectionFactory.NewSqlConnection())
-                 {
+             Task.Run(() => {
+                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                      IIdentityRepository identityRepository = _identityRepositoriesFactory.NewIdentityRepository(connection);
                      IIdentityRolesRepository rolesRepository = _identityRepositoriesFactory.NewIdentityRolesRepository(connection);
 
-                     if (!Regex.IsMatch(newUserDataContract.Password, ConfigurationManager.AppSettings.PasswordStrongRegex))
-                     {
+                     if (!Regex.IsMatch(newUserDataContract.Password, ConfigurationManager.AppSettings.PasswordStrongRegex)) {
                          throw new ArgumentException(ConfigurationManager.AppSettings.PasswordWeakErrorMessage);
                      }
 
-                     if (!Validator.IsEmailValid(newUserDataContract.Email))
-                     {
+                     if (!Validator.IsEmailValid(newUserDataContract.Email)) {
                          throw new ArgumentException(IdentityValidationMessages.EMAIL_INVALID);
                      }
 
-                     if (!identityRepository.IsEmailAvailable(newUserDataContract.Email))
-                     {
+                     if (!identityRepository.IsEmailAvailable(newUserDataContract.Email)) {
                          throw new ArgumentException(IdentityValidationMessages.EMAIL_NOT_AVAILABLE);
                      }
 
@@ -221,8 +195,7 @@ namespace MMSL.Services.IdentityServices
 
                      string hashedPassword = CryptoHelper.Hash(newUserDataContract.Password, passwordSalt);
 
-                     UserIdentity newUser = new UserIdentity
-                     {
+                     UserIdentity newUser = new UserIdentity {
                          CanUserResetExpiredPassword = true,
                          Email = newUserDataContract.Email,
                          PasswordExpiresAt =
@@ -237,17 +210,19 @@ namespace MMSL.Services.IdentityServices
 
                      newUser.Id = identityRepository.NewUser(newUser);
 
+                     if (newUserDataContract.Roles.Any()) {
+                         rolesRepository.AssignRoles(newUser.Id, newUserDataContract.Roles);
+                     }
+
                      return identityRepository.GetAccountByUserId(newUser.Id);
                  }
              });
 
         private bool IsUserPasswordExpired(
-            UserIdentity user)
-        {
+            UserIdentity user) {
             if (user.IsPasswordExpired) { return true; }
 
-            if (DateTime.UtcNow > user.PasswordExpiresAt)
-            {
+            if (DateTime.UtcNow > user.PasswordExpiresAt) {
                 user.IsPasswordExpired = true;
                 return true;
             }

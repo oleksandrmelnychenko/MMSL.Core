@@ -1,5 +1,6 @@
 ﻿using MMSL.Domain.Entities.Addresses;
 using MMSL.Domain.Entities.CurrencyTypes;
+using MMSL.Domain.Entities.Identity;
 using MMSL.Domain.Entities.PaymentTypes;
 using MMSL.Domain.Entities.Stores;
 using System.Collections.Generic;
@@ -47,6 +48,10 @@ namespace MMSL.Domain.Entities.Dealer {
         public long? PaymentTypeId { get; set; }
 
         public PaymentType PaymentType { get; set; }
+
+        public long UserIdentityId { get; set; }
+
+        public UserIdentity CreatedBy { get; set; }
 
         public ICollection<StoreMapDealerAccount> StoreMapDealerAccounts { get; set; } = new HashSet<StoreMapDealerAccount>();
 

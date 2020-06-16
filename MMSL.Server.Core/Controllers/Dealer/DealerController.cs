@@ -1,15 +1,22 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using MMSL.Common;
 using MMSL.Common.Exceptions.DealerExceptions;
+using MMSL.Common.Helpers;
+using MMSL.Common.IdentityConfiguration;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
+using MMSL.Domain.DataContracts;
 using MMSL.Domain.Entities.Dealer;
+using MMSL.Domain.Entities.Identity;
 using MMSL.Services.DealerServices.Contracts;
+using MMSL.Services.IdentityServices.Contracts;
 using Serilog;
 using System;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MMSL.Server.Core.Controllers.Dealer {
@@ -19,11 +26,14 @@ namespace MMSL.Server.Core.Controllers.Dealer {
     public class DealerController : WebApiControllerBase {
 
         private readonly IDealerAccountService _dealerAccountService;
+        private readonly IUserIdentityService _userIdentityService;
 
         public DealerController(IDealerAccountService dealerAccountService,
+             IUserIdentityService userIdentityService,
              IResponseFactory responseFactory,
              IStringLocalizer<DealerController> localizer) : base(responseFactory, localizer) {
             _dealerAccountService = dealerAccountService;
+            _userIdentityService = userIdentityService;
         }
 
         [HttpGet]
@@ -85,12 +95,27 @@ namespace MMSL.Server.Core.Controllers.Dealer {
         }
 
         [HttpPost]
+        //[Authorize(Roles = "Administrator,Manufacturer")]
         [AssignActionRoute(DealerSegments.ADD_DEALER)]
         public async Task<IActionResult> AddDealerAccount([FromBody] DealerAccount dealerAccount) {
             try {
                 if (dealerAccount == null) throw new ArgumentNullException("dealerAccount");
 
-                return Ok(SuccessResponseBody(await _dealerAccountService.AddDealerAccount(dealerAccount), Localizer["Dealer account successfully created"]));
+                UserAccount dealerIdentity = await _userIdentityService.NewUser(
+                    new NewUserDataContract {
+                        Email = dealerAccount.Email,
+                        Password = GetRandomPassword(),
+                        PasswordExpiresAt = DateTime.Now.AddDays(7),
+                        Roles = new System.Collections.Generic.List<RoleType> { RoleType.Dealer }
+                    });
+
+                dealerAccount.UserIdentityId = dealerIdentity.Id;
+
+                long dealerId = await _dealerAccountService.AddDealerAccount(dealerAccount);
+
+                //TODO: send email to dealer with login info
+
+                return Ok(SuccessResponseBody(dealerId, Localizer["Dealer account successfully created"]));
             } catch (InvalidDealerModelException dealerExc) {
                 return BadRequest(ErrorResponseBody(dealerExc.GetUserMessageException, HttpStatusCode.BadRequest));
             } catch (Exception exc) {
@@ -129,6 +154,21 @@ namespace MMSL.Server.Core.Controllers.Dealer {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
+        }
+
+        private string GetRandomPassword() {
+            string password;
+
+            int tryCount = 0;
+
+            Random r = new Random();
+
+            do {
+                password = PasswordGenerationHelper.GenerateStrongPassword(r.Next(10, 30));
+                tryCount++;
+            } while (!Regex.IsMatch(password, ConfigurationManager.AppSettings.PasswordStrongRegex) && tryCount < 50);
+
+            return password;
         }
     }
 }
