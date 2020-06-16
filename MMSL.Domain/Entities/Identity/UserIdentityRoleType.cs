@@ -1,5 +1,5 @@
 ﻿namespace MMSL.Domain.Entities.Identity {
-    public class UserIdentityRoleType : EntityBase {
+    public class UserIdentityRoleType : EntityBaseNamed {
 
         public RoleType RoleType { get; set; }
 
