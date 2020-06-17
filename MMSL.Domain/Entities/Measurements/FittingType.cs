@@ -17,6 +17,9 @@ namespace MMSL.Domain.Entities.Measurements {
         public long DealerAccountId { get; set; }
         public DealerAccount DealerAccount { get; set; }
 
+        public long MeasurementId { get; set; }
+        public Measurement Measurement { get; set; }
+
         public ICollection<MeasurementMapValue> MeasurementMapValues { get; set; }
     }
 }
