@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MMSL.Services.MeasurementServices.Contracts {
     public interface IFittingTypeService {
-        Task<List<FittingType>> GetFittingTypesAsync(string searchPhrase);
+        Task<List<FittingType>> GetFittingTypesAsync(string searchPhrase, long mesurementId);
         Task<FittingType> AddFittingTypeAsync(FittingTypeDataContract fittingTypeDataContract);
         Task<FittingType> GetFittingTypeByIdAsync(long fittingTypeId);
         Task<FittingType> UpdateFittingTypeAsync(FittingType fittingType);

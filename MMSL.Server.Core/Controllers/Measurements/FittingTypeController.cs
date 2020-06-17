@@ -40,7 +40,7 @@ namespace MMSL.Server.Core.Controllers.Measurements {
         [HttpGet]
         [Authorize]
         [AssignActionRoute(FittingTypeSegments.GET_FITTING_TYPES)]
-        public async Task<IActionResult> GetAll([FromQuery]string searchPhrase) {
+        public async Task<IActionResult> GetAll([FromQuery]string searchPhrase, [FromQuery]long measurementId) {
             try {
                 List<FittingType> fittingTypes = await _fittingTypeService.GetFittingTypesAsync(searchPhrase);
 

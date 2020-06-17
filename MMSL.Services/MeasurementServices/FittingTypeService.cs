@@ -24,7 +24,7 @@ namespace MMSL.Services.MeasurementServices {
             _measurementsRepositoriesFactory = measurementsRepositoriesFactory;
         }
 
-        public Task<List<FittingType>> GetFittingTypesAsync(string searchPhrase) =>
+        public Task<List<FittingType>> GetFittingTypesAsync(string searchPhrase, long mesurementId) =>
              Task.Run(() => {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                      var fittingTypeRepository = _measurementsRepositoriesFactory.NewFittingTypeRepository(connection);
