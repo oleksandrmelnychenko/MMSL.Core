@@ -29,7 +29,7 @@ namespace MMSL.Services.MeasurementServices {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                      var fittingTypeRepository = _measurementsRepositoriesFactory.NewFittingTypeRepository(connection);
 
-                     return fittingTypeRepository.GetAll(searchPhrase); ;
+                     return fittingTypeRepository.GetAll(searchPhrase, mesurementId); ;
                  }
              });
 
@@ -49,7 +49,7 @@ namespace MMSL.Services.MeasurementServices {
                      IMeasurementMapValueRepository measurementMapValueRepository = _measurementsRepositoriesFactory.NewMeasurementMapValueRepository(connection);
 
                      FittingType newFittingType =
-                        fittingTypeRepository.Add(fittingTypeDataContract.Type, fittingTypeDataContract.Unit, fittingTypeDataContract.DealerAccountId);
+                        fittingTypeRepository.Add(fittingTypeDataContract.Type, fittingTypeDataContract.Unit, fittingTypeDataContract.DealerAccountId, fittingTypeDataContract.MeasurementId);
 
                      if (newFittingType != null) {
 
