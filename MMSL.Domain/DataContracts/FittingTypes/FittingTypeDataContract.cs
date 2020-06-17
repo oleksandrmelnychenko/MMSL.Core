@@ -9,6 +9,8 @@ namespace MMSL.Domain.DataContracts.FittingTypes {
 
         public long DealerAccountId { get; set; }
 
+        public long MeasurementId { get; set; }
+
         public List<ValueDataContract> ValueDataContracts { get; set; }
     }
 }

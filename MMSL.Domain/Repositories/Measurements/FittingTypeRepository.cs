@@ -49,17 +49,18 @@ namespace MMSL.Domain.Repositories.Measurements {
                 new { Id = fittingTypeId })
             .SingleOrDefault();
 
-        public FittingType Add(string type, string unit, long dealerAccountId) =>
+        public FittingType Add(string type, string unit, long dealerAccountId, long measurementId) =>
             _connection.QuerySingleOrDefault<FittingType>(
-                "INSERT INTO [FittingTypes]([IsDeleted],[Type],[Unit],[DealerAccountId]) " +
-                "VALUES (0,@Type,@Unit,@DealerAccountId) " +
+                "INSERT INTO [FittingTypes]([IsDeleted],[Type],[Unit],[DealerAccountId],[MeasurementId]) " +
+                "VALUES (0,@Type,@Unit,@DealerAccountId,@MeasurementId) " +
                 "SELECT * " +
                 "FROM [FittingTypes] " +
                 "WHERE [FittingTypes].Id = SCOPE_IDENTITY()",
                 new {
                     Type = type,
                     Unit = unit,
-                    DealerAccountId = dealerAccountId
+                    DealerAccountId = dealerAccountId,
+                    MeasurementId = measurementId
                 });
 
         public void Update(FittingType fittingType) =>
