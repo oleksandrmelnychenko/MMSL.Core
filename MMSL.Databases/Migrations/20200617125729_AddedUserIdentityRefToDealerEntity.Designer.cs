@@ -4,14 +4,16 @@ using MMSL.Databases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MMSL.Databases.Migrations
 {
     [DbContext(typeof(MMSLDbContext))]
-    partial class MMSLDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200617125729_AddedUserIdentityRefToDealerEntity")]
+    partial class AddedUserIdentityRefToDealerEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,7 +155,7 @@ namespace MMSL.Databases.Migrations
                     b.Property<bool>("UseBillingAsShipping")
                         .HasColumnType("bit");
 
-                    b.Property<long>("UserIdentityId")
+                    b.Property<long?>("UserIdentityId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -951,9 +953,6 @@ namespace MMSL.Databases.Migrations
                     b.Property<bool>("UseBillingAsDeliveryAddress")
                         .HasColumnType("bit");
 
-                    b.Property<long>("UserIdentityId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -965,8 +964,6 @@ namespace MMSL.Databases.Migrations
                     b.HasIndex("DeliveryAddressId");
 
                     b.HasIndex("StoreId");
-
-                    b.HasIndex("UserIdentityId");
 
                     b.ToTable("StoreCustomers");
                 });
@@ -1068,9 +1065,7 @@ namespace MMSL.Databases.Migrations
 
                     b.HasOne("MMSL.Domain.Entities.Identity.UserIdentity", "UserIdentity")
                         .WithMany()
-                        .HasForeignKey("UserIdentityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserIdentityId");
                 });
 
             modelBuilder.Entity("MMSL.Domain.Entities.Dealer.DealerMapProductPermissionSettings", b =>
@@ -1257,12 +1252,6 @@ namespace MMSL.Databases.Migrations
                     b.HasOne("MMSL.Domain.Entities.Stores.Store", "Store")
                         .WithMany()
                         .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MMSL.Domain.Entities.Identity.UserIdentity", "UserIdentity")
-                        .WithMany()
-                        .HasForeignKey("UserIdentityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

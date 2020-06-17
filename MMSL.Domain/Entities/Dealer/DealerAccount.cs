@@ -51,7 +51,7 @@ namespace MMSL.Domain.Entities.Dealer {
 
         public long UserIdentityId { get; set; }
 
-        public UserIdentity CreatedBy { get; set; }
+        public UserIdentity UserIdentity { get; set; }
 
         public ICollection<StoreMapDealerAccount> StoreMapDealerAccounts { get; set; } = new HashSet<StoreMapDealerAccount>();
 

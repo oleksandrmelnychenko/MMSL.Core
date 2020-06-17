@@ -1,4 +1,5 @@
 ﻿using MMSL.Domain.Entities.Addresses;
+using MMSL.Domain.Entities.Identity;
 using MMSL.Domain.Entities.Stores;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -29,5 +30,8 @@ namespace MMSL.Domain.Entities.StoreCustomers {
 
         public long StoreId { get; set; }
         public Store Store { get; set; }
+
+        public long UserIdentityId { get; set; }
+        public UserIdentity UserIdentity { get; set; }
     }
 }

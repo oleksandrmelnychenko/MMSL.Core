@@ -2,6 +2,7 @@
     public enum RoleType {
         Administrator = 0,
         Manufacturer = 1,
-        Dealer = 2
+        Dealer = 2,
+        Customer = 3
     }
 }
