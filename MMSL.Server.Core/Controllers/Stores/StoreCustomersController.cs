@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using MMSL.Common.IdentityConfiguration;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
+using MMSL.Domain.DataContracts;
+using MMSL.Domain.Entities.Identity;
 using MMSL.Domain.Entities.StoreCustomers;
+using MMSL.Services.IdentityServices.Contracts;
 using MMSL.Services.StoreCustomerServices.Contracts;
 using Serilog;
 using System;
@@ -20,10 +24,14 @@ namespace MMSL.Server.Core.Controllers.Stores {
 
         private readonly IStoreCustomerService _storeCustomerService;
 
+        private readonly IUserIdentityService _userIdentityService;
+
         public StoreCustomersController(IStoreCustomerService storeCustomerService,
+            IUserIdentityService userIdentityService,
             IResponseFactory responseFactory, IStringLocalizer<StoreCustomersController> localizer) 
             : base(responseFactory, localizer) {
             _storeCustomerService = storeCustomerService;
+            _userIdentityService = userIdentityService;
         }
 
         [HttpGet]
@@ -59,7 +67,19 @@ namespace MMSL.Server.Core.Controllers.Stores {
             try {
                 if (storeCustomer == null) throw new ArgumentNullException("storeCustomer");
 
-                return Ok(SuccessResponseBody(await _storeCustomerService.AddCustomerAsync(storeCustomer), Localizer["Successfully added"]));
+                UserAccount customerIdentity = await _userIdentityService.NewUser(
+                    new NewUserDataContract {
+                        Email = storeCustomer.Email,
+                        Password = PasswordGenerationHelper.GetRandomPassword(),
+                        PasswordExpiresAt = DateTime.Now.AddDays(7),
+                        Roles = new List<RoleType> { RoleType.Customer }
+                    });
+
+                storeCustomer.UserIdentityId = customerIdentity.Id;
+
+                StoreCustomer customerEntity = await _storeCustomerService.AddCustomerAsync(storeCustomer);
+
+                return Ok(SuccessResponseBody(customerEntity, Localizer["Successfully added"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

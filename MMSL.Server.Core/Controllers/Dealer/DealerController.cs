@@ -104,7 +104,7 @@ namespace MMSL.Server.Core.Controllers.Dealer {
                 UserAccount dealerIdentity = await _userIdentityService.NewUser(
                     new NewUserDataContract {
                         Email = dealerAccount.Email,
-                        Password = GetRandomPassword(),
+                        Password = PasswordGenerationHelper.GetRandomPassword(),
                         PasswordExpiresAt = DateTime.Now.AddDays(7),
                         Roles = new System.Collections.Generic.List<RoleType> { RoleType.Dealer }
                     });
@@ -154,21 +154,6 @@ namespace MMSL.Server.Core.Controllers.Dealer {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
-        }
-
-        private string GetRandomPassword() {
-            string password;
-
-            int tryCount = 0;
-
-            Random r = new Random();
-
-            do {
-                password = PasswordGenerationHelper.GenerateStrongPassword(r.Next(10, 30));
-                tryCount++;
-            } while (!Regex.IsMatch(password, ConfigurationManager.AppSettings.PasswordStrongRegex) && tryCount < 50);
-
-            return password;
         }
     }
 }

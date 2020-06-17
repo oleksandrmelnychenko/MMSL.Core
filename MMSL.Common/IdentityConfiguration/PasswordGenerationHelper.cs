@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MMSL.Common.IdentityConfiguration {
     /// <summary>
@@ -16,6 +17,19 @@ namespace MMSL.Common.IdentityConfiguration {
         static readonly string allChars = AlphaCaps + AlphaLow + Numerics + Special;
 
         static readonly Random r = new Random();
+
+        public static string GetRandomPassword() {
+            string password;
+
+            int tryCount = 0;
+
+            do {
+                password = GenerateStrongPassword(r.Next(10, 30));
+                tryCount++;
+            } while (!Regex.IsMatch(password, ConfigurationManager.AppSettings.PasswordStrongRegex) && tryCount < 50);
+
+            return password;
+        }
 
         public static string GenerateStrongPassword(int length) {
             StringBuilder generatedPassword = new StringBuilder();

@@ -23,10 +23,10 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "INSERT INTO [DealerAccount] " +
                 "([IsDeleted],[CompanyName],[Name],[Email],[AlternateEmail],[PhoneNumber]," +
                 "[TaxNumber],[IsVatApplicable],[CurrencyTypeId],[PaymentTypeId],[IsCreditAllowed],[BillingAddressId]," +
-                "[UseBillingAsShipping],[ShippingAddressId]) " +
+                "[UseBillingAsShipping],[ShippingAddressId],[UserIdentityId]) " +
                 "VALUES (0,@CompanyName,@Name,@Email,@AlternateEmail,@PhoneNumber," +
                 "@TaxNumber,@IsVatApplicable,@CurrencyTypeId,@PaymentTypeId,@IsCreditAllowed,@BillingAddressId," +
-                "@UseBillingAsShipping,@ShippingAddressId); " +
+                "@UseBillingAsShipping,@ShippingAddressId,@UserIdentityId); " +
                 "SELECT SCOPE_IDENTITY()", dealerAccount);
 
         public PaginatingResult<DealerAccount> GetDealerAccounts(int pageNumber, int limit, string searchPhrase, DateTime? from, DateTime? to) {
