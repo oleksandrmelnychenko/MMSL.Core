@@ -12,10 +12,8 @@ namespace MMSL.Domain.Entities.Measurements {
 
         public string Type { get; set; }
 
-        public string Unit { get; set; }
-
-        public long DealerAccountId { get; set; }
-        public DealerAccount DealerAccount { get; set; }
+        public long MeasurementUnitId { get; set; }
+        public MeasurementUnit MeasurementUnit { get; set; }
 
         public long MeasurementId { get; set; }
         public Measurement Measurement { get; set; }

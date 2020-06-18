@@ -24,12 +24,12 @@ namespace MMSL.Services.MeasurementServices {
             _measurementsRepositoriesFactory = measurementsRepositoriesFactory;
         }
 
-        public Task<List<FittingType>> GetFittingTypesAsync(string searchPhrase, long mesurementId) =>
+        public Task<List<FittingType>> GetFittingTypesAsync(string searchPhrase, long measurementId) =>
              Task.Run(() => {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                      var fittingTypeRepository = _measurementsRepositoriesFactory.NewFittingTypeRepository(connection);
 
-                     return fittingTypeRepository.GetAll(searchPhrase, mesurementId); ;
+                     return fittingTypeRepository.GetAll(searchPhrase, measurementId); ;
                  }
              });
 

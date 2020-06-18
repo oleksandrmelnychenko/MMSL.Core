@@ -58,6 +58,8 @@ namespace MMSL.Databases {
 
         public DbSet<Measurement> Measurements { get; set; }
 
+        public DbSet<MeasurementUnit> MeasurementUnits { get; set; }
+
         public DbSet<MeasurementMapSize> MeasurementMapSizes { get; set; }
 
         public DbSet<MeasurementSize> MeasurementSizes { get; set; }
@@ -108,6 +110,7 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new ProductCategoryMap());
             modelBuilder.AddConfiguration(new ProductCategoryMapOptionGroupMap());
             modelBuilder.AddConfiguration(new MeasurementMap());
+            modelBuilder.AddConfiguration(new MeasurementUnitMap());
             modelBuilder.AddConfiguration(new MeasurementDefinitionMap());
             modelBuilder.AddConfiguration(new MeasurementMapDefinitionMap());
             modelBuilder.AddConfiguration(new MeasurementSizeMap());

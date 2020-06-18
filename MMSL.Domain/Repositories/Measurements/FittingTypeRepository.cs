@@ -21,13 +21,13 @@ namespace MMSL.Domain.Repositories.Measurements {
             _connection = connection;
         }
 
-        public List<FittingType> GetAll(string searchPhrase, long mesurementId) =>
+        public List<FittingType> GetAll(string searchPhrase, long measurementId) =>
             _connection.Query<FittingType>(
                 "SELECT * " +
                 "FROM [FittingTypes] " +
                 "WHERE [FittingTypes].IsDeleted = 0 AND PATINDEX('%' + @SearchTerm + '%', [FittingTypes].Type) > 0 " +
-                "AND [MesurementId] = @MesurementId",
-                new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase, MesurementId = mesurementId })
+                "AND [MeasurementId] = @MeasurementId",
+                new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase, MeasurementId = measurementId })
             .ToList();
 
         public FittingType GetById(long fittingTypeId) =>
