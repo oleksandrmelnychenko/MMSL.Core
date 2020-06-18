@@ -26,11 +26,13 @@ namespace MMSL.Domain.Repositories.Measurements {
                 "SELECT * " +
                 "FROM [FittingTypes] " +
                 "WHERE [FittingTypes].IsDeleted = 0 AND PATINDEX('%' + @SearchTerm + '%', [FittingTypes].Type) > 0 " +
-                "AND [MeasurementId] = @MeasurementId",
+                "",
                 new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase, MeasurementId = measurementId })
             .ToList();
 
-        public FittingType GetById(long fittingTypeId) =>
+        public FittingType GetById(long fittingTypeId) {
+            FittingType result = null;
+
             _connection.Query<FittingType, MeasurementMapValue, MeasurementDefinition, FittingType>(
                 "SELECT ft.*, mv.*, d.* " +
                 "FROM [FittingTypes] AS ft " +
@@ -38,8 +40,11 @@ namespace MMSL.Domain.Repositories.Measurements {
                 "LEFT JOIN [MeasurementDefinitions] AS d ON d.Id = mv.MeasurementDefinitionId " +
                 "WHERE ft.IsDeleted = 0 AND ft.Id = @Id",
                 (fittingType, measurementMapValue, measurementDefinition) => {
+                    if (result == null)
+                        result = fittingType;
+
                     if (measurementMapValue != null) {
-                        fittingType.MeasurementMapValues.Add(measurementMapValue);
+                        result.MeasurementMapValues.Add(measurementMapValue);
 
                         if (measurementDefinition != null) {
                             measurementMapValue.MeasurementDefinition = measurementDefinition;
@@ -47,8 +52,10 @@ namespace MMSL.Domain.Repositories.Measurements {
                     }
                     return fittingType;
                 },
-                new { Id = fittingTypeId })
-            .SingleOrDefault();
+                new { Id = fittingTypeId });
+
+            return result;
+        }
 
         public FittingType Add(string type, long measurementUnitId, long measurementId) =>
             _connection.QuerySingleOrDefault<FittingType>(
@@ -66,7 +73,7 @@ namespace MMSL.Domain.Repositories.Measurements {
         public void Update(FittingType fittingType) =>
             _connection.Execute(
                 "UPDATE [FittingTypes] " +
-                "SET [IsDeleted]=@IsDeleted,[Type]=@Type,[Unit]=@Unit,[LastModified]=getutcdate() " +
+                "SET [IsDeleted]=@IsDeleted,[Type]=@Type,[MeasurementUnitId]=@MeasurementUnitId,[LastModified]=getutcdate() " +
                 "WHERE [FittingTypes].Id = @Id", fittingType);
     }
 }
