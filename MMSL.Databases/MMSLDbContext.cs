@@ -32,6 +32,8 @@ namespace MMSL.Databases {
 
         public DbSet<OptionUnit> OptionUnits { get; set; }
 
+        public DbSet<UnitValue> UnitValues { get; set; }
+
         public DbSet<OptionGroup> OptionGroups { get; set; }
 
         public DbSet<UserIdentityRoleType> UserIdentityRoleTypes { get; set; }
@@ -93,6 +95,7 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new StoreMap());
             modelBuilder.AddConfiguration(new AddressMap());
             modelBuilder.AddConfiguration(new OptionUnitMap());
+            modelBuilder.AddConfiguration(new UnitValueMap());
             modelBuilder.AddConfiguration(new OptionGroupMap());
             modelBuilder.AddConfiguration(new UserIdentityRoleTypeMap());
             modelBuilder.AddConfiguration(new UserRoleMap());
