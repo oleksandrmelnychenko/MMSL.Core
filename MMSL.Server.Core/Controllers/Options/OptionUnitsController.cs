@@ -62,7 +62,7 @@ namespace MMSL.Server.Core.Controllers.Options {
                     optionUnitEntity.ImageName = formData.File.FileName;
                 }
 
-                return Ok(SuccessResponseBody(await _optionUnitService.AddOptionUnit(optionUnitEntity), Localizer["Successfully created"]));
+                return Ok(SuccessResponseBody(await _optionUnitService.AddOptionUnit(optionUnitEntity, optionUnit.Values), Localizer["Successfully created"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
