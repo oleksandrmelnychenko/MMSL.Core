@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Internal;
-using MMSL.Domain.DataContracts;
+using MMSL.Domain.DataContracts.ProductOptions;
 using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Options;
 using MMSL.Domain.Repositories.Options.Contracts;

@@ -7,6 +7,7 @@ using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.Options;
 using MMSL.Domain.DataContracts;
+using MMSL.Domain.DataContracts.ProductOptions;
 using MMSL.Domain.Entities.Options;
 using MMSL.Domain.Entities.Stores;
 using MMSL.Services.OptionServices.Contracts;

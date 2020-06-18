@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MMSL.Domain.DataContracts {
+namespace MMSL.Domain.DataContracts.ProductOptions {
     public class NewOptionGroupDataContract {
         public long ProductId { get; set; }
 

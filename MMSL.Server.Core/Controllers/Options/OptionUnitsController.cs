@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using MMSL.Common;
@@ -7,7 +6,7 @@ using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.Options;
-using MMSL.Domain.DataContracts;
+using MMSL.Domain.DataContracts.ProductOptions;
 using MMSL.Domain.Entities.Options;
 using MMSL.Server.Core.Helpers;
 using MMSL.Services.OptionServices.Contracts;

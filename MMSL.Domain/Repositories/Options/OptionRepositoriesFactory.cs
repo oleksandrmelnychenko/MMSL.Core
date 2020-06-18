@@ -8,5 +8,8 @@ namespace MMSL.Domain.Repositories.Options {
 
         public IOptionUnitRepository NewOptionUnitRepository(IDbConnection connection) =>
             new OptionUnitRepository(connection);
+
+        public IUnitValuesRepository NewUnitValuesRepository(IDbConnection connection) =>
+            new UnitValuesRepository(connection);
     }
 }

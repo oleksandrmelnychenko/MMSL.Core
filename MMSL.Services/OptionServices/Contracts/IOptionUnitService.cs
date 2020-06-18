@@ -1,4 +1,5 @@
 ﻿using MMSL.Domain.DataContracts;
+using MMSL.Domain.DataContracts.ProductOptions;
 using MMSL.Domain.Entities.Options;
 using System.Collections.Generic;
 using System.Threading.Tasks;

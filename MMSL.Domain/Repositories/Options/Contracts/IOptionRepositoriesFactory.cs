@@ -5,5 +5,7 @@ namespace MMSL.Domain.Repositories.Options.Contracts {
         IOptionUnitRepository NewOptionUnitRepository(IDbConnection connection);
 
         IOptionGroupRepository NewOptionGroupRepository(IDbConnection connection);
+
+        IUnitValuesRepository NewUnitValuesRepository(IDbConnection connection);
     }
 }

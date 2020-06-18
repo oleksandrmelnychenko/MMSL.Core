@@ -1,4 +1,4 @@
-﻿namespace MMSL.Domain.DataContracts {
+﻿namespace MMSL.Domain.DataContracts.ProductOptions {
     public class UpdateOrderIndexDataContract {
         public long OptionUnitId { get; set; }
 

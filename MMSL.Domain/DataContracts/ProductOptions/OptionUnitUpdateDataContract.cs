@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using MMSL.Domain.Entities.Options;
 
-namespace MMSL.Domain.DataContracts {
-    public class OptionUnitDataContract : EntityDataContractBase<OptionUnit> {
+namespace MMSL.Domain.DataContracts.ProductOptions {
+    public class OptionUnitUpdateDataContract : EntityDataContractBase<OptionUnit> {
+
         public int OrderIndex { get; set; }
 
         public string Value { get; set; }
 
         public bool IsMandatory { get; set; }
 
-        public long OptionGroupId { get; set; }
+        public string ImageUrl { get; set; }
 
         public override OptionUnit GetEntity() {
             return new OptionUnit {
@@ -17,8 +18,9 @@ namespace MMSL.Domain.DataContracts {
                 OrderIndex = OrderIndex,
                 IsMandatory = IsMandatory,
                 Value = Value,
-                OptionGroupId = OptionGroupId
+                ImageUrl = ImageUrl
             };
         }
+
     }
 }
