@@ -49,7 +49,7 @@ namespace MMSL.Services.MeasurementServices {
                      IMeasurementMapValueRepository measurementMapValueRepository = _measurementsRepositoriesFactory.NewMeasurementMapValueRepository(connection);
 
                      FittingType newFittingType =
-                        fittingTypeRepository.Add(fittingTypeDataContract.Type, fittingTypeDataContract.Unit, fittingTypeDataContract.DealerAccountId, fittingTypeDataContract.MeasurementId);
+                        fittingTypeRepository.Add(fittingTypeDataContract.Type, fittingTypeDataContract.MeasurementUnitId, fittingTypeDataContract.MeasurementId);
 
                      if (newFittingType != null) {
 
