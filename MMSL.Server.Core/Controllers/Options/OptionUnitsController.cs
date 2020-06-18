@@ -13,6 +13,7 @@ using MMSL.Services.OptionServices.Contracts;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -53,16 +54,24 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpPost]
         [AssignActionRoute(OptionUnitSegments.ADD_OPTION_UNIT)]
-        public async Task<IActionResult> AddOptionUnit([FromQuery]OptionUnitDataContract optionUnit, [FromForm]FileFormData formData) {
+        public async Task<IActionResult> AddOptionUnit(
+            [FromForm] OptionUnitDataContract optionUnit, 
+            [FromForm] FileFormData formData) {
             try {
                 OptionUnit optionUnitEntity = optionUnit.GetEntity();
+
+                List<UnitValueDataContract> values = !string.IsNullOrEmpty(optionUnit.SerializedValues)
+                    ? Newtonsoft.Json.JsonConvert.DeserializeObject<List<UnitValueDataContract>>(optionUnit.SerializedValues)
+                    : null;
 
                 if (formData.File != null) {
                     optionUnitEntity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}://{Request.Host}", formData.File);
                     optionUnitEntity.ImageName = formData.File.FileName;
                 }
 
-                return Ok(SuccessResponseBody(await _optionUnitService.AddOptionUnit(optionUnitEntity, optionUnit.Values), Localizer["Successfully created"]));
+                return Ok(SuccessResponseBody(
+                    await _optionUnitService.AddOptionUnit(optionUnitEntity, values),
+                    Localizer["Successfully created"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
@@ -71,7 +80,7 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpPut]
         [AssignActionRoute(OptionUnitSegments.UPDATE_OPTION_UNIT)]
-        public async Task<IActionResult> UpdateOptionUnit([FromQuery]OptionUnitUpdateDataContract updateOptionUnit, [FromForm]FileFormData formData) {
+        public async Task<IActionResult> UpdateOptionUnit([FromForm] OptionUnitUpdateDataContract updateOptionUnit, [FromForm]FileFormData formData) {
             try {
                 if (updateOptionUnit == null)
                     throw new ArgumentNullException(nameof(updateOptionUnit));
@@ -80,6 +89,10 @@ namespace MMSL.Server.Core.Controllers.Options {
 
                 if (entity.IsNew())
                     throw new ArgumentException(nameof(updateOptionUnit.Id));
+
+                List<UnitValueDataContract> values = !string.IsNullOrEmpty(updateOptionUnit.SerializedValues)
+                    ? Newtonsoft.Json.JsonConvert.DeserializeObject<List<UnitValueDataContract>>(updateOptionUnit.SerializedValues)
+                    : null;
 
                 string oldImage = entity.ImageUrl;
 
@@ -96,7 +109,7 @@ namespace MMSL.Server.Core.Controllers.Options {
                     }
                 }
 
-                return Ok(SuccessResponseBody(await _optionUnitService.UpdateOptionUnit(entity), Localizer["Successfully updated"]));
+                return Ok(SuccessResponseBody(await _optionUnitService.UpdateOptionUnit(entity, values), Localizer["Successfully updated"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

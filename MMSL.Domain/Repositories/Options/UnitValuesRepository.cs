@@ -26,8 +26,13 @@ VALUES (0,GETUTCDATE(),@Value,@OptionUnitId)",
             throw new System.NotImplementedException();
         }
 
-        public UnitValue UpdateUnitValue(UnitValue value) {
-            throw new System.NotImplementedException();
-        }
+        public UnitValue UpdateUnitValue(UnitValue value) =>
+            _connection.QuerySingleOrDefault<UnitValue>(
+@"UPDATE [UnitValues] 
+SET [LastModified]=GETUTCDATE(), [Value]=@Value, [IsDeleted]=@IsDeleted 
+WHERE [Id] = @Id;
+SELECT TOP(1) * FROM [UnitValues]
+WHERE [Id] = @Id",
+                value);
     }
 }

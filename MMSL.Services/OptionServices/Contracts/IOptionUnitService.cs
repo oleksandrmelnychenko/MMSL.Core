@@ -9,7 +9,7 @@ namespace MMSL.Services.OptionServices.Contracts {
         Task<List<OptionUnit>> GetOptionUnitsByGroupIdAsync(long optionGroupId);
         Task<OptionUnit> GetOptionUnitByIdAsync(long optionUnitId);
         Task<OptionUnit> AddOptionUnit(OptionUnit optionUnit, List<UnitValueDataContract> values);
-        Task<OptionUnit> UpdateOptionUnit(OptionUnit optionUnit);
+        Task<OptionUnit> UpdateOptionUnit(OptionUnit optionUnit, List<UnitValueDataContract> values);
         Task<OptionUnit> DeleteOptionUnit(long optionUnitId);
         Task UpdateOrderIndexesAsync(List<UpdateOrderIndexDataContract> optionIndexes);
     }

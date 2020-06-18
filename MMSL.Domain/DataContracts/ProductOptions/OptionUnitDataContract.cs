@@ -11,7 +11,7 @@ namespace MMSL.Domain.DataContracts.ProductOptions {
 
         public long OptionGroupId { get; set; }
 
-        public List<UnitValueDataContract> Values { get; set; }
+        public string SerializedValues { get; set; }
 
         public override OptionUnit GetEntity() {
             return new OptionUnit {

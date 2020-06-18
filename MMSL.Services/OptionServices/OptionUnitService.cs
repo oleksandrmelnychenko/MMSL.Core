@@ -52,23 +52,43 @@ namespace MMSL.Services.OptionServices {
 
                     optionUnit.Id = unitRepository.AddOptionUnit(optionUnit);
 
-                    foreach (UnitValueDataContract value in values) {
-                        unitValuesRepository.AddUnitValue(new UnitValue {
-                            Value = value.Value,
-                            OptionUnitId = optionUnit.Id
-                        });
+                    if (values != null) {
+                        foreach (UnitValueDataContract value in values) {
+                            unitValuesRepository.AddUnitValue(new UnitValue {
+                                Value = value.Value,
+                                OptionUnitId = optionUnit.Id
+                            });
+                        }
                     }
 
                     return optionUnit;
                 }
             });
 
-        public Task<OptionUnit> UpdateOptionUnit(OptionUnit optionUnit) =>
+        public Task<OptionUnit> UpdateOptionUnit(OptionUnit optionUnit, List<UnitValueDataContract> values) =>
             Task.Factory.StartNew(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
+                    IUnitValuesRepository unitValuesRepository = _optionRepositoriesFactory.NewUnitValuesRepository(connection);
+
                     _optionRepositoriesFactory
                         .NewOptionUnitRepository(connection)
                         .UpdateOptionUnit(optionUnit);
+
+                    if (values != null) {
+                        foreach (UnitValueDataContract value in values) {
+                            var entity = new UnitValue {
+                                Id = value.Id,
+                                Value = value.Value,
+                                OptionUnitId = optionUnit.Id
+                            };
+
+                            if (entity.IsNew()) {
+                                unitValuesRepository.AddUnitValue(entity);
+                            } else {
+                                unitValuesRepository.UpdateUnitValue(entity);
+                            }
+                        }
+                    }
 
                     return optionUnit;
                 }
