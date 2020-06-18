@@ -38,11 +38,12 @@ namespace MMSL.Services.OptionServices {
                 }
             });
 
-        public Task<OptionUnit> AddOptionUnit(OptionUnit optionUnit) =>
+        public Task<OptionUnit> AddOptionUnit(OptionUnit optionUnit, List<UnitValueDataContract> values) =>
             Task.Factory.StartNew(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IOptionGroupRepository groupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
                     IOptionUnitRepository unitRepository = _optionRepositoriesFactory.NewOptionUnitRepository(connection);
+                    IUnitValuesRepository unitValuesRepository = _optionRepositoriesFactory.NewUnitValuesRepository(connection);
 
                     List<OptionUnit> units = unitRepository.GetOptionUnitsByGroup(optionUnit.OptionGroupId);
                     if (units.Any()) {
@@ -50,6 +51,13 @@ namespace MMSL.Services.OptionServices {
                     }
 
                     optionUnit.Id = unitRepository.AddOptionUnit(optionUnit);
+
+                    foreach (UnitValueDataContract value in values) {
+                        unitValuesRepository.AddUnitValue(new UnitValue {
+                            Value = value.Value,
+                            OptionUnitId = optionUnit.Id
+                        });
+                    }
 
                     return optionUnit;
                 }

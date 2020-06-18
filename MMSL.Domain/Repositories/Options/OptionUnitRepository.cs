@@ -22,21 +22,55 @@ namespace MMSL.Domain.Repositories.Options {
                 "SELECT SCOPE_IDENTITY()",
                 optionUnit);
 
-        public OptionUnit GetOptionUnit(long optionUnitId) =>
-            _connection.QuerySingleOrDefault<OptionUnit>(
-                "SELECT * FROM [OptionUnits] " +
+        public OptionUnit GetOptionUnit(long optionUnitId) {
+            OptionUnit result = null;
+
+            _connection.Query<OptionUnit, UnitValue, OptionUnit>(
+                "SELECT [OptionUnits].*, [UnitValues].* " +
+                "FROM [OptionUnits] " +
+                "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id " +
                 "WHERE [OptionUnits].Id = @Id",
+                (unit, unitValue) => {
+                    if (result == null)
+                        result = unit;
+
+                    if (unitValue != null)
+                        result.UnitValues.Add(unitValue);
+
+                    return unit;
+                },
                 new { Id = optionUnitId });
 
-        public List<OptionUnit> GetOptionUnitsByGroup(long optionGroupId) =>
-            _connection.Query<OptionUnit>(
-                "SELECT * FROM [OptionUnits] " +
+            return result;
+        }
+
+        public List<OptionUnit> GetOptionUnitsByGroup(long optionGroupId) {
+            List<OptionUnit> result = new List<OptionUnit>();
+
+            _connection.Query<OptionUnit, UnitValue, OptionUnit>(
+                "SELECT [OptionUnits].*, [UnitValues].* " +
+                "FROM [OptionUnits] " +
+                "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id " +
                 "WHERE [OptionUnits].[OptionGroupId] = @GroupId " +
                 "AND [OptionUnits].IsDeleted = 0 " +
                 "ORDER BY [OptionUnits].OrderIndex ",
+                (unit, unitValue) => {
+                    if (result.Any(x => x.Id == unit.Id))
+                        unit = result.First(x => x.Id == unit.Id);
+                    else
+                        result.Add(unit);
+                    
+                    if (unitValue != null)
+                        unit.UnitValues.Add(unitValue);
+
+                    return unit;
+                },
                 new {
                     GroupId = optionGroupId
-                }).ToList();
+                });
+
+            return result;
+        }
 
         public void UpdateOptionUnit(OptionUnit optionUnit) =>
             _connection.Execute(

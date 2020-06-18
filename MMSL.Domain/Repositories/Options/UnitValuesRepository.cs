@@ -1,4 +1,6 @@
-﻿using MMSL.Domain.Repositories.Options.Contracts;
+﻿using Dapper;
+using MMSL.Domain.Entities.Options;
+using MMSL.Domain.Repositories.Options.Contracts;
 using System.Data;
 
 namespace MMSL.Domain.Repositories.Options {
@@ -10,6 +12,22 @@ namespace MMSL.Domain.Repositories.Options {
             _connection = connection;
         }
 
+        public long AddUnitValue(UnitValue value) =>
+            _connection.QuerySingleOrDefault<long>(
+@"INSERT INTO [UnitValues] ([IsDeleted],[Created],[Value],[OptionUnitId]) 
+VALUES (0,GETUTCDATE(),@Value,@OptionUnitId)",
+                value);
 
+        public UnitValue GetUnitValue(long unitValueId) {
+            throw new System.NotImplementedException();
+        }
+
+        public UnitValue GetUnitValuesByUnitId(long optionUnitId) {
+            throw new System.NotImplementedException();
+        }
+
+        public UnitValue UpdateUnitValue(UnitValue value) {
+            throw new System.NotImplementedException();
+        }
     }
 }

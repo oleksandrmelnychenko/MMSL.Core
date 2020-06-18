@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MMSL.Domain.Entities.Options {
     public class OptionUnit : EntityBase {
@@ -19,5 +20,7 @@ namespace MMSL.Domain.Entities.Options {
         public bool IsAllow { get; set; }
 
         public OptionGroup OptionGroup { get; set; }
+
+        public ICollection<UnitValue> UnitValues { get; set; } = new HashSet<UnitValue>();
     }
 }
