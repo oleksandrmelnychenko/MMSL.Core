@@ -19,5 +19,7 @@ namespace MMSL.Domain.Repositories.Measurements.Contracts {
         IMeasurementMapSizeRepository NewMeasurementMapSizeRepository(IDbConnection connection);
 
         IFittingTypeRepository NewFittingTypeRepository(IDbConnection connection);
+
+        IMeasurementUnitsRepository NewMeasurementUnitsRepository(IDbConnection connection);
     }
 }

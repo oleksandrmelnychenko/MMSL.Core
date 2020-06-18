@@ -26,5 +26,8 @@ namespace MMSL.Domain.Repositories.Measurements {
 
         public IFittingTypeRepository NewFittingTypeRepository(IDbConnection connection) =>
             new FittingTypeRepository(connection);
+
+        public IMeasurementUnitsRepository NewMeasurementUnitsRepository(IDbConnection connection) => 
+            new MeasurementUnitsRepository(connection);
     }
 }

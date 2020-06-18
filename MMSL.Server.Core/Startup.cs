@@ -217,6 +217,7 @@ namespace MMSL.Server.Core
             builder.RegisterType<StoreCustomerService>().As<IStoreCustomerService>();
             builder.RegisterType<ProductCategoryService>().As<IProductCategoryService>();
             builder.RegisterType<MeasurementSizeService>().As<IMeasurementSizeService>();
+            builder.RegisterType<MeasurementUnitService>().As<IMeasurementUnitService>();
             builder.RegisterType<DeliveryTimelineService>().As<IDeliveryTimelineService>();
             builder.RegisterType<MeasurementDefinitionService>().As<IMeasurementDefinitionService>();
             builder.RegisterType<ProductPermissionSettingService>().As<IProductPermissionSettingService>();

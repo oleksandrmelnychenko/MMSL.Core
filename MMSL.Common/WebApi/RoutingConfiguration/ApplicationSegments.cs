@@ -20,6 +20,8 @@
 
         public const string Measurements = "measurements";
 
+        public const string MeasurementUnits = "measurement/units";
+
         public const string MeasurementDefinitions = "measurements/definitions";
 
         public const string MeasurementSizes = "measurements/sizes";
