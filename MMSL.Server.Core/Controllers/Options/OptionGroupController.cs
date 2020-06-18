@@ -55,7 +55,6 @@ namespace MMSL.Server.Core.Controllers.Options {
             }
         }
 
-
         [HttpGet]
         [Authorize]
         [AssignActionRoute(OptionGroupSegments.GET_OPTION_GROUP_BY_ID)]

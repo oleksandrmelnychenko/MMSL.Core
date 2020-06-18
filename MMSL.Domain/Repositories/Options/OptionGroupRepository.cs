@@ -42,9 +42,10 @@ namespace MMSL.Domain.Repositories.Options {
         public List<OptionGroup> GetAllMapped(string search, long? productCategoryId = null) {
             List<OptionGroup> optionGroups = new List<OptionGroup>();
 
-            string query = "SELECT og.*, u.* " +
+            string query = "SELECT og.*, u.*, [UnitValues].* " +
                 "FROM [OptionGroups] AS og " +
                 "LEFT JOIN [OptionUnits] AS u ON u.[OptionGroupId] = og.Id AND u.IsDeleted = 0 " +
+                "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = u.Id AND [UnitValues].IsDeleted = 0 " +
                 (
                     productCategoryId.HasValue
                     ? "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].OptionGroupId = og.Id " +
@@ -60,9 +61,9 @@ namespace MMSL.Domain.Repositories.Options {
                 (productCategoryId.HasValue ? "AND [ProductCategoryMapOptionGroups].ProductCategoryId = @ProductCategoryId " : string.Empty) +
                 "ORDER BY og.Id, u.OrderIndex ";
 
-            _connection.Query<OptionGroup, OptionUnit, OptionGroup>(
+            _connection.Query<OptionGroup, OptionUnit, UnitValue, OptionGroup>(
                 query,
-                (optionGroup, optionUnit) => {
+                (optionGroup, optionUnit, unitValue) => {
                     if (optionGroups.Any(x => x.Id == optionGroup.Id)) {
                         optionGroup = optionGroups.First(x => x.Id == optionGroup.Id);
                     } else {
@@ -70,7 +71,15 @@ namespace MMSL.Domain.Repositories.Options {
                     }
 
                     if (optionUnit != null) {
-                        optionGroup.OptionUnits.Add(optionUnit);
+                        if (optionGroup.OptionUnits.Any(x => x.Id == optionUnit.Id)) {
+                            optionUnit = optionGroup.OptionUnits.First(x => x.Id == optionUnit.Id);
+                        } else {
+                            optionGroup.OptionUnits.Add(optionUnit);
+                        }
+
+                        if (unitValue != null)
+                            optionUnit.UnitValues.Add(unitValue);
+
                     }
 
                     return optionGroup;
@@ -86,19 +95,28 @@ namespace MMSL.Domain.Repositories.Options {
         public OptionGroup GetById(long id) {
             OptionGroup groupResult = null;
 
-            _connection.Query<OptionGroup, OptionUnit, OptionGroup>(
-                "SELECT OptionGroups.*, [OptionUnits].* " +
+            _connection.Query<OptionGroup, OptionUnit, UnitValue, OptionGroup>(
+                "SELECT OptionGroups.*, [OptionUnits].*, [UnitValues].* " +
                 "FROM OptionGroups " +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id AND [OptionUnits].IsDeleted = 0" +
+                "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0 " +
                 "WHERE [OptionGroups].Id = @Id AND [OptionGroups].IsDeleted = 0 " +
                 "ORDER BY [OptionUnits].OrderIndex",
-                (group, unit) => {
+                (group, unit, unitValue) => {
                     if (groupResult == null) {
                         groupResult = group;
                     }
 
                     if (unit != null) {
-                        groupResult.OptionUnits.Add(unit);
+
+                        if (groupResult.OptionUnits.Any(x => x.Id == unit.Id)) {
+                            unit = groupResult.OptionUnits.First(x => x.Id == unit.Id);
+                        } else {
+                            groupResult.OptionUnits.Add(unit);
+                        }
+
+                        if (unitValue != null)
+                            unit.UnitValues.Add(unitValue);
                     }
 
                     return group;
