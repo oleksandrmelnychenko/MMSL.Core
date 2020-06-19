@@ -9,6 +9,8 @@ namespace MMSL.Domain.DataContracts
         public string Email { get; set; }
 
         public string Password { get; set; }
+        
+        public bool ForceChangePassword { get; set; }
 
         public DateTime PasswordExpiresAt { get; set; }
 

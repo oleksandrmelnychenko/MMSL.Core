@@ -7,13 +7,17 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MMSL.Common;
 using MMSL.Common.Exceptions.UserExceptions;
 using MMSL.Common.Helpers;
 using MMSL.Common.IdentityConfiguration;
+using MMSL.Common.WebApi;
+using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Domain.DataContracts;
+using MMSL.Domain.DataContracts.Identity;
 using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Identity;
 using MMSL.Domain.Repositories.Identity.Contracts;
@@ -202,6 +206,7 @@ namespace MMSL.Services.IdentityServices {
                              (newUserDataContract.PasswordExpiresAt.Date - DateTime.Now.Date).TotalDays < 0
                                  ? DateTime.Now.Date.AddDays(ConfigurationManager.AppSettings.PasswordExpiryDays)
                                  : newUserDataContract.PasswordExpiresAt,
+                         ForceChangePassword = newUserDataContract.ForceChangePassword,
                          PasswordHash = hashedPassword,
                          PasswordSalt = passwordSalt
                      };
@@ -218,6 +223,121 @@ namespace MMSL.Services.IdentityServices {
                  }
              });
 
+        public Task<UserAccount> UpdatePassword(ResetPasswordDataContract authenticateDataContract) =>
+           Task.Run(() => {
+               if (!Validator.IsEmailValid(authenticateDataContract.Email))
+                   throw new ArgumentException(IdentityValidationMessages.EMAIL_INVALID);
+
+               using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                   IIdentityRepository repository = _identityRepositoriesFactory.NewIdentityRepository(connection);
+                   UserIdentity user = repository.GetUserByEmail(authenticateDataContract.Email);
+
+                   if (user.IsDeleted) {
+                       UserExceptionCreator<InvalidIdentityException>.Create(
+                           IdentityValidationMessages.USER_DELETED,
+                           SignInErrorResponseModel.New(SignInErrorResponseType.UserDeleted,
+                               IdentityValidationMessages.USER_DELETED)).Throw();
+                   }
+
+                   if (!CryptoHelper.Validate(authenticateDataContract.Password, user.PasswordSalt, user.PasswordHash)) {
+                       UserExceptionCreator<InvalidIdentityException>.Create(
+                           IdentityValidationMessages.INVALID_CREDENTIALS,
+                           SignInErrorResponseModel.New(SignInErrorResponseType.InvalidCredentials,
+                               IdentityValidationMessages.INVALID_CREDENTIALS)).Throw();
+                   }
+
+                   if (user.IsPasswordExpired && !user.CanUserResetExpiredPassword) {
+                       UserExceptionCreator<InvalidIdentityException>.Create(
+                           IdentityValidationMessages.USER_NOT_ALLOW_TO_RESET_PASSWORD,
+                           SignInErrorResponseModel.New(SignInErrorResponseType.PasswordExpired,
+                               IdentityValidationMessages.USER_NOT_ALLOW_TO_RESET_PASSWORD)).Throw();
+                   }
+
+                   if (authenticateDataContract.Password == authenticateDataContract.NewPassword) {
+                       UserExceptionCreator<InvalidIdentityException>.Create(
+                           IdentityValidationMessages.PASSWORD_MUST_BE_DIFFERENT,
+                           SignInErrorResponseModel.New(SignInErrorResponseType.InvalidCredentials,
+                               IdentityValidationMessages.PASSWORD_MUST_BE_DIFFERENT)).Throw();
+                   }
+
+                   if (!UpdatePassword(user, authenticateDataContract.NewPassword, repository)) {
+                       UserExceptionCreator<InvalidIdentityException>.Create(
+                           ConfigurationManager.AppSettings.PasswordWeakErrorMessage,
+                           SignInErrorResponseModel.New(SignInErrorResponseType.InvalidCredentials,
+                               ConfigurationManager.AppSettings.PasswordWeakErrorMessage)).Throw();
+                   }
+
+                   if (user.ForceChangePassword) {
+                       user.ForceChangePassword = false;
+
+                       repository.UpdateUser(user);
+                   }
+
+                   return SignInAsync(new AuthenticationDataContract { Password = authenticateDataContract.NewPassword, Email = authenticateDataContract.Email });
+               }
+           });
+
+        public Task<UserAccount> UpdateUser(UpdateUserDataContract updateUserDataContract) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    IIdentityRepository identityRepository = _identityRepositoriesFactory.NewIdentityRepository(connection);
+                    IIdentityRolesRepository rolesRepository = _identityRepositoriesFactory.NewIdentityRolesRepository(connection);
+
+                    if (updateUserDataContract.Id <= 0) {
+                        throw new ArgumentException(IdentityValidationMessages.USER_NOT_SPECIFIED);
+                    }
+
+                    UserIdentity userIdentity = identityRepository.GetUserById(updateUserDataContract.Id);
+
+                    if (userIdentity == null) {
+                        throw new ArgumentException(IdentityValidationMessages.USER_NOT_EXISTS);
+                    }
+
+                    if (!userIdentity.Email.ToLower().Equals(updateUserDataContract.Email.ToLower())) {
+                        if (!Validator.IsEmailValid(updateUserDataContract.Email)) {
+                            throw new ArgumentException(IdentityValidationMessages.EMAIL_INVALID);
+                        } else if (!identityRepository.IsEmailAvailable(updateUserDataContract.Email)) {
+                            throw new ArgumentException(IdentityValidationMessages.EMAIL_NOT_AVAILABLE);
+                        } 
+                    }
+
+                    if (!string.IsNullOrEmpty(updateUserDataContract.Password)) {
+                        if (!Regex.IsMatch(updateUserDataContract.Password, ConfigurationManager.AppSettings.PasswordStrongRegex)) {
+                            throw new ArgumentException(ConfigurationManager.AppSettings.PasswordWeakErrorMessage);
+                        }
+
+                        userIdentity.PasswordSalt = CryptoHelper.CreateSalt();
+
+                        userIdentity.PasswordHash = CryptoHelper.Hash(updateUserDataContract.Password, userIdentity.PasswordSalt);
+                    }
+
+                    userIdentity.ForceChangePassword = updateUserDataContract.ForceChangePassword;
+                    userIdentity.PasswordExpiresAt =
+                        (updateUserDataContract.PasswordExpiresAt.Date - DateTime.Now.Date).TotalDays < 0
+                            ? DateTime.Now.Date.AddDays(ConfigurationManager.AppSettings.PasswordExpiryDays)
+                            : updateUserDataContract.PasswordExpiresAt;
+                    userIdentity.Email = updateUserDataContract.Email;
+                    userIdentity.IsPasswordExpired = (userIdentity.PasswordExpiresAt - DateTime.Now.Date).TotalDays < 0;
+
+                    identityRepository.UpdateUser(userIdentity);
+
+                    return identityRepository.GetAccountByUserId(userIdentity.Id);
+                }
+            });
+
+        public Task<bool> IsEmailAvailable(string email) =>
+             Task.Run(() => {
+                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                     IIdentityRepository identityRepository = _identityRepositoriesFactory.NewIdentityRepository(connection);
+
+                     if (!Validator.IsEmailValid(email)) {
+                         throw new ArgumentException(IdentityValidationMessages.EMAIL_INVALID);
+                     }
+
+                     return identityRepository.IsEmailAvailable(email);
+                 }
+             });
+
         private bool IsUserPasswordExpired(
             UserIdentity user) {
             if (user.IsPasswordExpired) { return true; }
@@ -230,5 +350,28 @@ namespace MMSL.Services.IdentityServices {
             return false;
         }
 
+        private bool UpdatePassword(
+            UserIdentity user,
+            string newPassword,
+            IIdentityRepository repository) {
+
+            if (!Regex.IsMatch(newPassword, ConfigurationManager.AppSettings.PasswordStrongRegex)) {
+                //_logger.LogInformation("New password did not match minimum strong password requirements: {0}", ConfigurationManager.AppSettings.PasswordStrongRegex);
+                return false;
+            }
+
+            if (user.CanUserResetExpiredPassword) {
+                user.PasswordExpiresAt = DateTime.UtcNow.AddDays(ConfigurationManager.AppSettings.PasswordExpiryDays);
+            }
+
+            string salt = CryptoHelper.CreateSalt();
+            user.PasswordSalt = salt;
+            user.PasswordHash = CryptoHelper.Hash(newPassword, salt);
+            user.IsPasswordExpired = false;
+
+            repository.UpdateUserPassword(user);
+
+            return true;
+        }
     }
 }

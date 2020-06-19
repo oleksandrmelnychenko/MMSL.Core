@@ -129,5 +129,15 @@ namespace MMSL.Domain.Repositories.Identity {
                 "WHERE Id = @Id",
                 new { Id = userId, IsExpired = isExpired }
             );
+
+        public void UpdateUser(UserIdentity userIdentity) =>
+            _connection.Execute(
+                "UPDATE [UserIdentities] " +
+                "SET IsPasswordExpired = @IsPasswordExpired, CanUserResetExpiredPassword = @CanUserResetExpiredPassword, " +
+                "Email = @Email, PasswordHash = @PasswordHash, PasswordSalt = @PasswordSalt, PasswordExpiresAt = @PasswordExpiresAt, ForceChangePassword = @ForceChangePassword, " +
+                "LastModified = getutcdate() " +
+                "WHERE [UserIdentities].Id = @Id",
+                userIdentity
+            );
     }
 }

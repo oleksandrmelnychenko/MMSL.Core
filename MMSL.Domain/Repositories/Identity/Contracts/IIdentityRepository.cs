@@ -20,6 +20,8 @@ namespace MMSL.Domain.Repositories.Identity.Contracts {
 
         long NewUser(UserIdentity userIdentity);
 
+        void UpdateUser(UserIdentity userIdentity);
+
         UserAccount GetAccountByUserId(long userId);
     }
 }

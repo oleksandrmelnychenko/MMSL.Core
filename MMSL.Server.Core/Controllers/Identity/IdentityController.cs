@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using MMSL.Common.Exceptions.UserExceptions;
+using MMSL.Common.IdentityConfiguration;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Domain.DataContracts;
+using MMSL.Domain.DataContracts.Identity;
 using MMSL.Domain.Entities.Identity;
 using MMSL.Services.IdentityServices.Contracts;
 using Serilog;
@@ -36,6 +38,18 @@ namespace MMSL.Server.Core.Controllers.Identity {
                 return Unauthorized(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.Unauthorized, exc.Body));
             } catch (Exception exc) {
                 Log.Error(exc.Message); 
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        [AssignActionRoute(IdentitySegments.EMAIL_AVAILABLE)]
+        public async Task<IActionResult> ValidateEmail([FromQuery] string email) {
+            try {
+                return Ok(SuccessResponseBody(await _userIdentityService.IsEmailAvailable(email), Localizer["Token validated successfully"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
         }
@@ -70,6 +84,36 @@ namespace MMSL.Server.Core.Controllers.Identity {
                 return Ok(SuccessResponseBody(user, Localizer["User logged in successfully"]));
             } catch (InvalidIdentityException exc) {
                 return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [AssignActionRoute(IdentitySegments.UPDATE_PASSWORD)]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDataContract resetPasswordDataContract) {
+            try {
+                if (resetPasswordDataContract == null) throw new ArgumentNullException("ResetPasswordDataContract");
+
+                UserAccount user = await _userIdentityService.UpdatePassword(resetPasswordDataContract);
+
+                return Ok(SuccessResponseBody(user, "Password updated successfully"));
+            } catch (InvalidIdentityException exc) {
+                return BadRequest(ErrorResponseBody(exc.GetUserMessageException, HttpStatusCode.BadRequest, exc.Body));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        [AssignActionRoute(IdentitySegments.GENERATE_PASSWORD)]
+        public IActionResult GeneratePassword() {
+            try {
+                return Ok(SuccessResponseBody(PasswordGenerationHelper.GetRandomPassword()));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

@@ -13,6 +13,8 @@ namespace MMSL.Common.WebApi.RoutingConfiguration
 
         public const string VALIDATE_TOKEN = "validate/token";
 
+        public const string EMAIL_AVAILABLE = "email/available";
+
         public const string GET_USER_ROLES = "get/roles";
 
         public const string UPDATE_PASSWORD = "update/password";
