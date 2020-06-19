@@ -23,10 +23,10 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "INSERT INTO [DealerAccount] " +
                 "([IsDeleted],[CompanyName],[Name],[Email],[AlternateEmail],[PhoneNumber]," +
                 "[TaxNumber],[IsVatApplicable],[CurrencyTypeId],[PaymentTypeId],[IsCreditAllowed],[BillingAddressId]," +
-                "[UseBillingAsShipping],[ShippingAddressId],[UserIdentityId]) " +
+                "[UseBillingAsShipping],[ShippingAddressId],[UserIdentityId],[TempPassword]) " +
                 "VALUES (0,@CompanyName,@Name,@Email,@AlternateEmail,@PhoneNumber," +
                 "@TaxNumber,@IsVatApplicable,@CurrencyTypeId,@PaymentTypeId,@IsCreditAllowed,@BillingAddressId," +
-                "@UseBillingAsShipping,@ShippingAddressId,@UserIdentityId); " +
+                "@UseBillingAsShipping,@ShippingAddressId,@UserIdentityId,@TempPassword); " +
                 "SELECT SCOPE_IDENTITY()", dealerAccount);
 
         public PaginatingResult<DealerAccount> GetDealerAccounts(int pageNumber, int limit, string searchPhrase, DateTime? from, DateTime? to) {
@@ -137,7 +137,8 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "[IsCreditAllowed]=@IsCreditAllowed," +
                 "[BillingAddressId]=@BillingAddressId," +
                 "[UseBillingAsShipping]=@UseBillingAsShipping," +
-                "[ShippingAddressId]=@ShippingAddressId " +
+                "[ShippingAddressId]=@ShippingAddressId, " +
+                "[TempPassword] = @TempPassword " +
                 "WHERE [DealerAccount].Id=@Id;",
                 dealerAccount);
 

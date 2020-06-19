@@ -9,6 +9,7 @@ using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Domain.DataContracts;
+using MMSL.Domain.DataContracts.Dealers;
 using MMSL.Domain.Entities.Dealer;
 using MMSL.Domain.Entities.Identity;
 using MMSL.Services.DealerServices.Contracts;
@@ -95,17 +96,20 @@ namespace MMSL.Server.Core.Controllers.Dealer {
         }
 
         [HttpPost]
-        //[Authorize(Roles = "Administrator,Manufacturer")]
+        [Authorize(Roles = "Administrator,Manufacturer")]
         [AssignActionRoute(DealerSegments.ADD_DEALER)]
-        public async Task<IActionResult> AddDealerAccount([FromBody] DealerAccount dealerAccount) {
+        public async Task<IActionResult> AddDealerAccount([FromBody] NewDealerAccountDataContract dealerAccountDataContract) {
             try {
-                if (dealerAccount == null) throw new ArgumentNullException("dealerAccount");
+                if (dealerAccountDataContract == null) throw new ArgumentNullException("NewDealerAccountDataContract");
+
+                DealerAccount dealerAccount = dealerAccountDataContract.GetEntity();
 
                 UserAccount dealerIdentity = await _userIdentityService.NewUser(
                     new NewUserDataContract {
                         Email = dealerAccount.Email,
-                        Password = PasswordGenerationHelper.GetRandomPassword(),
+                        Password = dealerAccountDataContract.Password,
                         PasswordExpiresAt = DateTime.Now.AddDays(7),
+                        ForceChangePassword = true,
                         Roles = new System.Collections.Generic.List<RoleType> { RoleType.Dealer }
                     });
 

@@ -53,6 +53,8 @@ namespace MMSL.Domain.Entities.Dealer {
 
         public UserIdentity UserIdentity { get; set; }
 
+        public string TempPassword { get; set; }
+
         public ICollection<StoreMapDealerAccount> StoreMapDealerAccounts { get; set; } = new HashSet<StoreMapDealerAccount>();
 
         public ICollection<DealerMapProductPermissionSettings> DealerMapProductPermissionSettings { get; set; } = new HashSet<DealerMapProductPermissionSettings>();
