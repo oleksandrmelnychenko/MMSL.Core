@@ -57,6 +57,7 @@ WHERE [FittingTypes].IsDeleted = 0 ";
 
             return results;
         }
+
         public FittingType GetById(long fittingTypeId) {
             FittingType result = null;
 
@@ -83,6 +84,7 @@ WHERE [FittingTypes].IsDeleted = 0 ";
 
             return result;
         }
+
         public FittingType Add(string type, long measurementUnitId, long measurementId) {
             FittingType result = null;
 
