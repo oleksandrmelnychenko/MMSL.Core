@@ -12,9 +12,10 @@ namespace MMSL.Domain.Repositories.Measurements {
     public class FittingTypeRepository : IFittingTypeRepository {
 
         private const string _mappedQuery =
-@"SELECT [FittingTypes].*, [Measurements].*, [MeasurementMapValues].*, [MeasurementDefinitions].* 
+@"SELECT [FittingTypes].*, [Measurements].*, [MeasurementUnits].*, [MeasurementMapValues].*, [MeasurementDefinitions].* 
 FROM [FittingTypes] 
 LEFT JOIN [Measurements] ON [Measurements].Id = [FittingTypes].MeasurementId AND [Measurements].IsDeleted = 0 
+LEFT JOIN [MeasurementUnits] ON [MeasurementUnits].Id = [FittingTypes].MeasurementUnitId 
 LEFT JOIN [MeasurementMapValues] ON [MeasurementMapValues].FittingTypeId = [FittingTypes].Id AND [MeasurementMapValues].IsDeleted = 0 
 LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapValues].MeasurementDefinitionId 
 WHERE [FittingTypes].IsDeleted = 0 ";
@@ -32,15 +33,16 @@ WHERE [FittingTypes].IsDeleted = 0 ";
         public List<FittingType> GetAll(string searchPhrase, long measurementId) {
             List<FittingType> results = new List<FittingType>();
 
-            _connection.Query<FittingType, Measurement, MeasurementMapValue, MeasurementDefinition, FittingType>(
+            _connection.Query<FittingType, Measurement, MeasurementUnit, MeasurementMapValue, MeasurementDefinition, FittingType>(
                 _mappedQuery +
                 "AND PATINDEX('%' + @SearchTerm + '%', [FittingTypes].Type) > 0 " +
                 "AND [FittingTypes].MeasurementId = @MeasurementId",
-                (fitType, measurement, value, definition) => {
+                (fitType, measurement, unit, value, definition) => {
                     if (results.Any(x => x.Id == fitType.Id)) {
                         fitType = results.First(x => x.Id == fitType.Id);
                     } else {
                         fitType.Measurement = measurement;
+                        fitType.MeasurementUnit = unit;
                         results.Add(fitType);
                     }
 
@@ -58,10 +60,11 @@ WHERE [FittingTypes].IsDeleted = 0 ";
         public FittingType GetById(long fittingTypeId) {
             FittingType result = null;
 
-            _connection.Query<FittingType, Measurement, MeasurementMapValue, MeasurementDefinition, FittingType>(
+            _connection.Query<FittingType, Measurement, MeasurementUnit, MeasurementMapValue, MeasurementDefinition, FittingType>(
                 _mappedQuery + "AND [FittingTypes].Id = @Id",
-                (fittingType, measurement, measurementMapValue, measurementDefinition) => {
+                (fittingType, measurement, unit, measurementMapValue, measurementDefinition) => {
                     fittingType.Measurement = measurement;
+                    fittingType.MeasurementUnit = unit;
 
                     if (result == null)
                         result = fittingType;
@@ -83,13 +86,14 @@ WHERE [FittingTypes].IsDeleted = 0 ";
         public FittingType Add(string type, long measurementUnitId, long measurementId) {
             FittingType result = null;
 
-            _connection.Query<FittingType, Measurement, MeasurementMapValue, MeasurementDefinition, FittingType>(
+            _connection.Query<FittingType, Measurement, MeasurementUnit, MeasurementMapValue, MeasurementDefinition, FittingType>(
                 "INSERT INTO [FittingTypes]([IsDeleted],[Type],[MeasurementUnitId],[MeasurementId]) " +
                 "VALUES (0,@Type,@MeasurementUnitId,@MeasurementId) " +
                 _mappedQuery +
                 "AND [FittingTypes].Id = SCOPE_IDENTITY()",
-                (fittingType, measurement, measurementMapValue, measurementDefinition) => {
+                (fittingType, measurement, unit, measurementMapValue, measurementDefinition) => {
                     fittingType.Measurement = measurement;
+                    fittingType.MeasurementUnit = unit;
 
                     if (result == null)
                         result = fittingType;
