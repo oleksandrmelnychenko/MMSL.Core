@@ -77,6 +77,8 @@ namespace MMSL.Services.MeasurementServices {
 
                      if (fittingType.MeasurementMapValues.Any()) {
                          foreach (MeasurementMapValue value in fittingType.MeasurementMapValues) {
+                             value.FittingTypeId = fittingType.Id;
+
                              if (value.IsNew()) {
                                  measurementMapValueRepository.AddValue(value);
                              } else {
