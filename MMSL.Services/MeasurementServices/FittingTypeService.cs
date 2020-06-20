@@ -63,7 +63,7 @@ namespace MMSL.Services.MeasurementServices {
                              }
                          }
                      }
-                     return newFittingType;
+                     return fittingTypeRepository.GetById(newFittingType.Id);
                  }
              });
 

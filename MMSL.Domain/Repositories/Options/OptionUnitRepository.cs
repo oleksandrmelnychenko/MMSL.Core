@@ -28,7 +28,7 @@ namespace MMSL.Domain.Repositories.Options {
             _connection.Query<OptionUnit, UnitValue, OptionUnit>(
                 "SELECT [OptionUnits].*, [UnitValues].* " +
                 "FROM [OptionUnits] " +
-                "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id " +
+                "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0 " +
                 "WHERE [OptionUnits].Id = @Id",
                 (unit, unitValue) => {
                     if (result == null)
