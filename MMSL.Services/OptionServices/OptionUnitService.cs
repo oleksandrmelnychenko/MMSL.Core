@@ -61,7 +61,7 @@ namespace MMSL.Services.OptionServices {
                         }
                     }
 
-                    return optionUnit;
+                    return unitRepository.GetOptionUnit(optionUnit.Id);
                 }
             });
 
@@ -69,10 +69,9 @@ namespace MMSL.Services.OptionServices {
             Task.Factory.StartNew(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IUnitValuesRepository unitValuesRepository = _optionRepositoriesFactory.NewUnitValuesRepository(connection);
+                    IOptionUnitRepository unitRepository = _optionRepositoriesFactory.NewOptionUnitRepository(connection);
 
-                    _optionRepositoriesFactory
-                        .NewOptionUnitRepository(connection)
-                        .UpdateOptionUnit(optionUnit);
+                    unitRepository.UpdateOptionUnit(optionUnit);
 
                     if (values != null) {
                         foreach (UnitValueDataContract value in values) {
@@ -90,7 +89,7 @@ namespace MMSL.Services.OptionServices {
                         }
                     }
 
-                    return optionUnit;
+                    return unitRepository.GetOptionUnit(optionUnit.Id);
                 }
             });
 
