@@ -78,7 +78,8 @@ namespace MMSL.Services.OptionServices {
                             var entity = new UnitValue {
                                 Id = value.Id,
                                 Value = value.Value,
-                                OptionUnitId = optionUnit.Id
+                                OptionUnitId = optionUnit.Id,
+                                IsDeleted = optionUnit.IsDeleted
                             };
 
                             if (entity.IsNew()) {
