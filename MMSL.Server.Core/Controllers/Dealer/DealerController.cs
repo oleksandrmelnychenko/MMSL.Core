@@ -97,10 +97,12 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
         [HttpPost]
         [Authorize(Roles = "Administrator,Manufacturer")]
-        [AssignActionRoute(DealerSegments.ADD_DEALER)]
+        [AssignActionRoute(DealerSegments.ADD_DEALER)] 
         public async Task<IActionResult> AddDealerAccount([FromBody] NewDealerAccountDataContract dealerAccountDataContract) {
             try {
                 if (dealerAccountDataContract == null) throw new ArgumentNullException("NewDealerAccountDataContract");
+
+                if (string.IsNullOrEmpty(dealerAccountDataContract.Password)) throw new ArgumentNullException("Password");
 
                 DealerAccount dealerAccount = dealerAccountDataContract.GetEntity();
 
