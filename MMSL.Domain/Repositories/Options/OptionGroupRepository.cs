@@ -59,7 +59,7 @@ namespace MMSL.Domain.Repositories.Options {
                 : "AND (PATINDEX('%' + @Search + '%', og.[Name]) > 0 OR PATINDEX('%' + @Search + '%', u.[Value]) > 0) "
                 ) +
                 (productCategoryId.HasValue ? "AND [ProductCategoryMapOptionGroups].ProductCategoryId = @ProductCategoryId " : string.Empty) +
-                "ORDER BY og.Id, u.OrderIndex ";
+                "ORDER BY og.Id, u.OrderIndex, [UnitValues].OrderIndex ";
 
             _connection.Query<OptionGroup, OptionUnit, UnitValue, OptionGroup>(
                 query,
@@ -101,7 +101,7 @@ namespace MMSL.Domain.Repositories.Options {
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id AND [OptionUnits].IsDeleted = 0" +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0 " +
                 "WHERE [OptionGroups].Id = @Id AND [OptionGroups].IsDeleted = 0 " +
-                "ORDER BY [OptionUnits].OrderIndex",
+                "ORDER BY [OptionUnits].OrderIndex, [UnitValues].OrderIndex",
                 (group, unit, unitValue) => {
                     if (groupResult == null) {
                         groupResult = group;

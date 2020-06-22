@@ -56,7 +56,8 @@ namespace MMSL.Services.OptionServices {
                         foreach (UnitValueDataContract value in values) {
                             unitValuesRepository.AddUnitValue(new UnitValue {
                                 Value = value.Value,
-                                OptionUnitId = optionUnit.Id
+                                OptionUnitId = optionUnit.Id,
+                                OrderIndex = value.OrderIndex
                             });
                         }
                     }

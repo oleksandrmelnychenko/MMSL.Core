@@ -4,6 +4,8 @@
 
         public long OptionUnitId { get; set; }
 
+        public int OrderIndex { get; set; }
+
         public OptionUnit OptionUnit { get; set; }
     }
 }

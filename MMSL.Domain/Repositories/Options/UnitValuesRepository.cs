@@ -14,8 +14,8 @@ namespace MMSL.Domain.Repositories.Options {
 
         public long AddUnitValue(UnitValue value) =>
             _connection.QuerySingleOrDefault<long>(
-@"INSERT INTO [UnitValues] ([IsDeleted],[Created],[Value],[OptionUnitId]) 
-VALUES (0,GETUTCDATE(),@Value,@OptionUnitId)",
+@"INSERT INTO [UnitValues] ([IsDeleted],[Created],[Value],[OptionUnitId],[OrderIndex]) 
+VALUES (0,GETUTCDATE(),@Value,@OptionUnitId,@OrderIndex)",
                 value);
 
         public UnitValue GetUnitValue(long unitValueId) {
@@ -29,7 +29,7 @@ VALUES (0,GETUTCDATE(),@Value,@OptionUnitId)",
         public UnitValue UpdateUnitValue(UnitValue value) =>
             _connection.QuerySingleOrDefault<UnitValue>(
 @"UPDATE [UnitValues] 
-SET [LastModified]=GETUTCDATE(), [Value]=@Value, [IsDeleted]=@IsDeleted 
+SET [LastModified]=GETUTCDATE(), [Value]=@Value, [IsDeleted]=@IsDeleted, [OrderIndex]=@OrderIndex
 WHERE [Id] = @Id;
 SELECT TOP(1) * FROM [UnitValues]
 WHERE [Id] = @Id",

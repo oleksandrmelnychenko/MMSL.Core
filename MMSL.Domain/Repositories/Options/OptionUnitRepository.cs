@@ -29,7 +29,8 @@ namespace MMSL.Domain.Repositories.Options {
                 "SELECT [OptionUnits].*, [UnitValues].* " +
                 "FROM [OptionUnits] " +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0 " +
-                "WHERE [OptionUnits].Id = @Id",
+                "WHERE [OptionUnits].Id = @Id " +
+                "ORDER BY [UnitValues].OrderIndex ",
                 (unit, unitValue) => {
                     if (result == null)
                         result = unit;
@@ -53,7 +54,7 @@ namespace MMSL.Domain.Repositories.Options {
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id " +
                 "WHERE [OptionUnits].[OptionGroupId] = @GroupId " +
                 "AND [OptionUnits].IsDeleted = 0 " +
-                "ORDER BY [OptionUnits].OrderIndex ",
+                "ORDER BY [OptionUnits].OrderIndex, [UnitValues].OrderIndex ",
                 (unit, unitValue) => {
                     if (result.Any(x => x.Id == unit.Id))
                         unit = result.First(x => x.Id == unit.Id);
