@@ -30,8 +30,5 @@ namespace MMSL.Domain.Entities.StoreCustomers {
 
         public long StoreId { get; set; }
         public Store Store { get; set; }
-
-        public long UserIdentityId { get; set; }
-        public UserIdentity UserIdentity { get; set; }
     }
 }

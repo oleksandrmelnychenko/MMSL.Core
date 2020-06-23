@@ -67,16 +67,6 @@ namespace MMSL.Server.Core.Controllers.Stores {
             try {
                 if (storeCustomer == null) throw new ArgumentNullException("storeCustomer");
 
-                UserAccount customerIdentity = await _userIdentityService.NewUser(
-                    new NewUserDataContract {
-                        Email = storeCustomer.Email,
-                        Password = PasswordGenerationHelper.GetRandomPassword(),
-                        PasswordExpiresAt = DateTime.Now.AddDays(7),
-                        Roles = new List<RoleType> { RoleType.Customer }
-                    });
-
-                storeCustomer.UserIdentityId = customerIdentity.Id;
-
                 StoreCustomer customerEntity = await _storeCustomerService.AddCustomerAsync(storeCustomer);
 
                 return Ok(SuccessResponseBody(customerEntity, Localizer["Successfully added"]));
