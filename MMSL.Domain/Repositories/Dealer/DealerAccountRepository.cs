@@ -167,15 +167,8 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "AND [DealerMapProductPermissionSettings].IsDeleted = 0 " +
                 "LEFT JOIN [ProductPermissionSettings] ON [ProductPermissionSettings].Id = [DealerMapProductPermissionSettings].ProductPermissionSettingsId " +
                 "AND [ProductPermissionSettings].IsDeleted = 0 " +
-                "AND [ProductPermissionSettings].Id IS NOT NULL " +
-                "AND [ProductPermissionSettings].ProductCategoryId = @ProductId " +
                 "WHERE [DealerAccount].IsDeleted = 0 " +
-                (
-                excludeMatchProduct.HasValue && excludeMatchProduct.Value 
-                    ? "AND [ProductPermissionSettings].Id IS NULL " 
-                    : "AND ([DealerMapProductPermissionSettings].Id IS NULL " +
-                    "OR ([DealerMapProductPermissionSettings].Id IS NOT NULL AND [ProductPermissionSettings].Id IS NOT NULL))"
-                ) +
+                "AND ([ProductPermissionSettings].Id IS NULL OR [ProductPermissionSettings].ProductCategoryId != @ProductId) " +
                 "AND (" +
                 "PATINDEX('%' + @SearchPhrase + '%', [DealerAccount].CompanyName) > 0 " +
                 "OR PATINDEX('%' + @SearchPhrase + '%', [DealerAccount].Email) > 0 " +
@@ -201,8 +194,7 @@ namespace MMSL.Domain.Repositories.Dealer {
                 new {
                     SearchPhrase = searchPhrase,
                     ProductId = productId
-                })
-                .ToList();
+                });
 
             return dealerAccounts;
         }
