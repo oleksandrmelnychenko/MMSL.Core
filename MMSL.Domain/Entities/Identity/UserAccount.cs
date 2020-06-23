@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MMSL.Domain.Entities.Identity
 {
@@ -18,6 +21,10 @@ namespace MMSL.Domain.Entities.Identity
             LastLoggedIn = user.LastLoggedIn;
             CanUserResetExpiredPassword = user.CanUserResetExpiredPassword;
             ForceChangePassword = user.ForceChangePassword;
+
+            if (user.UserRoles != null) {
+                Roles = user.UserRoles.Select(x => x.UserRoleType).ToList();
+            }
         }
 
         /// <summary>
@@ -57,5 +64,7 @@ namespace MMSL.Domain.Entities.Identity
         public DateTime? TokenExpiresAt { get; set; }
 
         public string TokenExpiresAtTicks => TokenExpiresAt?.Ticks.ToString();
+
+        public List<UserIdentityRoleType> Roles { get; set; } = new List<UserIdentityRoleType>();
     }
 }
