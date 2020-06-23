@@ -851,6 +851,9 @@ namespace MMSL.Databases.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 

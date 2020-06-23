@@ -14,5 +14,8 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
 
         public IPermissionSettingsRepository NewPermissionSettingsRepository(IDbConnection connection) =>
             new PermissionSettingsRepository(connection);
+
+        public IDealerProductAvailabilityRepository NewDealerProductAvailabilityRepository(IDbConnection connection) =>
+            new DealerProductAvailabilityRepository(connection);
     }
 }

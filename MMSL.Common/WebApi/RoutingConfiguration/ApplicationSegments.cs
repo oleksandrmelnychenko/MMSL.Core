@@ -18,6 +18,8 @@
 
         public const string ProductPermissions = "product/permissions";
 
+        public const string ProductAvailability = "product/availability";
+
         public const string Measurements = "measurements";
 
         public const string MeasurementUnits = "measurement/units";

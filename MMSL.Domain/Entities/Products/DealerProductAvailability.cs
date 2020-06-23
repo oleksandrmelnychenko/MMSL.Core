@@ -13,5 +13,8 @@ namespace MMSL.Domain.Entities.Products {
         public long ProductCategoryId { get; set; }
 
         public ProductCategory ProductCategory { get; set; }
+
+        public bool IsDisabled { get; set; }
+
     }
 }

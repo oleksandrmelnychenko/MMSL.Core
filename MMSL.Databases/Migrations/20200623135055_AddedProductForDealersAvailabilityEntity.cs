@@ -17,7 +17,8 @@ namespace MMSL.Databases.Migrations
                     Created = table.Column<DateTime>(nullable: true, defaultValueSql: "getutcdate()"),
                     LastModified = table.Column<DateTime>(nullable: true),
                     DealerAccountId = table.Column<long>(nullable: false),
-                    ProductCategoryId = table.Column<long>(nullable: false)
+                    ProductCategoryId = table.Column<long>(nullable: false),
+                    IsDisabled = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {

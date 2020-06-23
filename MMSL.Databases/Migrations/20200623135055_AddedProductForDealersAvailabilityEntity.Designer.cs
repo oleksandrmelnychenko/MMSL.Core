@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MMSL.Databases.Migrations
 {
     [DbContext(typeof(MMSLDbContext))]
-    [Migration("20200623101040_AddedProductForDealersAvailabilityEntity")]
+    [Migration("20200623135055_AddedProductForDealersAvailabilityEntity")]
     partial class AddedProductForDealersAvailabilityEntity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -851,6 +851,9 @@ namespace MMSL.Databases.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDisabled")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")

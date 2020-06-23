@@ -9,5 +9,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories.Contracts {
         IProductPermissionSettingsRepository NewProductPermissionSettingsRepository(IDbConnection connection);
         
         IPermissionSettingsRepository NewPermissionSettingsRepository(IDbConnection connection);
+
+        IDealerProductAvailabilityRepository NewDealerProductAvailabilityRepository(IDbConnection connection);
     }
 }
