@@ -80,6 +80,8 @@ namespace MMSL.Databases {
 
         public DbSet<PermissionSettings> PermissionSettings { get; set; }
 
+        public DbSet<DealerProductAvailability> DealerProductAvailabilities { get; set; }
+        
         public DbSet<DealerMapProductPermissionSettings> DealerMapProductPermissionSettings { get; set; }
 
         /// <summary>
@@ -121,6 +123,7 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new DeliveryTimelineProductMapMap());
             modelBuilder.AddConfiguration(new ProductPermissionSettingsMap());
             modelBuilder.AddConfiguration(new PermissionSettingsMap());
+            modelBuilder.AddConfiguration(new DealerProductAvailabilityMap());
             modelBuilder.AddConfiguration(new DealerMapProductPermissionSettingsMap());
         }
     }
