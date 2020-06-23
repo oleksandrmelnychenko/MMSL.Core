@@ -45,12 +45,13 @@ namespace MMSL.Services.DealerServices {
                 }
             });
 
-        public Task<long> AddDealerAccount(DealerAccount dealerAccount) =>
+        public Task<DealerAccount> AddDealerAccount(DealerAccount dealerAccount) =>
             Task.Run(() => {
                 ValidateDealerAccount(dealerAccount);
 
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IAddressRepository addressRepository = _addressRepositoriesFactory.NewAddressRepository(connection);
+                    IDealerAccountRepository dealerRepository = _dealerRepositoriesFactory.NewDealerAccountRepository(connection);
 
                     if (dealerAccount.BillingAddress != null && dealerAccount.BillingAddress.IsNew()) {
                         dealerAccount.BillingAddressId = dealerAccount.BillingAddress.Id = addressRepository.AddAddress(dealerAccount.BillingAddress);
@@ -60,18 +61,25 @@ namespace MMSL.Services.DealerServices {
                         dealerAccount.ShippingAddressId = dealerAccount.ShippingAddress.Id = addressRepository.AddAddress(dealerAccount.ShippingAddress);
                     }
 
-                    return _dealerRepositoriesFactory
-                        .NewDealerAccountRepository(connection)
-                        .AddDealerAccount(dealerAccount);
+                    long id = dealerRepository.AddDealerAccount(dealerAccount);
+
+                    return dealerRepository.GetDealerAccount(id);
                 }
             });
 
-        public Task UpdateDealerAccount(DealerAccount dealerAccount) =>
+        public Task<DealerAccount> UpdateDealerAccount(DealerAccount dealerAccount) =>
             Task.Run(() => {
                 ValidateDealerAccount(dealerAccount);
 
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IAddressRepository addressRepository = _addressRepositoriesFactory.NewAddressRepository(connection);
+                    IDealerAccountRepository dealerRepository = _dealerRepositoriesFactory.NewDealerAccountRepository(connection);
+
+                    DealerAccount existingDealer = dealerRepository.GetDealerAccount(dealerAccount.Id);
+
+                    if (existingDealer == null)
+                        ExceptionCreator<DealerNotFoundException>.Create("Dealer not found")
+                            .Throw();
 
                     if (dealerAccount.BillingAddress != null) {
                         if (dealerAccount.BillingAddress.IsNew()) {
@@ -95,9 +103,9 @@ namespace MMSL.Services.DealerServices {
                         }
                     }
 
-                    _dealerRepositoriesFactory
-                        .NewDealerAccountRepository(connection)
-                        .UpdateDealerAccount(dealerAccount);
+                    dealerRepository.UpdateDealerAccount(dealerAccount);
+
+                    return dealerRepository.GetDealerAccount(dealerAccount.Id);
                 }
             });
 

@@ -117,11 +117,9 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
                 dealerAccount.UserIdentityId = dealerIdentity.Id;
 
-                long dealerId = await _dealerAccountService.AddDealerAccount(dealerAccount);
-
                 //TODO: send email to dealer with login info
 
-                return Ok(SuccessResponseBody(dealerId, Localizer["Dealer account successfully created"]));
+                return Ok(SuccessResponseBody(await _dealerAccountService.AddDealerAccount(dealerAccount), Localizer["Dealer account successfully created"]));
             } catch (InvalidDealerModelException dealerExc) {
                 return BadRequest(ErrorResponseBody(dealerExc.GetUserMessageException, HttpStatusCode.BadRequest));
             } catch (Exception exc) {
@@ -156,6 +154,8 @@ namespace MMSL.Server.Core.Controllers.Dealer {
                 return Ok(SuccessResponseBody(await _dealerAccountService.GetDealerAccount(dealerAccount.Id), Localizer["Dealer account successfully updated"]));
             } catch (InvalidDealerModelException dealerExc) {
                 return BadRequest(ErrorResponseBody(dealerExc.GetUserMessageException, HttpStatusCode.BadRequest));
+            } catch (DealerNotFoundException notFound) {
+                return BadRequest(ErrorResponseBody(notFound.GetUserMessageException, HttpStatusCode.BadRequest));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

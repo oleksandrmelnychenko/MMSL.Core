@@ -15,9 +15,9 @@ namespace MMSL.Services.DealerServices.Contracts {
 
         Task<DealerAccount> GetDealerAccount(long dealerAccountId);
 
-        Task<long> AddDealerAccount(DealerAccount dealerAccount);
+        Task<DealerAccount> AddDealerAccount(DealerAccount dealerAccount);
 
-        Task UpdateDealerAccount(DealerAccount dealerAccount);
+        Task<DealerAccount> UpdateDealerAccount(DealerAccount dealerAccount);
 
         Task DeleteDealerAccount(long dealerAccountId);
     }
