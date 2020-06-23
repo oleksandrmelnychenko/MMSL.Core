@@ -23,11 +23,11 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
             _connection = connection;
         }
 
-        public List<ProductCategory> GetAll(string searchPhrase) {
+        public List<ProductCategory> GetAll(string searchPhrase, long? dealerAccountId) {
             List<ProductCategory> result = new List<ProductCategory>();
 
             _connection.Query<ProductCategory, ProductCategoryMapOptionGroup, OptionGroup, OptionUnit, ProductCategory>(
-                "SELECT [ProductCategories].*, [ProductCategoryMapOptionGroups].*, [OptionGroups].*, [OptionUnits].* " +
+                $"SELECT [ProductCategories].*, [ProductCategoryMapOptionGroups].*, [OptionGroups].*, [OptionUnits].* " +
                 "FROM [ProductCategories] " +
                 "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].ProductCategoryId = [ProductCategories].Id " +
                 "AND [ProductCategoryMapOptionGroups].IsDeleted = 0 " +
@@ -36,8 +36,18 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "AND [OptionGroups].IsDeleted = 0 " +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id " +
                 "AND [OptionUnits].IsDeleted = 0 " +
+                (
+                    dealerAccountId.HasValue && dealerAccountId.Value != default(long)
+                    ? "LEFT JOIN [DealerProductAvailabilities] ON [DealerProductAvailabilities].ProductCategoryId = ProductCategories.Id "
+                    : string.Empty
+                ) +
                 "WHERE [ProductCategories].IsDeleted = 0 " +
                 "AND PATINDEX('%' + @SearchTerm + '%', [ProductCategories].Name) > 0 " +
+                (
+                    dealerAccountId.HasValue && dealerAccountId.Value != default(long)
+                    ? "AND ([DealerProductAvailabilities].Id IS NULL OR [DealerProductAvailabilities].DealerAccountId != @DealerAccountId) "
+                    : string.Empty
+                ) +
                 "ORDER BY [ProductCategories].Id, [OptionGroups].Id, [OptionUnits].OrderIndex",
                 (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit) => {
                     if (result.Any(x => x.Id == productCategory.Id)) {
@@ -61,7 +71,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
 
                     return productCategory;
                 },
-                new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase });
+                new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase, DealerAccountId = dealerAccountId });
 
             return result;
         }

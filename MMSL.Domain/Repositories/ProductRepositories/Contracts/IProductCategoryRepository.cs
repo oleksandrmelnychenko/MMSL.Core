@@ -6,7 +6,7 @@ using System.Text;
 
 namespace MMSL.Domain.Repositories.ProductRepositories.Contracts {
     public interface IProductCategoryRepository {
-        List<ProductCategory> GetAll(string searchPhrase);
+        List<ProductCategory> GetAll(string searchPhrase, long? dealerAccountId);
 
         ProductCategory NewProduct(ProductCategory newProductCategory);
 

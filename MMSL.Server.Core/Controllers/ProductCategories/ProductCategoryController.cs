@@ -40,9 +40,9 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         [HttpGet]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORIES)]
-        public async Task<IActionResult> GetAll([FromQuery]string searchPhrase) {
+        public async Task<IActionResult> GetAll([FromQuery]string searchPhrase, [FromQuery] long? dealerAccountId) {
             try {
-                List<ProductCategory> products = await _productCategoryService.GetProductCategoriesAsync(searchPhrase);
+                List<ProductCategory> products = await _productCategoryService.GetProductCategoriesAsync(searchPhrase, dealerAccountId);
 
                 return Ok(SuccessResponseBody(products, Localizer["Successfully completed"]));
             }           
