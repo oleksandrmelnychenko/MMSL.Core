@@ -27,9 +27,9 @@ namespace MMSL.Domain.Repositories.Stores {
             _connection.QuerySingleOrDefault<long>(
                 "INSERT INTO [StoreCustomers] " +
                 "([IsDeleted],[UserName],[CustomerName],[Email],[PhoneNumber],[BirthDate]," +
-                "[UseBillingAsDeliveryAddress],[BillingAddressId],[DeliveryAddressId],[StoreId],[UserIdentityId]) " +
+                "[UseBillingAsDeliveryAddress],[BillingAddressId],[DeliveryAddressId],[StoreId]) " +
                 "VALUES (0,@UserName,@CustomerName,@Email,@PhoneNumber,@BirthDate," +
-                "@UseBillingAsDeliveryAddress,@BillingAddressId,@DeliveryAddressId,@StoreId,@UserIdentityId);" +
+                "@UseBillingAsDeliveryAddress,@BillingAddressId,@DeliveryAddressId,@StoreId);" +
                 "SELECT SCOPE_IDENTITY()", storeCustomer);
 
         public StoreCustomer GetStoreCustomer(long storeCustomerId) =>
