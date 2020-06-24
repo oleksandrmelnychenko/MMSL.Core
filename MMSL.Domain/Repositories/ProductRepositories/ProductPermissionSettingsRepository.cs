@@ -29,10 +29,13 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
 
             string query = 
                 "SELECT [ProductPermissionSettings].*, " +
-                "(SELECT COUNT(Id) " +
+                "(SELECT COUNT([DealerMapProductPermissionSettings].Id) " +
                 "FROM [DealerMapProductPermissionSettings] " +
+                "LEFT JOIN [DealerAccount] ON [DealerAccount].Id = [DealerMapProductPermissionSettings].DealerAccountId " +
+                "AND [DealerAccount].IsDeleted = 0 " +
                 "WHERE [DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
-                "AND [DealerMapProductPermissionSettings].IsDeleted = 0) AS [DealersAppliedCount]" +
+                "AND [DealerMapProductPermissionSettings].IsDeleted = 0 " +
+                "AND [DealerAccount].Id IS NOT NULL) AS [DealersAppliedCount]" +
                 ", [PermissionSettings].* " +
                 "FROM [ProductPermissionSettings] " +
                 "LEFT JOIN [PermissionSettings] ON [PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
