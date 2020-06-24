@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MMSL.Services.StoreCustomerServices.Contracts {
     public interface IStoreCustomerService {
-        Task<PaginatingResult<StoreCustomer>> GetCustomersByStoreAsync(int pageNumber, int limit, string searchPhrase, string storeName, long? storeId = null);
+        Task<PaginatingResult<StoreCustomer>> GetCustomersByStoreAsync(int pageNumber, int limit, string searchPhrase, string storeName, long? storeId = null, long? userIdentityId = null);
         Task<StoreCustomer> GetCustomerAsync(long storeCustomerId);
         Task<StoreCustomer> AddCustomerAsync(StoreCustomer storeCustomer);
         Task<StoreCustomer> UpdateCustomerAsync(StoreCustomer storeCustomer);

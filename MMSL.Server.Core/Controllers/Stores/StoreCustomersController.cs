@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Localization;
+using MMSL.Common.Helpers;
 using MMSL.Common.IdentityConfiguration;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
@@ -13,7 +15,9 @@ using MMSL.Services.StoreCustomerServices.Contracts;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace MMSL.Server.Core.Controllers.Stores {
@@ -43,7 +47,11 @@ namespace MMSL.Server.Core.Controllers.Stores {
             [FromQuery]string searchPhrase,
             [FromQuery]string storeName) {
             try {
-                return Ok(SuccessResponseBody(await _storeCustomerService.GetCustomersByStoreAsync(pageNumber, limit, searchPhrase, storeName, storeId), Localizer["Successfully completed"]));
+                long? userId = ClaimHelper.GetUserRoles(User).Any(x => x == RoleType.Dealer.ToString())
+                    ? ClaimHelper.GetUserId(User) 
+                    : default(long?);
+
+                return Ok(SuccessResponseBody(await _storeCustomerService.GetCustomersByStoreAsync(pageNumber, limit, searchPhrase, storeName, storeId, userId), Localizer["Successfully completed"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
