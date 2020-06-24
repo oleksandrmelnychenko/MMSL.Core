@@ -80,7 +80,9 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
             _connection.Query<ProductCategory>(
 @"SELECT [ProductCategories].*,[DealerProductAvailabilities].IsDisabled 
 FROM [ProductCategories]
-LEFT JOIN [DealerProductAvailabilities] ON [DealerProductAvailabilities].ProductCategoryId = [ProductCategories].Id"
+LEFT JOIN [DealerProductAvailabilities] ON [DealerProductAvailabilities].ProductCategoryId = [ProductCategories].Id 
+WHERE [ProductCategories].IsDeleted = 0 AND DealerAccountId = @DealerAccountId",
+                new { DealerAccountId = dealerAccountId }
                 ).ToList();
 
         public ProductCategory GetById(long productCategoryId) =>

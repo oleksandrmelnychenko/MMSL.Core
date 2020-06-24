@@ -57,7 +57,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORIES_WITH_AVAILABILITY)]
         public async Task<IActionResult> GetWithAvailability([FromQuery] string searchPhrase, [FromQuery] long? dealerAccountId) {
             try {
-                List<ProductCategory> products = await _productCategoryService.GetProductCategoriesAsync(searchPhrase, dealerAccountId);
+                List<ProductCategory> products = await _productCategoryService.GetProductCategoriesAvailabilitiesAsync(searchPhrase, dealerAccountId);
 
                 return Ok(SuccessResponseBody(products, Localizer["Successfully completed"]));
             } catch (Exception exc) {
