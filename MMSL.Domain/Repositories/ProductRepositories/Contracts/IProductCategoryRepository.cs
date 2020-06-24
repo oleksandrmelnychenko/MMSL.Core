@@ -8,6 +8,8 @@ namespace MMSL.Domain.Repositories.ProductRepositories.Contracts {
     public interface IProductCategoryRepository {
         List<ProductCategory> GetAll(string searchPhrase, long? dealerAccountId);
 
+        List<ProductCategory> GetAvailabilities(string searchPhrase, long? dealerAccountId);
+
         ProductCategory NewProduct(ProductCategory newProductCategory);
 
         void UpdateProduct(ProductCategory product);

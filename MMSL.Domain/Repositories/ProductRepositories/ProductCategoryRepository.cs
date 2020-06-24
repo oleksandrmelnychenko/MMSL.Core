@@ -76,6 +76,13 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
             return result;
         }
 
+        public List<ProductCategory> GetAvailabilities(string searchPhrase, long? dealerAccountId) =>
+            _connection.Query<ProductCategory>(
+@"SELECT [ProductCategories].*,[DealerProductAvailabilities].IsDisabled 
+FROM [ProductCategories]
+LEFT JOIN [DealerProductAvailabilities] ON [DealerProductAvailabilities].ProductCategoryId = [ProductCategories].Id"
+                ).ToList();
+
         public ProductCategory GetById(long productCategoryId) =>
             _connection.Query<ProductCategory>(
                 "SELECT * " +

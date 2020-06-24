@@ -125,5 +125,15 @@ namespace MMSL.Services.ProductCategories {
                       }
                   }
               });
+
+        public Task<List<ProductCategory>> GetProductCategoriesAvailabilitiesAsync(string searchPhrase, long? dealerAccountId) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    List<ProductCategory> products = null;
+                    IProductCategoryRepository productCategoryRepository = _productCategoryRepositoriesFactory.NewProductCategoryRepository(connection);
+                    products = productCategoryRepository.GetAvailabilities(searchPhrase, dealerAccountId);
+                    return products;
+                }
+            });
     }
 }

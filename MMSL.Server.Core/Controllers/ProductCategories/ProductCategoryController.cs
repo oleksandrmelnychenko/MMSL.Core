@@ -53,6 +53,20 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         }
 
         [HttpGet]
+        [Authorize(Roles = "Administrator,Manufacturer")]
+        [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORIES_WITH_AVAILABILITY)]
+        public async Task<IActionResult> GetWithAvailability([FromQuery] string searchPhrase, [FromQuery] long? dealerAccountId) {
+            try {
+                List<ProductCategory> products = await _productCategoryService.GetProductCategoriesAsync(searchPhrase, dealerAccountId);
+
+                return Ok(SuccessResponseBody(products, Localizer["Successfully completed"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpGet]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORY)]
         public async Task<IActionResult> Get([FromQuery]long productCategoryId) {
