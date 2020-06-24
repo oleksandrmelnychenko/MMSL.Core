@@ -81,7 +81,8 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
 @"SELECT [ProductCategories].*,[DealerProductAvailabilities].IsDisabled 
 FROM [ProductCategories]
 LEFT JOIN [DealerProductAvailabilities] ON [DealerProductAvailabilities].ProductCategoryId = [ProductCategories].Id 
-WHERE [ProductCategories].IsDeleted = 0 AND DealerAccountId = @DealerAccountId",
+AND DealerAccountId = @DealerAccountId 
+WHERE [ProductCategories].IsDeleted = 0 ",
                 new { DealerAccountId = dealerAccountId }
                 ).ToList();
 
