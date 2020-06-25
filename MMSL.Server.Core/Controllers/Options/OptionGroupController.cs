@@ -77,6 +77,9 @@ namespace MMSL.Server.Core.Controllers.Options {
         [AssignActionRoute(OptionGroupSegments.NEW_OPTION_GROUP)]
         public async Task<IActionResult> NewOptionGroup([FromBody] NewOptionGroupDataContract newOptionGroupDataContract) {
             try {
+                if (newOptionGroupDataContract.Price.HasValue && !newOptionGroupDataContract.CurrencyTypeId.HasValue)
+                    throw new ArgumentNullException(nameof(newOptionGroupDataContract.CurrencyTypeId));
+
                 if (newOptionGroupDataContract == null)
                     throw new ArgumentNullException("NewOptionGroupDataContract");
 
@@ -86,7 +89,14 @@ namespace MMSL.Server.Core.Controllers.Options {
                 if (newOptionGroupDataContract.ProductId == default(long))
                     throw new ArgumentNullException("ProductId");
 
-                return Ok(SuccessResponseBody(await _optionGroupService.NewOptionGroupAsync(newOptionGroupDataContract), Localizer["Style has been created successfully"]));
+                OptionPrice price = newOptionGroupDataContract.Price.HasValue && newOptionGroupDataContract.Price.Value != default
+                    ? new OptionPrice {
+                        Price = newOptionGroupDataContract.Price.Value,
+                        CurrencyTypeId = newOptionGroupDataContract.CurrencyTypeId.Value
+                    }
+                    : null;
+
+                return Ok(SuccessResponseBody(await _optionGroupService.NewOptionGroupAsync(newOptionGroupDataContract, price), Localizer["Style has been created successfully"]));
             }           
             catch (Exception exc) {
                 Log.Error(exc.Message);
@@ -101,7 +111,15 @@ namespace MMSL.Server.Core.Controllers.Options {
             try {
                 if (optionGroup == null) throw new ArgumentNullException("UpdateOptionGroup");
 
-                await _optionGroupService.UpdateOptionGroupAsync(optionGroup);
+                OptionPrice price = optionGroup.Price.HasValue && optionGroup.Price.Value != default
+                    ? new OptionPrice {
+                        Price = optionGroup.Price.Value,
+                        CurrencyTypeId = optionGroup.CurrencyTypeId.Value,
+                        OptionGroupId = optionGroup.Id
+                    }
+                    : null;
+
+                await _optionGroupService.UpdateOptionGroupAsync(optionGroup, price);
 
                 return Ok(SuccessResponseBody(optionGroup, Localizer["Style successfully updated"]));
             }

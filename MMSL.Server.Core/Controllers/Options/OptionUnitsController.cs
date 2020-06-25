@@ -114,7 +114,7 @@ namespace MMSL.Server.Core.Controllers.Options {
                     entity.ImageName = formData.File.FileName;
                 }
 
-                OptionPrice price = updateOptionUnit.Price.HasValue
+                OptionPrice price = updateOptionUnit.Price.HasValue && updateOptionUnit.Price.Value != default
                     ? new OptionPrice {
                         Price = updateOptionUnit.Price.Value,
                         CurrencyTypeId = updateOptionUnit.CurrencyTypeId.Value,

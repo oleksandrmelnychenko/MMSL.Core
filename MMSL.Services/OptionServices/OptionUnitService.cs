@@ -54,7 +54,7 @@ namespace MMSL.Services.OptionServices {
 
                     if (price != null) {
                         IOptionPriceRepository priceRepository = _optionRepositoriesFactory.NewOptionPriceRepository(connection);
-                        
+
                         price.OptionUnitId = optionUnit.Id;
                         priceRepository.AddPrice(price);
                     }
@@ -78,13 +78,17 @@ namespace MMSL.Services.OptionServices {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IUnitValuesRepository unitValuesRepository = _optionRepositoriesFactory.NewUnitValuesRepository(connection);
                     IOptionUnitRepository unitRepository = _optionRepositoriesFactory.NewOptionUnitRepository(connection);
+                    IOptionPriceRepository priceRepository = _optionRepositoriesFactory.NewOptionPriceRepository(connection);
 
-                    if (price != null) {
-                        IOptionPriceRepository priceRepository = _optionRepositoriesFactory.NewOptionPriceRepository(connection);
+                    List<OptionPrice> existing = priceRepository.GetPrices(optionUnit.Id, null);
+                    OptionPrice lastActive = existing.LastOrDefault();
 
-                        List<OptionPrice> existing = priceRepository.GetPrices(optionUnit.Id, null);
+                    if (price == null && lastActive != null) {
 
-                        OptionPrice lastActive = existing.LastOrDefault();
+                        lastActive.IsDeleted = true;
+                        priceRepository.UpdatePrice(price);
+
+                    } else if (price != null) {
 
                         if (lastActive == null) {
                             priceRepository.AddPrice(price);
@@ -92,6 +96,7 @@ namespace MMSL.Services.OptionServices {
                             price.Id = lastActive.Id;
                             priceRepository.UpdatePrice(price);
                         }
+
                     }
 
                     unitRepository.UpdateOptionUnit(optionUnit);

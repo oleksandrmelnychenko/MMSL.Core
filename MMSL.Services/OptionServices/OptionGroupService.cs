@@ -87,16 +87,20 @@ namespace MMSL.Services.OptionServices {
              Task.Run(() => {
                  using (var connection = _connectionFactory.NewSqlConnection()) {
                      IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
+                     IOptionPriceRepository priceRepository = _optionRepositoriesFactory.NewOptionPriceRepository(connection);
 
                      OptionGroup existed = optionGroupRepository.GetById(optionGroup.Id);
 
                      if (existed != null) {
-                         if (price != null) {
-                             IOptionPriceRepository priceRepository = _optionRepositoriesFactory.NewOptionPriceRepository(connection);
+                         List<OptionPrice> existing = priceRepository.GetPrices(null, optionGroup.Id);
+                         OptionPrice lastActive = existing.LastOrDefault();
 
-                             List<OptionPrice> existing = priceRepository.GetPrices(null, optionGroup.Id);
+                         if (price == null && lastActive != null) {
 
-                             OptionPrice lastActive = existing.LastOrDefault();
+                             lastActive.IsDeleted = true;
+                             priceRepository.UpdatePrice(price);
+
+                         } else if (price != null) {
 
                              if (lastActive == null) {
                                  priceRepository.AddPrice(price);
@@ -104,6 +108,7 @@ namespace MMSL.Services.OptionServices {
                                  price.Id = lastActive.Id;
                                  priceRepository.UpdatePrice(price);
                              }
+
                          }
 
                          int rowAffected = optionGroupRepository.UpdateOptionGroup(optionGroup.GetEntity());

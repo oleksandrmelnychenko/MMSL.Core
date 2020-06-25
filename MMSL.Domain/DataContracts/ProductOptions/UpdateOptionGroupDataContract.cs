@@ -8,9 +8,9 @@ namespace MMSL.Domain.DataContracts.ProductOptions {
 
         public bool IsMandatory { get; set; }
 
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; }
 
-        public long CurrencyTypeId { get; set; }
+        public long? CurrencyTypeId { get; set; }
 
         public override OptionGroup GetEntity() {
             return new OptionGroup {
