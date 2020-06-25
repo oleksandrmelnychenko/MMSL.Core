@@ -40,7 +40,6 @@ namespace MMSL.Domain.Repositories.Options {
                         result.UnitValues.Add(unitValue);
 
                     if (price != null) {
-                        result.OptionPrices.Add(price);
                         result.CurrentPrice = price;
                     }
 
@@ -72,7 +71,6 @@ namespace MMSL.Domain.Repositories.Options {
                         unit.UnitValues.Add(unitValue);
 
                     if (price != null) {
-                        unit.OptionPrices.Add(price);
                         unit.CurrentPrice = price;
                     }
 

@@ -95,16 +95,22 @@ namespace MMSL.Domain.Repositories.Options {
         public OptionGroup GetById(long id) {
             OptionGroup groupResult = null;
 
-            _connection.Query<OptionGroup, OptionUnit, UnitValue, OptionGroup>(
-                "SELECT OptionGroups.*, [OptionUnits].*, [UnitValues].* " +
+            _connection.Query<OptionGroup, OptionPrice, OptionUnit, UnitValue, OptionPrice, OptionGroup>(
+                "SELECT [OptionGroups].*, [GroupPrice].*, [OptionUnits].*, [UnitValues].*, [UnitPrice].* " +
                 "FROM OptionGroups " +
+                "LEFT JOIN [OptionPrices] AS [GroupPrice] ON [GroupPrice].OptionGroupId = OptionGroups.Id AND [GroupPrice].IsDeleted = 0 " +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id AND [OptionUnits].IsDeleted = 0" +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0 " +
+                "LEFT JOIN [OptionPrices] AS [UnitPrice] ON [UnitPrice].OptionUnitId = [OptionUnits].Id AND [UnitPrice].IsDeleted = 0 " +
                 "WHERE [OptionGroups].Id = @Id AND [OptionGroups].IsDeleted = 0 " +
                 "ORDER BY [OptionUnits].OrderIndex, [UnitValues].OrderIndex",
-                (group, unit, unitValue) => {
+                (group, groupPrice, unit, unitValue, unitPrice) => {
                     if (groupResult == null) {
                         groupResult = group;
+                    }
+
+                    if (groupPrice != null) {
+                        groupResult.CurrentPrice = groupPrice;
                     }
 
                     if (unit != null) {
@@ -113,6 +119,10 @@ namespace MMSL.Domain.Repositories.Options {
                             unit = groupResult.OptionUnits.First(x => x.Id == unit.Id);
                         } else {
                             groupResult.OptionUnits.Add(unit);
+                        }
+
+                        if (unitPrice != null) {
+                            unit.CurrentPrice = unitPrice;
                         }
 
                         if (unitValue != null)
