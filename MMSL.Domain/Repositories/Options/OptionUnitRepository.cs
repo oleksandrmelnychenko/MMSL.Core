@@ -25,18 +25,24 @@ namespace MMSL.Domain.Repositories.Options {
         public OptionUnit GetOptionUnit(long optionUnitId) {
             OptionUnit result = null;
 
-            _connection.Query<OptionUnit, UnitValue, OptionUnit>(
-                "SELECT [OptionUnits].*, [UnitValues].* " +
+            _connection.Query<OptionUnit, UnitValue, OptionPrice, OptionUnit>(
+                "SELECT [OptionUnits].*, [UnitValues].*, [OptionPrices].* " +
                 "FROM [OptionUnits] " +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0 " +
+                "LEFT JOIN [OptionPrices] ON [OptionPrices].OptionUnitId = [OptionUnits].Id AND [OptionPrices].IsDeleted = 0 " +
                 "WHERE [OptionUnits].Id = @Id " +
                 "ORDER BY [UnitValues].OrderIndex ",
-                (unit, unitValue) => {
+                (unit, unitValue, price) => {
                     if (result == null)
                         result = unit;
 
                     if (unitValue != null)
                         result.UnitValues.Add(unitValue);
+
+                    if (price != null) {
+                        result.OptionPrices.Add(price);
+                        result.CurrentPrice = price;
+                    }
 
                     return unit;
                 },
@@ -48,14 +54,15 @@ namespace MMSL.Domain.Repositories.Options {
         public List<OptionUnit> GetOptionUnitsByGroup(long optionGroupId) {
             List<OptionUnit> result = new List<OptionUnit>();
 
-            _connection.Query<OptionUnit, UnitValue, OptionUnit>(
+            _connection.Query<OptionUnit, UnitValue, OptionPrice, OptionUnit>(
                 "SELECT [OptionUnits].*, [UnitValues].* " +
                 "FROM [OptionUnits] " +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id " +
+                "LEFT JOIN [OptionPrices] ON [OptionPrices].OptionUnitId = [OptionUnits].Id AND [OptionPrices].IsDeleted = 0 " +
                 "WHERE [OptionUnits].[OptionGroupId] = @GroupId " +
                 "AND [OptionUnits].IsDeleted = 0 " +
                 "ORDER BY [OptionUnits].OrderIndex, [UnitValues].OrderIndex ",
-                (unit, unitValue) => {
+                (unit, unitValue, price) => {
                     if (result.Any(x => x.Id == unit.Id))
                         unit = result.First(x => x.Id == unit.Id);
                     else
@@ -63,6 +70,11 @@ namespace MMSL.Domain.Repositories.Options {
                     
                     if (unitValue != null)
                         unit.UnitValues.Add(unitValue);
+
+                    if (price != null) {
+                        unit.OptionPrices.Add(price);
+                        unit.CurrentPrice = price;
+                    }
 
                     return unit;
                 },

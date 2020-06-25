@@ -38,7 +38,7 @@ namespace MMSL.Services.OptionServices {
                 }
             });
 
-        public Task<OptionUnit> AddOptionUnit(OptionUnit optionUnit, List<UnitValueDataContract> values) =>
+        public Task<OptionUnit> AddOptionUnit(OptionUnit optionUnit, List<UnitValueDataContract> values, OptionPrice price = null) =>
             Task.Factory.StartNew(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IOptionGroupRepository groupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
@@ -51,6 +51,13 @@ namespace MMSL.Services.OptionServices {
                     }
 
                     optionUnit.Id = unitRepository.AddOptionUnit(optionUnit);
+
+                    if (price != null) {
+                        IOptionPriceRepository priceRepository = _optionRepositoriesFactory.NewOptionPriceRepository(connection);
+                        
+                        price.OptionUnitId = optionUnit.Id;
+                        priceRepository.AddPrice(price);
+                    }
 
                     if (values != null) {
                         foreach (UnitValueDataContract value in values) {
@@ -66,11 +73,26 @@ namespace MMSL.Services.OptionServices {
                 }
             });
 
-        public Task<OptionUnit> UpdateOptionUnit(OptionUnit optionUnit, List<UnitValueDataContract> values) =>
+        public Task<OptionUnit> UpdateOptionUnit(OptionUnit optionUnit, List<UnitValueDataContract> values, OptionPrice price = null) =>
             Task.Factory.StartNew(() => {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     IUnitValuesRepository unitValuesRepository = _optionRepositoriesFactory.NewUnitValuesRepository(connection);
                     IOptionUnitRepository unitRepository = _optionRepositoriesFactory.NewOptionUnitRepository(connection);
+
+                    if (price != null) {
+                        IOptionPriceRepository priceRepository = _optionRepositoriesFactory.NewOptionPriceRepository(connection);
+
+                        List<OptionPrice> existing = priceRepository.GetPrices(optionUnit.Id, null);
+
+                        OptionPrice lastActive = existing.LastOrDefault();
+
+                        if (lastActive == null) {
+                            priceRepository.AddPrice(price);
+                        } else {
+                            price.Id = lastActive.Id;
+                            priceRepository.UpdatePrice(price);
+                        }
+                    }
 
                     unitRepository.UpdateOptionUnit(optionUnit);
 

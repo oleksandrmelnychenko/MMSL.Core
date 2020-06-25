@@ -14,6 +14,10 @@ namespace MMSL.Domain.DataContracts.ProductOptions {
 
         public string SerializedValues { get; set; }
 
+        public decimal? Price { get; set; }
+
+        public long? CurrencyTypeId { get; set; }
+
         public override OptionUnit GetEntity() {
             return new OptionUnit {
                 Id = Id,

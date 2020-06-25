@@ -1,6 +1,7 @@
 ﻿using MMSL.Domain.Entities.Products;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MMSL.Domain.Entities.Options {
     public class OptionGroup : EntityBase {
@@ -19,5 +20,8 @@ namespace MMSL.Domain.Entities.Options {
         public ICollection<ProductCategoryMapOptionGroup> ProductCategoryMaps { get; set; }
         
         public ICollection<OptionPrice> OptionPrices { get; set; } = new HashSet<OptionPrice>();
+
+        [NotMapped]
+        public OptionPrice CurrentPrice { get; set; }
     }
 }

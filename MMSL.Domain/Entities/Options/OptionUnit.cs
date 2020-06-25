@@ -24,5 +24,8 @@ namespace MMSL.Domain.Entities.Options {
         public ICollection<UnitValue> UnitValues { get; set; } = new HashSet<UnitValue>();
 
         public ICollection<OptionPrice> OptionPrices { get; set; } = new HashSet<OptionPrice>();
+
+        [NotMapped]
+        public OptionPrice CurrentPrice { get; set; }
     }
 }

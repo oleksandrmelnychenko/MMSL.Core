@@ -7,5 +7,9 @@ namespace MMSL.Domain.DataContracts.ProductOptions {
         public string Name { get; set; }
 
         public bool IsMandatory { get; set; }
+
+        public decimal Price { get; set; }
+
+        public long CurrencyTypeId { get; set; }
     }
 }

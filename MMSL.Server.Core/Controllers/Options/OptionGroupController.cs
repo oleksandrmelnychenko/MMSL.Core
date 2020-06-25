@@ -97,7 +97,7 @@ namespace MMSL.Server.Core.Controllers.Options {
         [HttpPut]
         [Authorize]
         [AssignActionRoute(OptionGroupSegments.UPDATE_OPTION_GROUP)]
-        public async Task<IActionResult> UpdateOptionGroup([FromBody]OptionGroup optionGroup) {
+        public async Task<IActionResult> UpdateOptionGroup([FromBody] UpdateOptionGroupDataContract optionGroup) {
             try {
                 if (optionGroup == null) throw new ArgumentNullException("UpdateOptionGroup");
 

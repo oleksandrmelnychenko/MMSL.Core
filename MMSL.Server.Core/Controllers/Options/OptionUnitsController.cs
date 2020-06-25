@@ -32,7 +32,7 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpGet]
         [AssignActionRoute(OptionUnitSegments.GET_OPTION_UNITS)]
-        public async Task<IActionResult> GetOptionUnit([FromQuery]long optionUnitId) {
+        public async Task<IActionResult> GetOptionUnit([FromQuery] long optionUnitId) {
             try {
                 return Ok(SuccessResponseBody(await _optionUnitService.GetOptionUnitByIdAsync(optionUnitId), Localizer["Successfully completed"]));
             } catch (Exception exc) {
@@ -43,7 +43,7 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpGet]
         [AssignActionRoute(OptionUnitSegments.GET_GROUP_OPTION_UNITS)]
-        public async Task<IActionResult> GetGroupOptionUnit([FromQuery]long optionGroupId) {
+        public async Task<IActionResult> GetGroupOptionUnit([FromQuery] long optionGroupId) {
             try {
                 return Ok(SuccessResponseBody(await _optionUnitService.GetOptionUnitsByGroupIdAsync(optionGroupId), Localizer["Successfully completed"]));
             } catch (Exception exc) {
@@ -55,9 +55,12 @@ namespace MMSL.Server.Core.Controllers.Options {
         [HttpPost]
         [AssignActionRoute(OptionUnitSegments.ADD_OPTION_UNIT)]
         public async Task<IActionResult> AddOptionUnit(
-            [FromForm] OptionUnitDataContract optionUnit, 
+            [FromForm] OptionUnitDataContract optionUnit,
             [FromForm] FileFormData formData) {
             try {
+                if (optionUnit.Price.HasValue && !optionUnit.CurrencyTypeId.HasValue)
+                    throw new ArgumentNullException(nameof(optionUnit.CurrencyTypeId));
+
                 OptionUnit optionUnitEntity = optionUnit.GetEntity();
 
                 List<UnitValueDataContract> values = !string.IsNullOrEmpty(optionUnit.SerializedValues)
@@ -69,8 +72,15 @@ namespace MMSL.Server.Core.Controllers.Options {
                     optionUnitEntity.ImageName = formData.File.FileName;
                 }
 
+                OptionPrice price = optionUnit.Price.HasValue 
+                    ? new OptionPrice { 
+                        Price = optionUnit.Price.Value, 
+                        CurrencyTypeId = optionUnit.CurrencyTypeId.Value
+                    } 
+                    : null;
+
                 return Ok(SuccessResponseBody(
-                    await _optionUnitService.AddOptionUnit(optionUnitEntity, values),
+                    await _optionUnitService.AddOptionUnit(optionUnitEntity, values, price),
                     Localizer["Successfully created"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
@@ -80,8 +90,11 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpPut]
         [AssignActionRoute(OptionUnitSegments.UPDATE_OPTION_UNIT)]
-        public async Task<IActionResult> UpdateOptionUnit([FromForm] OptionUnitUpdateDataContract updateOptionUnit, [FromForm]FileFormData formData) {
+        public async Task<IActionResult> UpdateOptionUnit([FromForm] OptionUnitUpdateDataContract updateOptionUnit, [FromForm] FileFormData formData) {
             try {
+                if (updateOptionUnit.Price.HasValue && !updateOptionUnit.CurrencyTypeId.HasValue)
+                    throw new ArgumentNullException(nameof(updateOptionUnit.CurrencyTypeId));
+
                 if (updateOptionUnit == null)
                     throw new ArgumentNullException(nameof(updateOptionUnit));
 
@@ -101,6 +114,16 @@ namespace MMSL.Server.Core.Controllers.Options {
                     entity.ImageName = formData.File.FileName;
                 }
 
+                OptionPrice price = updateOptionUnit.Price.HasValue
+                    ? new OptionPrice {
+                        Price = updateOptionUnit.Price.Value,
+                        CurrencyTypeId = updateOptionUnit.CurrencyTypeId.Value,
+                        OptionUnitId = updateOptionUnit.Id
+                    }
+                    : null;
+
+                OptionUnit result = await _optionUnitService.UpdateOptionUnit(entity, values, price);
+
                 if (string.IsNullOrEmpty(oldImage) || oldImage != entity.ImageUrl) {
                     OptionUnit oldEntity = await _optionUnitService.GetOptionUnitByIdAsync(entity.Id);
 
@@ -109,7 +132,7 @@ namespace MMSL.Server.Core.Controllers.Options {
                     }
                 }
 
-                return Ok(SuccessResponseBody(await _optionUnitService.UpdateOptionUnit(entity, values), Localizer["Successfully updated"]));
+                return Ok(SuccessResponseBody(result, Localizer["Successfully updated"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
@@ -118,7 +141,7 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpDelete]
         [AssignActionRoute(OptionUnitSegments.DELETE_OPTION_UNIT)]
-        public async Task<IActionResult> DeleteOptionUnit([FromQuery]long optionUnitId) {
+        public async Task<IActionResult> DeleteOptionUnit([FromQuery] long optionUnitId) {
             try {
                 return Ok(SuccessResponseBody(await _optionUnitService.DeleteOptionUnit(optionUnitId), Localizer["Successfully updated"]));
             } catch (Exception exc) {
@@ -129,7 +152,7 @@ namespace MMSL.Server.Core.Controllers.Options {
 
         [HttpPut]
         [AssignActionRoute(OptionUnitSegments.UPDATE_ORDER_INDEX)]
-        public async Task<IActionResult> UpdateOptionUnit([FromBody]List<UpdateOrderIndexDataContract> orderIndexes) {
+        public async Task<IActionResult> UpdateOptionUnit([FromBody] List<UpdateOrderIndexDataContract> orderIndexes) {
             try {
                 await _optionUnitService.UpdateOrderIndexesAsync(orderIndexes);
 

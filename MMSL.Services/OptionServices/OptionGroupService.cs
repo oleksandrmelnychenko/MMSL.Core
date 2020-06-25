@@ -10,6 +10,7 @@ using MMSL.Services.OptionServices.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -50,7 +51,7 @@ namespace MMSL.Services.OptionServices {
                 }
             });
 
-        public Task<OptionGroup> NewOptionGroupAsync(NewOptionGroupDataContract newOptionGroupDataContract) =>
+        public Task<OptionGroup> NewOptionGroupAsync(NewOptionGroupDataContract newOptionGroupDataContract, OptionPrice price = null) =>
              Task.Run(() => {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                      IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
@@ -69,13 +70,20 @@ namespace MMSL.Services.OptionServices {
 
                      optionGroup = optionGroupRepository.NewOptionGroup(optionGroup);
 
+                     if (price != null) {
+                         IOptionPriceRepository priceRepository = _optionRepositoriesFactory.NewOptionPriceRepository(connection);
+
+                         price.OptionGroupId = optionGroup.Id;
+                         priceRepository.AddPrice(price);
+                     }
+
                      productMapsRepository.NewMap(newOptionGroupDataContract.ProductId, optionGroup.Id);
 
                      return optionGroup;
                  }
              });
 
-        public Task UpdateOptionGroupAsync(OptionGroup optionGroup) =>
+        public Task UpdateOptionGroupAsync(UpdateOptionGroupDataContract optionGroup, OptionPrice price = null) =>
              Task.Run(() => {
                  using (var connection = _connectionFactory.NewSqlConnection()) {
                      IOptionGroupRepository optionGroupRepository = _optionRepositoriesFactory.NewOptionGroupRepository(connection);
@@ -83,7 +91,22 @@ namespace MMSL.Services.OptionServices {
                      OptionGroup existed = optionGroupRepository.GetById(optionGroup.Id);
 
                      if (existed != null) {
-                         int rowAffected = optionGroupRepository.UpdateOptionGroup(optionGroup);
+                         if (price != null) {
+                             IOptionPriceRepository priceRepository = _optionRepositoriesFactory.NewOptionPriceRepository(connection);
+
+                             List<OptionPrice> existing = priceRepository.GetPrices(null, optionGroup.Id);
+
+                             OptionPrice lastActive = existing.LastOrDefault();
+
+                             if (lastActive == null) {
+                                 priceRepository.AddPrice(price);
+                             } else {
+                                 price.Id = lastActive.Id;
+                                 priceRepository.UpdatePrice(price);
+                             }
+                         }
+
+                         int rowAffected = optionGroupRepository.UpdateOptionGroup(optionGroup.GetEntity());
                      } else {
                          UserExceptionCreator<NotFoundValueException>.Create(NotFoundValueException.VALUE_NOT_FOUND).Throw();
                      }

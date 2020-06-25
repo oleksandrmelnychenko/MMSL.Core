@@ -6,6 +6,9 @@ namespace MMSL.Domain.Repositories.Options {
         public IOptionGroupRepository NewOptionGroupRepository(IDbConnection connection) =>
             new OptionGroupRepository(connection);
 
+        public IOptionPriceRepository NewOptionPriceRepository(IDbConnection connection) =>
+            new OptionPriceRepository(connection);
+
         public IOptionUnitRepository NewOptionUnitRepository(IDbConnection connection) =>
             new OptionUnitRepository(connection);
 
