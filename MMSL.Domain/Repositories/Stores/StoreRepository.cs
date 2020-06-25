@@ -19,9 +19,14 @@ namespace MMSL.Domain.Repositories.Stores {
 
         public List<Store> GetAll(string searchPhrase) {
             List<Store> stores = _connection.Query<Store>(
-                "SELECT *" +
-                "FROM Stores " +
-                "WHERE IsDeleted = 0 AND PATINDEX('%' + @SearchTerm + '%', [Stores].Name) > 0 " +
+                "SELECT [Stores].*" +
+                "FROM [Stores] " +
+                "LEFT JOIN [StoreMapDealerAccounts] ON [StoreMapDealerAccounts].StoreId = [Stores].Id AND [StoreMapDealerAccounts].IsDeleted = 0 " +
+                "LEFT JOIN [DealerAccount] ON [DealerAccount].Id = [StoreMapDealerAccounts].DealerAccountId AND [DealerAccount].IsDeleted = 0 " +
+                "WHERE [Stores].IsDeleted = 0 " +
+                "AND PATINDEX('%' + @SearchTerm + '%', [Stores].Name) > 0 " +
+                "AND [StoreMapDealerAccounts].Id IS NOT NULL " +
+                "AND[DealerAccount].Id IS NOT NULL " +
                 "ORDER BY [Stores].[Name]",
                 new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase }).ToList();
             return stores;
