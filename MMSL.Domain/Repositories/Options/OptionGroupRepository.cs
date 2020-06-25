@@ -42,12 +42,17 @@ namespace MMSL.Domain.Repositories.Options {
         public List<OptionGroup> GetAllMapped(string search, long? productCategoryId = null) {
             List<OptionGroup> optionGroups = new List<OptionGroup>();
 
-            string query = "SELECT og.*, u.*, [UnitValues].* " +
+            string query =
+                "SELECT og.*, [GroupPrice].*, u.*, " +
+                "(SELECT TOP(1) IIF(COUNT(Id)>0,0,1) FROM [OptionPrices] WHERE [OptionPrices].OptionGroupId = u.OptionGroupId AND [OptionPrices].IsDeleted = 0) AS [CanDeclareOwnPrice]," +
+                "[UnitValues].*,[UnitPrice].* " +
                 "FROM [OptionGroups] AS og " +
+                "LEFT JOIN [OptionPrices] AS [GroupPrice] ON [GroupPrice].OptionGroupId = og.Id AND [GroupPrice].IsDeleted = 0 " +
                 "LEFT JOIN [OptionUnits] AS u ON u.[OptionGroupId] = og.Id AND u.IsDeleted = 0 " +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = u.Id AND [UnitValues].IsDeleted = 0 " +
+                "LEFT JOIN [OptionPrices] AS [UnitPrice] ON [UnitPrice].OptionUnitId = u.Id AND [UnitPrice].IsDeleted = 0 " +
                 (
-                    productCategoryId.HasValue
+                    productCategoryId.HasValue && productCategoryId.Value != default
                     ? "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].OptionGroupId = og.Id " +
                     "AND [ProductCategoryMapOptionGroups].IsDeleted = 0 "
                     : string.Empty
@@ -58,16 +63,20 @@ namespace MMSL.Domain.Repositories.Options {
                 ? string.Empty
                 : "AND (PATINDEX('%' + @Search + '%', og.[Name]) > 0 OR PATINDEX('%' + @Search + '%', u.[Value]) > 0) "
                 ) +
-                (productCategoryId.HasValue ? "AND [ProductCategoryMapOptionGroups].ProductCategoryId = @ProductCategoryId " : string.Empty) +
+                (productCategoryId.HasValue && productCategoryId.Value != default ? "AND [ProductCategoryMapOptionGroups].ProductCategoryId = @ProductCategoryId " : string.Empty) +
                 "ORDER BY og.Id, u.OrderIndex, [UnitValues].OrderIndex ";
 
-            _connection.Query<OptionGroup, OptionUnit, UnitValue, OptionGroup>(
+            _connection.Query<OptionGroup, OptionPrice, OptionUnit, UnitValue, OptionPrice, OptionGroup>(
                 query,
-                (optionGroup, optionUnit, unitValue) => {
+                (optionGroup, groupPrice, optionUnit, unitValue, unitPrice) => {
                     if (optionGroups.Any(x => x.Id == optionGroup.Id)) {
                         optionGroup = optionGroups.First(x => x.Id == optionGroup.Id);
                     } else {
                         optionGroups.Add(optionGroup);
+                    }
+
+                    if (groupPrice != null) {
+                        optionGroup.CurrentPrice = groupPrice;
                     }
 
                     if (optionUnit != null) {
@@ -80,7 +89,12 @@ namespace MMSL.Domain.Repositories.Options {
                         if (unitValue != null)
                             optionUnit.UnitValues.Add(unitValue);
 
+                        if (unitPrice != null) {
+                            optionUnit.CurrentPrice = unitPrice;
+                        }
                     }
+
+                    optionGroup.CanDeclareOwnPrice = optionGroup.OptionUnits.All(x => x.CurrentPrice == null);
 
                     return optionGroup;
                 },
