@@ -16,6 +16,9 @@ namespace MMSL.Domain.Entities.Measurements {
         public long? ParentMeasurementId { get; set; }
         public Measurement ParentMeasurement { get; set; }
 
+        public long MeasurementUnitId { get; set; }
+        public MeasurementUnit MeasurementUnit { get; set; }
+
         public ICollection<MeasurementMapSize> MeasurementMapSizes { get; set; }
 
         public ICollection<MeasurementMapDefinition> MeasurementMapDefinitions { get; set; }

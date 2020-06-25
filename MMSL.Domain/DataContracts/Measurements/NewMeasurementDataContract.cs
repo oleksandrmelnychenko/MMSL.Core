@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace MMSL.Domain.DataContracts.Measurements {
     public class NewMeasurementDataContract {
+
+        public long MeasurementUnitId { get; set; }
+
         public long? ProductCategoryId { get; set; }
 
         public long? BaseMeasurementId { get; set; }

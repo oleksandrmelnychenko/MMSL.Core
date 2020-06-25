@@ -15,7 +15,7 @@ namespace MMSL.Domain.Repositories.Measurements {
 @"SELECT [FittingTypes].*, [Measurements].*, [MeasurementUnits].*, [MeasurementMapValues].*, [MeasurementDefinitions].* 
 FROM [FittingTypes] 
 LEFT JOIN [Measurements] ON [Measurements].Id = [FittingTypes].MeasurementId AND [Measurements].IsDeleted = 0 
-LEFT JOIN [MeasurementUnits] ON [MeasurementUnits].Id = [FittingTypes].MeasurementUnitId 
+LEFT JOIN [MeasurementUnits] ON [MeasurementUnits].Id = [Measurements].MeasurementUnitId 
 LEFT JOIN [MeasurementMapValues] ON [MeasurementMapValues].FittingTypeId = [FittingTypes].Id AND [MeasurementMapValues].IsDeleted = 0 
 LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapValues].MeasurementDefinitionId 
 WHERE [FittingTypes].IsDeleted = 0 ";
@@ -42,7 +42,7 @@ WHERE [FittingTypes].IsDeleted = 0 ";
                         fitType = results.First(x => x.Id == fitType.Id);
                     } else {
                         fitType.Measurement = measurement;
-                        fitType.MeasurementUnit = unit;
+                        measurement.MeasurementUnit = unit;
                         results.Add(fitType);
                     }
 
@@ -65,7 +65,7 @@ WHERE [FittingTypes].IsDeleted = 0 ";
                 _mappedQuery + "AND [FittingTypes].Id = @Id",
                 (fittingType, measurement, unit, measurementMapValue, measurementDefinition) => {
                     fittingType.Measurement = measurement;
-                    fittingType.MeasurementUnit = unit;
+                    measurement.MeasurementUnit = unit;
 
                     if (result == null)
                         result = fittingType;
@@ -89,13 +89,13 @@ WHERE [FittingTypes].IsDeleted = 0 ";
             FittingType result = null;
 
             _connection.Query<FittingType, Measurement, MeasurementUnit, MeasurementMapValue, MeasurementDefinition, FittingType>(
-                "INSERT INTO [FittingTypes]([IsDeleted],[Type],[MeasurementUnitId],[MeasurementId]) " +
-                "VALUES (0,@Type,@MeasurementUnitId,@MeasurementId) " +
+                "INSERT INTO [FittingTypes]([IsDeleted],[Type],[MeasurementId]) " +
+                "VALUES (0,@Type,@MeasurementId) " +
                 _mappedQuery +
                 "AND [FittingTypes].Id = SCOPE_IDENTITY()",
                 (fittingType, measurement, unit, measurementMapValue, measurementDefinition) => {
                     fittingType.Measurement = measurement;
-                    fittingType.MeasurementUnit = unit;
+                    measurement.MeasurementUnit = unit;
 
                     if (result == null)
                         result = fittingType;
@@ -122,7 +122,7 @@ WHERE [FittingTypes].IsDeleted = 0 ";
         public void Update(FittingType fittingType) =>
             _connection.Execute(
                 "UPDATE [FittingTypes] " +
-                "SET [IsDeleted]=@IsDeleted,[Type]=@Type,[MeasurementUnitId]=@MeasurementUnitId,[LastModified]=getutcdate() " +
+                "SET [IsDeleted]=@IsDeleted,[Type]=@Type,[LastModified]=getutcdate() " +
                 "WHERE [FittingTypes].Id = @Id", fittingType);
     }
 }

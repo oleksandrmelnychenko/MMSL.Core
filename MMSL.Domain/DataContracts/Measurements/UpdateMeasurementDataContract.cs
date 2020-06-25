@@ -5,6 +5,8 @@ using System.Collections.Generic;
 namespace MMSL.Domain.DataContracts.Measurements {
     public class UpdateMeasurementDataContract : EntityDataContractBase<Measurement> {
 
+        public long MeasurementUnitId { get; set; }
+
         public string Name { get; set; }
 
         public List<UpdateMeasurementMapDefinitionDataContract> MeasurementDefinitions { get; set; } = new List<UpdateMeasurementMapDefinitionDataContract>();

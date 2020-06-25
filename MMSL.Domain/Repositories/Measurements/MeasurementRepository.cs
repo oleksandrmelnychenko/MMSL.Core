@@ -54,8 +54,8 @@ namespace MMSL.Domain.Repositories.Measurements {
 
         public Measurement NewMeasurement(NewMeasurementDataContract newMeasurementDataContract) =>
             _connection.Query<Measurement>(
-                "INSERT INTO [Measurements]([IsDeleted],[Name],[ProductCategoryId],[ParentMeasurementId]) " +
-                "VALUES(0,@Name,@ProductCategoryId, @ParentMeasurementId)" +
+                "INSERT INTO [Measurements]([IsDeleted],[Name],[ProductCategoryId],[ParentMeasurementId],[MeasurementUnitId]) " +
+                "VALUES(0,@Name,@ProductCategoryId, @ParentMeasurementId,@MeasurementUnitId)" +
                 "SELECT * " +
                 "FROM [Measurements]" +
                 "WHERE [Measurements].Id = SCOPE_IDENTITY()",
@@ -70,7 +70,9 @@ namespace MMSL.Domain.Repositories.Measurements {
             _connection.Execute(
                 "UPDATE [Measurements] " +
                 "SET [IsDeleted] = @IsDeleted, [LastModified]=getutcdate()," +
-                "[Name]=@Name,[Description]=@Description " +
+                "[Name]=@Name," +
+                "[Description]=@Description," +
+                "[MeasurementUnitId]=@MeasurementUnitId" +
                 "WHERE [Measurements].Id = @Id", measurement);
 
         public Measurement GetById(long measurementId) =>
