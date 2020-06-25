@@ -26,7 +26,10 @@ namespace MMSL.Domain.Repositories.Options {
             OptionUnit result = null;
 
             _connection.Query<OptionUnit, UnitValue, OptionPrice, OptionUnit>(
-                "SELECT [OptionUnits].*, [UnitValues].*, [OptionPrices].* " +
+                "SELECT [OptionUnits].*" +
+                ",(SELECT TOP(1) IIF(COUNT(Id)>0,0,1) FROM [OptionPrices] WHERE [OptionPrices].OptionGroupId = [OptionUnits].OptionGroupId) AS [CanDeclareOwnPrice]" +
+                ",[UnitValues].*" +
+                ",[OptionPrices].* " +
                 "FROM [OptionUnits] " +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0 " +
                 "LEFT JOIN [OptionPrices] ON [OptionPrices].OptionUnitId = [OptionUnits].Id AND [OptionPrices].IsDeleted = 0 " +
@@ -54,7 +57,10 @@ namespace MMSL.Domain.Repositories.Options {
             List<OptionUnit> result = new List<OptionUnit>();
 
             _connection.Query<OptionUnit, UnitValue, OptionPrice, OptionUnit>(
-                "SELECT [OptionUnits].*, [UnitValues].* " +
+                "SELECT [OptionUnits].*" +
+                ",(SELECT TOP(1) IIF(COUNT(Id)>0,0,1) FROM [OptionPrices] WHERE [OptionPrices].OptionGroupId = [OptionUnits].OptionGroupId) AS [CanDeclareOwnPrice]" +
+                ", [UnitValues].*" +
+                ",[OptionPrices].* " +
                 "FROM [OptionUnits] " +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id " +
                 "LEFT JOIN [OptionPrices] ON [OptionPrices].OptionUnitId = [OptionUnits].Id AND [OptionPrices].IsDeleted = 0 " +

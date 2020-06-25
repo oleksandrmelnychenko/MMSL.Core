@@ -23,5 +23,8 @@ namespace MMSL.Domain.Entities.Options {
 
         [NotMapped]
         public OptionPrice CurrentPrice { get; set; }
+
+        [NotMapped]
+        public bool CanDeclareOwnPrice { get; set; }
     }
 }

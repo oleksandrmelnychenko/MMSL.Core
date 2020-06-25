@@ -114,6 +114,7 @@ namespace MMSL.Domain.Repositories.Options {
                     }
 
                     if (unit != null) {
+                        unit.CanDeclareOwnPrice = groupResult.CurrentPrice != null;
 
                         if (groupResult.OptionUnits.Any(x => x.Id == unit.Id)) {
                             unit = groupResult.OptionUnits.First(x => x.Id == unit.Id);
@@ -128,6 +129,8 @@ namespace MMSL.Domain.Repositories.Options {
                         if (unitValue != null)
                             unit.UnitValues.Add(unitValue);
                     }
+
+                    groupResult.CanDeclareOwnPrice = groupResult.OptionUnits.All(x => x.CurrentPrice == null);
 
                     return group;
                 },
