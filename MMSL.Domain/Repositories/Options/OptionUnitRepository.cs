@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using MMSL.Domain.Entities.CurrencyTypes;
 using MMSL.Domain.Entities.Options;
 using MMSL.Domain.Repositories.Options.Contracts;
 using System.Collections.Generic;
@@ -25,21 +26,25 @@ namespace MMSL.Domain.Repositories.Options {
         public OptionUnit GetOptionUnit(long optionUnitId) {
             OptionUnit result = null;
 
-            _connection.Query<OptionUnit, UnitValue, OptionPrice, OptionGroup, OptionPrice, OptionUnit>(
+            _connection.Query<OptionUnit, UnitValue, OptionPrice, CurrencyType, OptionGroup, OptionPrice, CurrencyType, OptionUnit>(
                 "SELECT [OptionUnits].*" +
                 ",(SELECT TOP(1) IIF(COUNT(Id)>0,0,1) FROM [OptionPrices] WHERE [OptionPrices].OptionGroupId = [OptionUnits].OptionGroupId AND [OptionPrices].IsDeleted = 0) AS [CanDeclareOwnPrice]" +
                 ",[UnitValues].*" +
                 ",[OptionPrices].*" +
+                ",[UnitCurrency].*" +
                 ",[OptionGroups].*" +
-                ",[GroupPrice].* " +
+                ",[GroupPrice].*" +
+                ",[GroupCurrency].* " +
                 "FROM [OptionUnits] " +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0 " +
                 "LEFT JOIN [OptionPrices] ON [OptionPrices].OptionUnitId = [OptionUnits].Id AND [OptionPrices].IsDeleted = 0 " +
+                "LEFT JOIN [CurrencyTypes] AS [UnitCurrency] ON [UnitCurrency].Id = [OptionPrices].CurrencyTypeId " +
                 "LEFT JOIN [OptionGroups] ON [OptionGroups].Id = [OptionUnits].OptionGroupId " +
                 "LEFT JOIN [OptionPrices] AS [GroupPrice] ON [GroupPrice].OptionGroupId = [OptionGroups].Id AND [GroupPrice].IsDeleted = 0 " +
+                "LEFT JOIN [CurrencyTypes] AS [GroupCurrency] ON [GroupCurrency].Id = [GroupPrice].CurrencyTypeId " +
                 "WHERE [OptionUnits].Id = @Id " +
                 "ORDER BY [UnitValues].OrderIndex ",
-                (unit, unitValue, price, group, groupPrice) => {
+                (unit, unitValue, price, unitCurrency, group, groupPrice, groupCurrency) => {
                     if (result == null)
                         result = unit;
 
@@ -47,11 +52,16 @@ namespace MMSL.Domain.Repositories.Options {
                         result.UnitValues.Add(unitValue);
 
                     if (price != null) {
+                        price.CurrencyType = unitCurrency;
                         result.CurrentPrice = price;
                     }
 
                     if (group != null) {
-                        group.CurrentPrice = groupPrice;
+                        if (groupPrice != null) {
+                            groupPrice.CurrencyType = groupCurrency;
+                            group.CurrentPrice = groupPrice;
+                        }
+
                         result.OptionGroup = group;
                     }
 
@@ -65,36 +75,46 @@ namespace MMSL.Domain.Repositories.Options {
         public List<OptionUnit> GetOptionUnitsByGroup(long optionGroupId) {
             List<OptionUnit> result = new List<OptionUnit>();
 
-            _connection.Query<OptionUnit, UnitValue, OptionPrice, OptionGroup, OptionPrice, OptionUnit>(
+            _connection.Query<OptionUnit, UnitValue, OptionPrice, CurrencyType, OptionGroup, OptionPrice, CurrencyType, OptionUnit>(
                 "SELECT [OptionUnits].*" +
                 ",(SELECT TOP(1) IIF(COUNT(Id)>0,0,1) FROM [OptionPrices] WHERE [OptionPrices].OptionGroupId = [OptionUnits].OptionGroupId AND [OptionPrices].IsDeleted = 0) AS [CanDeclareOwnPrice]" +
                 ", [UnitValues].*" +
                 ",[OptionPrices].* " +
+                ",[UnitCurrency].*" +
                 ",[OptionGroups].*" +
                 ",[GroupPrice].* " +
+                ",[GroupCurrency].* " +
                 "FROM [OptionUnits] " +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id " +
                 "LEFT JOIN [OptionPrices] ON [OptionPrices].OptionUnitId = [OptionUnits].Id AND [OptionPrices].IsDeleted = 0 " +
+                "LEFT JOIN [CurrencyTypes] AS [UnitCurrency] ON [UnitCurrency].Id = [UnitPrice].CurrencyTypeId " +
                 "LEFT JOIN [OptionGroups] ON [OptionGroups].Id = [OptionUnits].OptionGroupId " +
                 "LEFT JOIN [OptionPrices] AS [GroupPrice] ON [GroupPrice].OptionGroupId = [OptionGroups].Id AND [GroupPrice].IsDeleted = 0 " +
+                "LEFT JOIN [CurrencyTypes] AS [GroupCurrency] ON [GroupCurrency].Id = [GroupPrice].CurrencyTypeId " +
                 "WHERE [OptionUnits].[OptionGroupId] = @GroupId " +
                 "AND [OptionUnits].IsDeleted = 0 " +
                 "ORDER BY [OptionUnits].OrderIndex, [UnitValues].OrderIndex ",
-                (unit, unitValue, price, group, groupPrice) => {
+                (unit, unitValue, price, unitCurrency, group, groupPrice, groupCurrency) => {
                     if (result.Any(x => x.Id == unit.Id))
                         unit = result.First(x => x.Id == unit.Id);
                     else
                         result.Add(unit);
-                    
-                    if (unitValue != null)
+
+                    if (unitValue != null) {
+                        price.CurrencyType = unitCurrency;
                         unit.UnitValues.Add(unitValue);
+                    }
 
                     if (price != null) {
                         unit.CurrentPrice = price;
                     }
 
                     if (group != null) {
-                        group.CurrentPrice = groupPrice;
+                        if (groupPrice != null) {
+                            groupPrice.CurrencyType = groupCurrency;
+                            group.CurrentPrice = groupPrice;
+                        }
+
                         unit.OptionGroup = group;
                     }
 

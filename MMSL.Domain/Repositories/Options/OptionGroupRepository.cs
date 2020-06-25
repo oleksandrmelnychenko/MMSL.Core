@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using MMSL.Domain.Entities.CurrencyTypes;
 using MMSL.Domain.Entities.Options;
 using MMSL.Domain.Repositories.Options.Contracts;
 using System;
@@ -43,14 +44,16 @@ namespace MMSL.Domain.Repositories.Options {
             List<OptionGroup> optionGroups = new List<OptionGroup>();
 
             string query =
-                "SELECT og.*, [GroupPrice].*, u.*, " +
+                "SELECT og.*, [GroupPrice].*,[GroupCurrency].*, u.*, " +
                 "(SELECT TOP(1) IIF(COUNT(Id)>0,0,1) FROM [OptionPrices] WHERE [OptionPrices].OptionGroupId = u.OptionGroupId AND [OptionPrices].IsDeleted = 0) AS [CanDeclareOwnPrice]," +
-                "[UnitValues].*,[UnitPrice].* " +
+                "[UnitValues].*,[UnitPrice].*,[UnitCurrency].* " +
                 "FROM [OptionGroups] AS og " +
                 "LEFT JOIN [OptionPrices] AS [GroupPrice] ON [GroupPrice].OptionGroupId = og.Id AND [GroupPrice].IsDeleted = 0 " +
+                "LEFT JOIN [CurrencyTypes] AS [GroupCurrency] ON [GroupCurrency].Id = [GroupPrice].CurrencyTypeId " +
                 "LEFT JOIN [OptionUnits] AS u ON u.[OptionGroupId] = og.Id AND u.IsDeleted = 0 " +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = u.Id AND [UnitValues].IsDeleted = 0 " +
                 "LEFT JOIN [OptionPrices] AS [UnitPrice] ON [UnitPrice].OptionUnitId = u.Id AND [UnitPrice].IsDeleted = 0 " +
+                "LEFT JOIN [CurrencyTypes] AS [UnitCurrency] ON [UnitCurrency].Id = [UnitPrice].CurrencyTypeId " +
                 (
                     productCategoryId.HasValue && productCategoryId.Value != default
                     ? "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].OptionGroupId = og.Id " +
@@ -66,9 +69,9 @@ namespace MMSL.Domain.Repositories.Options {
                 (productCategoryId.HasValue && productCategoryId.Value != default ? "AND [ProductCategoryMapOptionGroups].ProductCategoryId = @ProductCategoryId " : string.Empty) +
                 "ORDER BY og.Id, u.OrderIndex, [UnitValues].OrderIndex ";
 
-            _connection.Query<OptionGroup, OptionPrice, OptionUnit, UnitValue, OptionPrice, OptionGroup>(
+            _connection.Query<OptionGroup, OptionPrice, CurrencyType, OptionUnit, UnitValue, OptionPrice, CurrencyType, OptionGroup>(
                 query,
-                (optionGroup, groupPrice, optionUnit, unitValue, unitPrice) => {
+                (optionGroup, groupPrice, groupCurrency, optionUnit, unitValue, unitPrice, unitCurrency) => {
                     if (optionGroups.Any(x => x.Id == optionGroup.Id)) {
                         optionGroup = optionGroups.First(x => x.Id == optionGroup.Id);
                     } else {
@@ -76,6 +79,7 @@ namespace MMSL.Domain.Repositories.Options {
                     }
 
                     if (groupPrice != null) {
+                        groupPrice.CurrencyType = groupCurrency;
                         optionGroup.CurrentPrice = groupPrice;
                     }
 
@@ -90,6 +94,7 @@ namespace MMSL.Domain.Repositories.Options {
                             optionUnit.UnitValues.Add(unitValue);
 
                         if (unitPrice != null) {
+                            unitPrice.CurrencyType = unitCurrency;
                             optionUnit.CurrentPrice = unitPrice;
                         }
                     }
@@ -109,21 +114,24 @@ namespace MMSL.Domain.Repositories.Options {
         public OptionGroup GetById(long id) {
             OptionGroup groupResult = null;
 
-            _connection.Query<OptionGroup, OptionPrice, OptionUnit, UnitValue, OptionPrice, OptionGroup>(
-                "SELECT [OptionGroups].*, [GroupPrice].*, [OptionUnits].*, [UnitValues].*, [UnitPrice].* " +
+            _connection.Query<OptionGroup, OptionPrice, CurrencyType, OptionUnit, UnitValue, OptionPrice, CurrencyType, OptionGroup>(
+                "SELECT [OptionGroups].*, [GroupPrice].*, [GroupCurrency].*, [OptionUnits].*, [UnitValues].*, [UnitPrice].*,[UnitCurrency].* " +
                 "FROM OptionGroups " +
                 "LEFT JOIN [OptionPrices] AS [GroupPrice] ON [GroupPrice].OptionGroupId = OptionGroups.Id AND [GroupPrice].IsDeleted = 0 " +
+                "LEFT JOIN [CurrencyTypes] AS [GroupCurrency] ON [GroupCurrency].Id = [GroupPrice].CurrencyTypeId " +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id AND [OptionUnits].IsDeleted = 0" +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0 " +
                 "LEFT JOIN [OptionPrices] AS [UnitPrice] ON [UnitPrice].OptionUnitId = [OptionUnits].Id AND [UnitPrice].IsDeleted = 0 " +
+                "LEFT JOIN [CurrencyTypes] AS [UnitCurrency] ON [UnitCurrency].Id = [UnitPrice].CurrencyTypeId " +
                 "WHERE [OptionGroups].Id = @Id AND [OptionGroups].IsDeleted = 0 " +
                 "ORDER BY [OptionUnits].OrderIndex, [UnitValues].OrderIndex",
-                (group, groupPrice, unit, unitValue, unitPrice) => {
+                (group, groupPrice, groupCurrency, unit, unitValue, unitPrice, unitCurrency) => {
                     if (groupResult == null) {
                         groupResult = group;
                     }
 
                     if (groupPrice != null) {
+                        groupPrice.CurrencyType = groupCurrency;
                         groupResult.CurrentPrice = groupPrice;
                     }
 
@@ -137,6 +145,7 @@ namespace MMSL.Domain.Repositories.Options {
                         }
 
                         if (unitPrice != null) {
+                            unitPrice.CurrencyType = unitCurrency;
                             unit.CurrentPrice = unitPrice;
                         }
 
