@@ -17,5 +17,7 @@ namespace MMSL.Domain.Entities.Options {
         public ICollection<OptionUnit> OptionUnits { get; set; }
 
         public ICollection<ProductCategoryMapOptionGroup> ProductCategoryMaps { get; set; }
+        
+        public ICollection<OptionPrice> OptionPrices { get; set; } = new HashSet<OptionPrice>();
     }
 }

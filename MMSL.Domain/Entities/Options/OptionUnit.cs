@@ -22,5 +22,7 @@ namespace MMSL.Domain.Entities.Options {
         public OptionGroup OptionGroup { get; set; }
 
         public ICollection<UnitValue> UnitValues { get; set; } = new HashSet<UnitValue>();
+
+        public ICollection<OptionPrice> OptionPrices { get; set; } = new HashSet<OptionPrice>();
     }
 }
