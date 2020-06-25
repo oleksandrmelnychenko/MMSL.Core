@@ -43,7 +43,8 @@ namespace MMSL.Domain.Repositories.Options {
                 "SET [IsDeleted] = @IsDeleted," +
                 "[LastModified] = GETUTCDATE()," +
                 "[Price]=@Price," +
-                "[CurrencyTypeId]=@CurrencyTypeId",
+                "[CurrencyTypeId]=@CurrencyTypeId " +
+                "WHERE [OptionPrices].Id = @Id",
                 price);
     }
 }
