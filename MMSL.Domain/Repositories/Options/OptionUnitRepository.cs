@@ -87,7 +87,7 @@ namespace MMSL.Domain.Repositories.Options {
                 "FROM [OptionUnits] " +
                 "LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id " +
                 "LEFT JOIN [OptionPrices] ON [OptionPrices].OptionUnitId = [OptionUnits].Id AND [OptionPrices].IsDeleted = 0 " +
-                "LEFT JOIN [CurrencyTypes] AS [UnitCurrency] ON [UnitCurrency].Id = [UnitPrice].CurrencyTypeId " +
+                "LEFT JOIN [CurrencyTypes] AS [UnitCurrency] ON [UnitCurrency].Id = [OptionPrices].CurrencyTypeId " +
                 "LEFT JOIN [OptionGroups] ON [OptionGroups].Id = [OptionUnits].OptionGroupId " +
                 "LEFT JOIN [OptionPrices] AS [GroupPrice] ON [GroupPrice].OptionGroupId = [OptionGroups].Id AND [GroupPrice].IsDeleted = 0 " +
                 "LEFT JOIN [CurrencyTypes] AS [GroupCurrency] ON [GroupCurrency].Id = [GroupPrice].CurrencyTypeId " +
