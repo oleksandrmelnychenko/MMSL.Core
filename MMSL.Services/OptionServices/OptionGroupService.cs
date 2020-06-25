@@ -98,7 +98,7 @@ namespace MMSL.Services.OptionServices {
                          if (price == null && lastActive != null) {
 
                              lastActive.IsDeleted = true;
-                             priceRepository.UpdatePrice(price);
+                             priceRepository.UpdatePrice(lastActive);
 
                          } else if (price != null) {
 
