@@ -1,6 +1,6 @@
 ﻿namespace MMSL.Domain.Entities.Options {
     public class UnitValue : EntityBase {
-        public float Value { get; set; }
+        public string Value { get; set; }
 
         public long OptionUnitId { get; set; }
 
