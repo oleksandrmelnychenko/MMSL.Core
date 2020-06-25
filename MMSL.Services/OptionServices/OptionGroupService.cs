@@ -111,6 +111,13 @@ namespace MMSL.Services.OptionServices {
 
                          }
 
+                         foreach (OptionUnit unit in existed.OptionUnits) {
+                             if (unit.CurrentPrice != null) {
+                                 unit.CurrentPrice.IsDeleted = true;
+                                 priceRepository.UpdatePrice(unit.CurrentPrice);
+                             }
+                         }
+
                          int rowAffected = optionGroupRepository.UpdateOptionGroup(optionGroup.GetEntity());
                      } else {
                          UserExceptionCreator<NotFoundValueException>.Create(NotFoundValueException.VALUE_NOT_FOUND).Throw();
