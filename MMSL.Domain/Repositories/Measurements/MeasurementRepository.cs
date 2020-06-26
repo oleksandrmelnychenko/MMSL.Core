@@ -72,7 +72,7 @@ namespace MMSL.Domain.Repositories.Measurements {
                 "SET [IsDeleted] = @IsDeleted, [LastModified]=getutcdate()," +
                 "[Name]=@Name," +
                 "[Description]=@Description," +
-                "[MeasurementUnitId]=@MeasurementUnitId" +
+                "[MeasurementUnitId]=@MeasurementUnitId " +
                 "WHERE [Measurements].Id = @Id", measurement);
 
         public Measurement GetById(long measurementId) =>
