@@ -34,10 +34,7 @@ namespace MMSL.Server.Core.Controllers.Stores {
         [Authorize(Roles = "Dealer")]
         [AssignActionRoute(StoreCustomerProductProfileSegments.GET_PROFILES)]
         public async Task<IActionResult> GetAll([FromQuery] string searchPhrase, [FromQuery] long? productId) {
-            try {
-                if (productId == default)
-                    throw new ArgumentNullException(nameof(productId));
-                
+            try {               
                 long dealerIdentityId = ClaimHelper.GetUserId(User);
 
                 List<CustomerProductProfile> profiles = await _storeCustomerProductProfileService.GetAllAsync(dealerIdentityId, productId, searchPhrase);
