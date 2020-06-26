@@ -84,6 +84,7 @@ namespace MMSL.Services.StoreCustomerServices {
 
                     foreach (UpdateCustomerProfileValueDataContract item in profileDataContract.Values) {
                         CustomerProfileSizeValue valueToUpdate = item.GetEntity();
+                        valueToUpdate.CustomerProductProfileId = entity.Id;
 
                         if (valueToUpdate.IsNew()) {
                             profileValueRepository.AddSizeValue(valueToUpdate);

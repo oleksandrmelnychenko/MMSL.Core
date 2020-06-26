@@ -32,8 +32,8 @@ WHERE [CustomerProfileSizeValues].Id = @Id",
 
         public long AddSizeValue(CustomerProfileSizeValue sizeValue) =>
             _connection.QuerySingleOrDefault<long>(
-@"INSERT INTO [CustomerProfileSizeValues] (IsDeleted,[Value],FittingValue,MeasurementDefinitionId)
-VALUES (0,@Value,@FittingValue,@MeasurementDefinitionId)
+@"INSERT INTO [CustomerProfileSizeValues] (IsDeleted,[Value],FittingValue,MeasurementDefinitionId,CustomerProductProfileId)
+VALUES (0,@Value,@FittingValue,@MeasurementDefinitionId,@CustomerProductProfileId)
 SELECT SCOPE_IDENTITY();", sizeValue);
 
         public void UpdateSizeValue(CustomerProfileSizeValue sizeValue) =>

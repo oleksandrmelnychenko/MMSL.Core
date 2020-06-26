@@ -12,8 +12,10 @@ namespace MMSL.Domain.DataContracts.Customer {
 
         public override CustomerProductProfile GetEntity() {
             return new CustomerProductProfile() {
+                Id = Id,
                 Name = Name,
-                Description = Description
+                Description = Description,
+                MeasurementId = MeasurementId
             };
         }
     }

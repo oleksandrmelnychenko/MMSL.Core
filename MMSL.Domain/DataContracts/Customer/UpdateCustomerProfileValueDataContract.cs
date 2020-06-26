@@ -12,11 +12,14 @@ namespace MMSL.Domain.DataContracts.Customer {
         /// </summary>
         public float? FittingValue { get; set; }
 
+        public long MeasurementDefinitionId { get; set; }
+
         public override CustomerProfileSizeValue GetEntity() {
             return new CustomerProfileSizeValue {
                 Id = Id,
                 Value = Value,
-                FittingValue = FittingValue
+                FittingValue = FittingValue,
+                MeasurementDefinitionId = MeasurementDefinitionId
             };
         }
     }
