@@ -13,7 +13,11 @@ namespace MMSL.Domain.DataContracts.Customer {
 
         public long StoreCustomerId { get; set; }
 
-        public List<NewCustomerProfileValueDataContract> Values { get; set; }
+        public long? MeasurementId { get; set; }
+
+        public long? FittingTypeId { get; set; }
+
+        public List<NewCustomerProfileValueDataContract> Values { get; set; } = new List<NewCustomerProfileValueDataContract>();
 
         public CustomerProductProfile GetEntity() {
             return new CustomerProductProfile() {

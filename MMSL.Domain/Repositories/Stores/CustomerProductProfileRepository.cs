@@ -91,8 +91,8 @@ WHERE [DealerAccount].UserIdentityId = @DealerIdentityId " +
 
         public long AddCustomerProductProfile(CustomerProductProfile profile) =>
             _connection.QuerySingleOrDefault<long>(
-@"INSERT INTO [CustomerProductProfiles] (IsDeleted,[Name],[Description],ProductCategoryId,StoreCustomerId,DealerAccountId)
-VALUES (0,@Name,@Description,@ProductCategoryId,@StoreCustomerId,@DealerAccountId)
+@"INSERT INTO [CustomerProductProfiles] (IsDeleted,[Name],[Description],ProductCategoryId,StoreCustomerId,DealerAccountId,MeasurementId,FittingTypeId)
+VALUES (0,@Name,@Description,@ProductCategoryId,@StoreCustomerId,@DealerAccountId,@MeasurementId,@FittingTypeId)
 SELECT SCOPE_IDENTITY();",
                 profile);
 
@@ -100,7 +100,9 @@ SELECT SCOPE_IDENTITY();",
             CustomerProductProfile result = null;
 
             _connection.Query<CustomerProductProfile, CustomerProfileSizeValue, MeasurementDefinition, CustomerProductProfile>(
-                @"UPDATE [CustomerProductProfiles] SET [Name]=@Name, [Description]=@Description, [IsDeleted]=@IsDeleted WHERE [CustomerProductProfiles].Id = @Id" +
+                "UPDATE [CustomerProductProfiles] SET [Name]=@Name, [Description]=@Description, [IsDeleted]=@IsDeleted,"+
+                "MeasurementId=@MeasurementId, FittingTypeId=@FittingTypeId "+
+                "WHERE [CustomerProductProfiles].Id = @Id" +
                 _getByIdQuery,
                 (profile, sizeValue, definition) => {
                     if (result == null) {
