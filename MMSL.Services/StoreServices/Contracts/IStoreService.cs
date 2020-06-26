@@ -9,6 +9,8 @@ namespace MMSL.Services.StoreServices.Contracts {
     public interface IStoreService {
         Task<List<Store>> GetAllStoresAsync(string searchPhrase);
 
+        Task<List<Store>> GetDealerStoresAsync(string searchPhrase, long dealerIdentityId);
+
         Task<Store> NewStoreAsync(NewStoreDataContract newStoreDataContract);
 
         Task UpdateStoreAsync(Store store);

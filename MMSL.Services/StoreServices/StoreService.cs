@@ -13,6 +13,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Text;
 using System.Threading.Tasks;
+using MMSL.Domain.Repositories.Dealer.Contracts;
+using MMSL.Domain.Entities.Dealer;
 
 namespace MMSL.Services.BankDetailsServices {
     public class StoreService : IStoreService {
@@ -23,6 +25,8 @@ namespace MMSL.Services.BankDetailsServices {
 
         private readonly IAddressRepositoriesFactory _addressRepositoriesFactory;
 
+        private readonly IDealerRepositoriesFactory _dealerRepositoriesFactory;
+
         /// <summary>
         ///     ctor().
         /// </summary>
@@ -31,10 +35,12 @@ namespace MMSL.Services.BankDetailsServices {
         /// <param name="addressRepositoriesFactory"></param>
         public StoreService(IDbConnectionFactory connectionFactory,
             IStoreRepositoriesFactory storeRepositoriesFactory,
+            IDealerRepositoriesFactory dealerRepositoriesFactory,
             IAddressRepositoriesFactory addressRepositoriesFactory) {
             _connectionFactory = connectionFactory;
             _storeRepositoriesFactory = storeRepositoriesFactory;
             _addressRepositoriesFactory = addressRepositoriesFactory;
+            _dealerRepositoriesFactory = dealerRepositoriesFactory;
         }
 
         public Task<List<Store>> GetAllStoresAsync(string searchPhrase) =>
@@ -122,5 +128,17 @@ namespace MMSL.Services.BankDetailsServices {
                      storeRepository.UpdateStore(store);
                  }
              });
+
+        public Task<List<Store>> GetDealerStoresAsync(string searchPhrase, long dealerIdentityId) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    IDealerAccountRepository dealerrepository = _dealerRepositoriesFactory.NewDealerAccountRepository(connection);
+                    IStoreRepository storeRepository = _storeRepositoriesFactory.NewStoreRepository(connection);
+
+                    DealerAccount dealer = dealerrepository.GetDealerAccountByIdentity(dealerIdentityId);
+
+                    return storeRepository.GetAllByDealerAccountId(dealer.Id, searchPhrase);
+                }
+            });
     }
 }

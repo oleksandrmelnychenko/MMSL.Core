@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using MMSL.Common.Exceptions.UserExceptions;
+using MMSL.Common.Helpers;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Domain.DataContracts;
+using MMSL.Domain.Entities.Identity;
 using MMSL.Domain.Entities.Stores;
 using MMSL.Services.StoreServices.Contracts;
 using Serilog;
@@ -41,7 +43,12 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
         [AssignActionRoute(StoreSegments.GET_STORES)]
         public async Task<IActionResult> GetAll([FromQuery]string searchPhrase) {
             try {
-                List<Store> stores = await _storeService.GetAllStoresAsync(searchPhrase);
+                bool isDealer = ClaimHelper.GetUserRoles(User).Any(x => x == RoleType.Dealer.ToString());
+                long identityId = ClaimHelper.GetUserId(User);
+
+                List<Store> stores = isDealer 
+                    ? await _storeService.GetAllStoresAsync(searchPhrase)
+                    : await _storeService.GetDealerStoresAsync(searchPhrase, identityId);
 
                 return Ok(SuccessResponseBody(stores, Localizer["Successfully completed"]));
             }
