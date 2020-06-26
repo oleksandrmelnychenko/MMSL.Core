@@ -14,7 +14,7 @@ namespace MMSL.Domain.DataContracts.ProductOptions {
 
         public string SerializedValues { get; set; }
 
-        public decimal? Price { get; set; }
+        public string Price { get; set; }
 
         public long? CurrencyTypeId { get; set; }
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using MMSL.Common.Exceptions.UserExceptions;
+using MMSL.Common.Helpers;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
@@ -77,9 +78,6 @@ namespace MMSL.Server.Core.Controllers.Options {
         [AssignActionRoute(OptionGroupSegments.NEW_OPTION_GROUP)]
         public async Task<IActionResult> NewOptionGroup([FromBody] NewOptionGroupDataContract newOptionGroupDataContract) {
             try {
-                if (newOptionGroupDataContract.Price.HasValue && !newOptionGroupDataContract.CurrencyTypeId.HasValue)
-                    throw new ArgumentNullException(nameof(newOptionGroupDataContract.CurrencyTypeId));
-
                 if (newOptionGroupDataContract == null)
                     throw new ArgumentNullException("NewOptionGroupDataContract");
 
@@ -89,9 +87,15 @@ namespace MMSL.Server.Core.Controllers.Options {
                 if (newOptionGroupDataContract.ProductId == default(long))
                     throw new ArgumentNullException("ProductId");
 
-                OptionPrice price = newOptionGroupDataContract.Price.HasValue && newOptionGroupDataContract.Price.Value != default(decimal)
+                decimal priceValue;
+                bool priceAvailable = PriceParsingHelper.TryParsePrice(newOptionGroupDataContract.Price, out priceValue);
+
+                if (priceAvailable && !newOptionGroupDataContract.CurrencyTypeId.HasValue)
+                    throw new ArgumentNullException(nameof(newOptionGroupDataContract.CurrencyTypeId));
+
+                OptionPrice price = priceAvailable
                     ? new OptionPrice {
-                        Price = newOptionGroupDataContract.Price.Value,
+                        Price = priceValue,
                         CurrencyTypeId = newOptionGroupDataContract.CurrencyTypeId.Value
                     }
                     : null;
@@ -109,11 +113,18 @@ namespace MMSL.Server.Core.Controllers.Options {
         [AssignActionRoute(OptionGroupSegments.UPDATE_OPTION_GROUP)]
         public async Task<IActionResult> UpdateOptionGroup([FromBody] UpdateOptionGroupDataContract optionGroup) {
             try {
-                if (optionGroup == null) throw new ArgumentNullException("UpdateOptionGroup");
+                if (optionGroup == null)
+                    throw new ArgumentNullException("UpdateOptionGroup");
 
-                OptionPrice price = optionGroup.Price.HasValue && optionGroup.Price.Value != default(decimal)
+                decimal priceValue;
+                bool priceAvailable = PriceParsingHelper.TryParsePrice(optionGroup.Price, out priceValue);
+
+                if (priceAvailable && !optionGroup.CurrencyTypeId.HasValue)
+                    throw new ArgumentNullException(nameof(optionGroup.CurrencyTypeId));
+
+                OptionPrice price = priceAvailable
                     ? new OptionPrice {
-                        Price = optionGroup.Price.Value,
+                        Price = priceValue,
                         CurrencyTypeId = optionGroup.CurrencyTypeId.Value,
                         OptionGroupId = optionGroup.Id
                     }

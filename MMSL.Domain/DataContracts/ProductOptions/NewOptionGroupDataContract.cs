@@ -8,7 +8,7 @@ namespace MMSL.Domain.DataContracts.ProductOptions {
 
         public bool IsMandatory { get; set; }
 
-        public decimal? Price { get; set; }
+        public string Price { get; set; }
 
         public long? CurrencyTypeId { get; set; }
     }

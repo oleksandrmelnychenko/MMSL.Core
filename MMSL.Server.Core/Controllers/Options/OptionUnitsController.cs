@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using MMSL.Common;
+using MMSL.Common.Helpers;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
@@ -13,6 +14,7 @@ using MMSL.Services.OptionServices.Contracts;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -58,7 +60,10 @@ namespace MMSL.Server.Core.Controllers.Options {
             [FromForm] OptionUnitDataContract optionUnit,
             [FromForm] FileFormData formData) {
             try {
-                if (optionUnit.Price.HasValue && optionUnit.Price.Value != default(decimal) && !optionUnit.CurrencyTypeId.HasValue)
+                decimal priceValue;
+                bool priceAvailable = PriceParsingHelper.TryParsePrice(optionUnit.Price, out priceValue);
+
+                if (priceAvailable && !optionUnit.CurrencyTypeId.HasValue)
                     throw new ArgumentNullException(nameof(optionUnit.CurrencyTypeId));
 
                 OptionUnit optionUnitEntity = optionUnit.GetEntity();
@@ -72,9 +77,9 @@ namespace MMSL.Server.Core.Controllers.Options {
                     optionUnitEntity.ImageName = formData.File.FileName;
                 }
 
-                OptionPrice price = optionUnit.Price.HasValue && optionUnit.Price != default(decimal)
+                OptionPrice price = priceAvailable
                     ? new OptionPrice {
-                        Price = optionUnit.Price.Value,
+                        Price = priceValue,
                         CurrencyTypeId = optionUnit.CurrencyTypeId.Value
                     }
                     : null;
@@ -92,7 +97,10 @@ namespace MMSL.Server.Core.Controllers.Options {
         [AssignActionRoute(OptionUnitSegments.UPDATE_OPTION_UNIT)]
         public async Task<IActionResult> UpdateOptionUnit([FromForm] OptionUnitUpdateDataContract updateOptionUnit, [FromForm] FileFormData formData) {
             try {
-                if (updateOptionUnit.Price.HasValue && updateOptionUnit.Price.Value != default(decimal) && !updateOptionUnit.CurrencyTypeId.HasValue)
+                decimal priceValue;
+                bool priceAvailable = PriceParsingHelper.TryParsePrice(updateOptionUnit.Price, out priceValue);
+
+                if (priceAvailable && !updateOptionUnit.CurrencyTypeId.HasValue)
                     throw new ArgumentNullException(nameof(updateOptionUnit.CurrencyTypeId));
 
                 if (updateOptionUnit == null)
@@ -118,9 +126,9 @@ namespace MMSL.Server.Core.Controllers.Options {
                     entity.ImageName = formData.File.FileName;
                 }
 
-                OptionPrice price = updateOptionUnit.Price.HasValue && updateOptionUnit.Price.Value != default(decimal)
+                OptionPrice price = priceAvailable
                     ? new OptionPrice {
-                        Price = updateOptionUnit.Price.Value,
+                        Price = priceValue,
                         CurrencyTypeId = updateOptionUnit.CurrencyTypeId.Value,
                         OptionUnitId = updateOptionUnit.Id
                     }
