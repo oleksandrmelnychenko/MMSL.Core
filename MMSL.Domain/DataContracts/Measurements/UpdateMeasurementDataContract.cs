@@ -14,7 +14,8 @@ namespace MMSL.Domain.DataContracts.Measurements {
         public override Measurement GetEntity() {
             return new Measurement {
                 Id = Id,
-                Name = Name
+                Name = Name,
+                MeasurementUnitId = MeasurementUnitId
             };
         }
     }

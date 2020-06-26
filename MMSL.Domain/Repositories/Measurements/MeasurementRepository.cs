@@ -62,7 +62,8 @@ namespace MMSL.Domain.Repositories.Measurements {
                 new {
                     Name = newMeasurementDataContract.Name,
                     ProductCategoryId = newMeasurementDataContract.ProductCategoryId,
-                    ParentMeasurementId = newMeasurementDataContract.BaseMeasurementId
+                    ParentMeasurementId = newMeasurementDataContract.BaseMeasurementId,
+                    MeasurementUnitId = newMeasurementDataContract.MeasurementUnitId
                 })
             .SingleOrDefault();
 
