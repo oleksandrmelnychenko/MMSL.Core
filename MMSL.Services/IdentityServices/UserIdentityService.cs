@@ -151,6 +151,8 @@ namespace MMSL.Services.IdentityServices {
                                 IdentityValidationMessages.EMAIL_INVALID)).Throw();
                     }
 
+                    currentUser = repository.GetUserByEmail(email);
+
                     if (IsUserPasswordExpired(currentUser)) {
                         UserExceptionCreator<InvalidIdentityException>.Create(
                             IdentityValidationMessages.PASSWORD_EXPIRED,

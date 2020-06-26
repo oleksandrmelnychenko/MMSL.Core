@@ -78,7 +78,7 @@ namespace MMSL.Server.Core.Controllers.Stores {
 
         [HttpDelete]
         [Authorize(Roles = "Dealer")]
-        [AssignActionRoute(StoreCustomerProductProfileSegments.UPDATE_PROFILE)]
+        [AssignActionRoute(StoreCustomerProductProfileSegments.DELETE_PROFILE)]
         public async Task<IActionResult> Delete([FromQuery] long customerProductProfileId) {
             try {
                 return Ok(SuccessResponseBody(
