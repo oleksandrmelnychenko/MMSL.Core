@@ -8,6 +8,8 @@
 
         public const string UPDATE_STORE = "update/store";
 
-        public const string DELETE_STORE = "delete/store";        
+        public const string DELETE_STORE = "delete/store";
     }
+
+    
 }

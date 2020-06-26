@@ -24,6 +24,6 @@ namespace MMSL.Domain.Entities.StoreCustomers {
         public long? MeasurementSizeId { get; set; }
         public MeasurementSize MeasurementSize { get; set; }
 
-        public List<CustomerProfileSizeValue> CustomerProfileSizeValues { get; set; }
+        public ICollection<CustomerProfileSizeValue> CustomerProfileSizeValues { get; set; } = new HashSet<CustomerProfileSizeValue>();
     }
 }

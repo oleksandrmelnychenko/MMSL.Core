@@ -9,5 +9,11 @@ namespace MMSL.Domain.Repositories.Stores {
 
         public IStoreCustomerRepository NewStoreCustomerRepository(IDbConnection connection)
             => new StoreCustomerRepository(connection);
+
+        public ICustomerProductProfileRepository NewCustomerProductProfileRepository(IDbConnection connection)
+            => new CustomerProductProfileRepository(connection);
+
+        public ICustomerProfileSizeValueRepository NewCustomerProfileSizeValueRepository(IDbConnection connection)
+            => new CustomerProfileSizeValueRepository(connection);
     }
 }

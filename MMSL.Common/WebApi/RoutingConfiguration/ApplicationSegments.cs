@@ -6,6 +6,8 @@
 
         public const string StoreCustomers = "store/customers";
 
+        public const string StoreCustomerProductProfile = "store/customers/product/profile";
+
         public const string Dealer = "dealer/accounts";
 
         public const string PaymentTypes = "types/payment";

@@ -222,7 +222,8 @@ namespace MMSL.Server.Core
             builder.RegisterType<MeasurementDefinitionService>().As<IMeasurementDefinitionService>();
             builder.RegisterType<ProductPermissionSettingService>().As<IProductPermissionSettingService>();
             builder.RegisterType<DealerProductAvailabilityService>().As<IDealerProductAvailabilityService>();
-            
+            builder.RegisterType<StoreCustomerProductProfileService>().As<IStoreCustomerProductProfileService>();
+
             builder.RegisterType<SqlDbContext>().As<ISqlDbContext>();
             builder.RegisterType<SqlContextFactory>().As<ISqlContextFactory>();
             builder.RegisterType<DbConnectionFactory>().As<IDbConnectionFactory>();
