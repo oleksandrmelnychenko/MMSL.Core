@@ -75,5 +75,19 @@ namespace MMSL.Server.Core.Controllers.Stores {
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
         }
+
+        [HttpDelete]
+        [Authorize(Roles = "Dealer")]
+        [AssignActionRoute(StoreCustomerProductProfileSegments.UPDATE_PROFILE)]
+        public async Task<IActionResult> Delete([FromQuery] long customerProductProfileId) {
+            try {
+                return Ok(SuccessResponseBody(
+                    await _storeCustomerProductProfileService.DeleteAsync(customerProductProfileId),
+                    Localizer["Successfully completed"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
     }
 }

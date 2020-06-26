@@ -96,5 +96,20 @@ namespace MMSL.Services.StoreCustomerServices {
                 }
             });
 
+        public Task<CustomerProductProfile> DeleteAsync(long customerProductProfileId) =>
+            Task.Run(() => {
+                using (var connection = _connectionFactory.NewSqlConnection()) {
+                    ICustomerProductProfileRepository profileRepository = _storeRepositoriesFactory.NewCustomerProductProfileRepository(connection);
+                    ICustomerProfileSizeValueRepository profileValueRepository = _storeRepositoriesFactory.NewCustomerProfileSizeValueRepository(connection);
+
+                    CustomerProductProfile entity = profileRepository.GetCustomerProductProfile(customerProductProfileId);
+
+                    entity.IsDeleted = true;
+
+                    profileRepository.UpdateCustomerProductProfile(entity);
+
+                    return entity;
+                }
+            });
     }
 }

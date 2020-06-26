@@ -9,5 +9,6 @@ namespace MMSL.Services.StoreCustomerServices.Contracts {
         Task<CustomerProductProfile> GetByIdAsync(long profileId);
         Task<CustomerProductProfile> AddAsync(long dealerIdentityId, NewCustomerProductProfile newProfileDataContract);
         Task<CustomerProductProfile> UpdateAsync(UpdateCustomerProductProfile profileDataContract);
+        Task<CustomerProductProfile> DeleteAsync(long customerProductProfileId);
     }
 }
