@@ -98,7 +98,7 @@ namespace MMSL.Domain.Repositories.Stores {
                 );
 
             if (storeId.HasValue) {
-                string storeIdQueryPart = "AND [StoreId] = @Id ";
+                string storeIdQueryPart = "AND [StoreCustomers].[StoreId] = @Id ";
 
                 paginatingDetailQuery += storeIdQueryPart;
                 query += storeIdQueryPart;
