@@ -89,7 +89,7 @@ namespace MMSL.Server.Core.Controllers.Options {
                 if (newOptionGroupDataContract.ProductId == default(long))
                     throw new ArgumentNullException("ProductId");
 
-                OptionPrice price = newOptionGroupDataContract.Price.HasValue && newOptionGroupDataContract.Price.Value != default
+                OptionPrice price = newOptionGroupDataContract.Price.HasValue && newOptionGroupDataContract.Price.Value != default(decimal)
                     ? new OptionPrice {
                         Price = newOptionGroupDataContract.Price.Value,
                         CurrencyTypeId = newOptionGroupDataContract.CurrencyTypeId.Value
@@ -111,7 +111,7 @@ namespace MMSL.Server.Core.Controllers.Options {
             try {
                 if (optionGroup == null) throw new ArgumentNullException("UpdateOptionGroup");
 
-                OptionPrice price = optionGroup.Price.HasValue && optionGroup.Price.Value != default
+                OptionPrice price = optionGroup.Price.HasValue && optionGroup.Price.Value != default(decimal)
                     ? new OptionPrice {
                         Price = optionGroup.Price.Value,
                         CurrencyTypeId = optionGroup.CurrencyTypeId.Value,
