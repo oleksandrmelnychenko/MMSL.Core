@@ -15,5 +15,6 @@ namespace MMSL.Domain.Repositories.ProductRepositories.Contracts {
         void UpdateProduct(ProductCategory product);
         ProductCategory GetById(long productCategoryId);
         ProductCategory GetDetailedById(long productCategoryId);
+        List<ProductCategory> GetAllByDealerIdentity(string searchPhrase, long? userIdentityId);
     }
 }

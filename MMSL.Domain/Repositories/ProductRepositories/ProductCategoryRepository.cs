@@ -26,8 +26,8 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
         public List<ProductCategory> GetAll(string searchPhrase, long? dealerAccountId) {
             List<ProductCategory> result = new List<ProductCategory>();
 
-            _connection.Query<ProductCategory, ProductCategoryMapOptionGroup, OptionGroup, OptionUnit, ProductCategory>(
-                $"SELECT [ProductCategories].*, [ProductCategoryMapOptionGroups].*, [OptionGroups].*, [OptionUnits].* " +
+            string query = 
+                "SELECT [ProductCategories].*, [ProductCategoryMapOptionGroups].*, [OptionGroups].*, [OptionUnits].* " +
                 "FROM [ProductCategories] " +
                 "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].ProductCategoryId = [ProductCategories].Id " +
                 "AND [ProductCategoryMapOptionGroups].IsDeleted = 0 " +
@@ -48,7 +48,10 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                     ? "AND ([DealerProductAvailabilities].Id IS NULL OR [DealerProductAvailabilities].DealerAccountId != @DealerAccountId) "
                     : string.Empty
                 ) +
-                "ORDER BY [ProductCategories].Id, [OptionGroups].Id, [OptionUnits].OrderIndex",
+                "ORDER BY [ProductCategories].Id, [OptionGroups].Id, [OptionUnits].OrderIndex";
+
+            _connection.Query<ProductCategory, ProductCategoryMapOptionGroup, OptionGroup, OptionUnit, ProductCategory>(
+                query,
                 (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit) => {
                     if (result.Any(x => x.Id == productCategory.Id)) {
                         productCategory = result.First(x => x.Id == productCategory.Id);
@@ -71,7 +74,74 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
 
                     return productCategory;
                 },
-                new { SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase, DealerAccountId = dealerAccountId });
+                new { 
+                    SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase, 
+                    DealerAccountId = dealerAccountId 
+                });
+
+            return result;
+        }
+
+        public List<ProductCategory> GetAllByDealerIdentity(string searchPhrase, long? userIdentityId) {
+            List<ProductCategory> result = new List<ProductCategory>();
+
+            string query = 
+@"SELECT [ProductCategories].*
+,[ProductCategoryMapOptionGroups].*
+,[OptionGroups].*
+,[OptionUnits].*
+FROM[ProductCategories]
+LEFT JOIN[ProductPermissionSettings] ON[ProductPermissionSettings].ProductCategoryId = [ProductCategories].Id
+AND[ProductPermissionSettings].IsDeleted = 0
+LEFT JOIN[PermissionSettings] ON[PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id
+AND[PermissionSettings].IsDeleted = 0
+AND[PermissionSettings].IsAllow = 1
+LEFT JOIN[ProductCategoryMapOptionGroups] ON[ProductCategoryMapOptionGroups].ProductCategoryId = [ProductCategories].Id
+AND[ProductCategoryMapOptionGroups].IsDeleted = 0
+AND[ProductCategoryMapOptionGroups].OptionGroupId = [PermissionSettings].OptionGroupId
+AND(SELECT COUNT([OptionGroups].Id) FROM[OptionGroups] WHERE[OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId AND[OptionGroups].IsDeleted = 0) > 0
+LEFT JOIN[OptionGroups] ON[OptionGroups].Id = [PermissionSettings].OptionGroupId
+AND[OptionGroups].IsDeleted = 0
+LEFT JOIN[OptionUnits] ON[OptionUnits].OptionGroupId = [OptionGroups].Id
+AND[OptionUnits].Id = [PermissionSettings].OptionUnitId
+AND[OptionUnits].IsDeleted = 0
+LEFT JOIN[DealerMapProductPermissionSettings] ON[DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id AND[DealerMapProductPermissionSettings].IsDeleted = 0
+LEFT JOIN[DealerAccount] ON[DealerAccount].Id = [DealerMapProductPermissionSettings].DealerAccountId
+WHERE[ProductCategories].IsDeleted = 0
+AND[DealerMapProductPermissionSettings].Id IS NOT NULL
+AND[DealerAccount].Id IS NOT NULL
+AND[PermissionSettings].Id IS NOT NULL
+AND[DealerAccount].UserIdentityId = @UserIdentityId";
+
+            _connection.Query<ProductCategory, ProductCategoryMapOptionGroup, OptionGroup, OptionUnit, ProductCategory>(
+                query,
+                (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit) => {
+                    if (result.Any(x => x.Id == productCategory.Id)) {
+                        productCategory = result.First(x => x.Id == productCategory.Id);
+                    } else {
+                        result.Add(productCategory);
+                    }
+
+                    if (productCategoryMapOptionGroup != null) {
+                        if (productCategory.OptionGroupMaps.Any(x => x.Id == productCategoryMapOptionGroup.Id)) {
+                            productCategoryMapOptionGroup = productCategory.OptionGroupMaps.First(x => x.Id == productCategoryMapOptionGroup.Id);
+                        } else {
+                            productCategory.OptionGroupMaps.Add(productCategoryMapOptionGroup);
+                            productCategoryMapOptionGroup.OptionGroup = optionGroup;
+                        }
+
+                        if (optionUnit != null) {
+                            productCategoryMapOptionGroup.OptionGroup.OptionUnits.Add(optionUnit);
+                        }
+                    }
+
+                    return productCategory;
+                },
+                new {
+                    SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase,
+                    UserIdentityId = userIdentityId
+                });
+
 
             return result;
         }

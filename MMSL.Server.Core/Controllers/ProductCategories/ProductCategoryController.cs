@@ -2,17 +2,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using MMSL.Common;
+using MMSL.Common.Helpers;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.ProductCategories;
 using MMSL.Domain.DataContracts.Measurements;
+using MMSL.Domain.Entities.Identity;
 using MMSL.Domain.Entities.Products;
 using MMSL.Server.Core.Helpers;
 using MMSL.Services.ProductCategories.Contracts;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -40,18 +43,27 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         [HttpGet]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORIES)]
-        public async Task<IActionResult> GetAll([FromQuery]string searchPhrase, [FromQuery] long? dealerAccountId) {
+        public async Task<IActionResult> GetAll([FromQuery] string searchPhrase, [FromQuery] long? dealerAccountId) {
             try {
-                List<ProductCategory> products = await _productCategoryService.GetProductCategoriesAsync(searchPhrase, dealerAccountId);
+                bool isDealer = ClaimHelper.GetUserRoles(User).Any(x => x == RoleType.Dealer.ToString());
+                long identityId = ClaimHelper.GetUserId(User);
 
-                return Ok(SuccessResponseBody(products, Localizer["Successfully completed"]));
-            }           
-            catch (Exception exc) {
+                return Ok(SuccessResponseBody(
+                    await _productCategoryService.GetProductCategoriesAsync(searchPhrase, dealerAccountId, identityId, isDealer),
+                    Localizer["Successfully completed"]));
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
         }
 
+        /// <summary>
+        ///     UNUSED for now. 
+        ///     Maybe need to delete.
+        /// </summary>
+        /// <param name="searchPhrase"></param>
+        /// <param name="dealerAccountId"></param>
+        /// <returns></returns>
         [HttpGet]
         [Authorize(Roles = "Administrator,Manufacturer")]
         [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORIES_WITH_AVAILABILITY)]
@@ -69,8 +81,9 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         [HttpGet]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORY)]
-        public async Task<IActionResult> Get([FromQuery]long productCategoryId) {
+        public async Task<IActionResult> Get([FromQuery] long productCategoryId) {
             try {
+
                 return Ok(SuccessResponseBody(await _productCategoryService.GetProductCategoryAsync(productCategoryId, true), Localizer["Successfully completed"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
@@ -98,8 +111,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
                 productCategory = await _productCategoryService.NewProductCategoryAsync(productCategory, newProductCategoryDataContract.OptionGroupIds);
 
                 return Ok(SuccessResponseBody(productCategory, Localizer["New product has been created successfully"]));
-            }          
-            catch (Exception exc) {
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
@@ -108,7 +120,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         [HttpPut]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.UPDATE_PRODUCT_CATEGORY)]
-        public async Task<IActionResult> UpdateProductCategory([FromQuery]UpdateProductCategoryDataContract productDataContract, [FromForm] FileFormData formData) {
+        public async Task<IActionResult> UpdateProductCategory([FromQuery] UpdateProductCategoryDataContract productDataContract, [FromForm] FileFormData formData) {
             try {
                 if (productDataContract == null) throw new ArgumentNullException("UpdateProductCategory");
 
@@ -127,8 +139,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
                 }
 
                 return Ok(SuccessResponseBody(productDataContract, Localizer["Product successfully updated"]));
-            }
-            catch (Exception exc) {
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
@@ -137,15 +148,14 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         [HttpPut]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.UPDATE_PRODUCT_CATEGORY_OPTION_GROUPS)]
-        public async Task<IActionResult> UpdateProductCategoryOptionGroups([FromBody]IEnumerable<ProductCategoryMapOptionGroup> maps) {
+        public async Task<IActionResult> UpdateProductCategoryOptionGroups([FromBody] IEnumerable<ProductCategoryMapOptionGroup> maps) {
             try {
                 if (maps == null) throw new ArgumentNullException("UpdateProductCategoryOptionGroups");
 
-                await _productCategoryService.UpdateProductCategoryOptionGroupsAsync(maps);          
+                await _productCategoryService.UpdateProductCategoryOptionGroupsAsync(maps);
 
                 return Ok(SuccessResponseBody("Completed", Localizer["Product styles successfully updated"]));
-            }
-            catch (Exception exc) {
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
@@ -154,13 +164,12 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         [HttpDelete]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.DELETE_PRODUCT_CATEGORY)]
-        public async Task<IActionResult> DeleteProductCategory([FromQuery]long productCategoryId) {
+        public async Task<IActionResult> DeleteProductCategory([FromQuery] long productCategoryId) {
             try {
                 await _productCategoryService.DeleteProductCategoryAsync(productCategoryId);
 
                 return Ok(SuccessResponseBody(productCategoryId, Localizer["Product successfully deleted"]));
-            }
-            catch (Exception exc) {
+            } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }

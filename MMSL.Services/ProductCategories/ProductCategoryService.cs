@@ -42,13 +42,14 @@ namespace MMSL.Services.ProductCategories {
             _deliveryTimelineRepositoriesFactory = deliveryTimelineRepositoriesFactory;
         }
 
-        public Task<List<ProductCategory>> GetProductCategoriesAsync(string searchPhrase, long? dealerAccountId) =>
+        public Task<List<ProductCategory>> GetProductCategoriesAsync(string searchPhrase, long? dealerAccountId, long? userIdentityId, bool isForDealer = false) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
-                    List<ProductCategory> products = null;
-                    IProductCategoryRepository productCategoryRepository = _productCategoryRepositoriesFactory.NewProductCategoryRepository(connection);
-                    products = productCategoryRepository.GetAll(searchPhrase, dealerAccountId);
-                    return products;
+                    IProductCategoryRepository repository = _productCategoryRepositoriesFactory.NewProductCategoryRepository(connection);
+
+                    return isForDealer
+                        ? repository.GetAllByDealerIdentity(searchPhrase, userIdentityId)
+                        : repository.GetAll(searchPhrase, dealerAccountId);
                 }
             });
 
