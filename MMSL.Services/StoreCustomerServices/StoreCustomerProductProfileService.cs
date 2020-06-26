@@ -1,6 +1,8 @@
 ﻿using MMSL.Domain.DataContracts.Customer;
 using MMSL.Domain.DbConnectionFactory;
+using MMSL.Domain.Entities.Dealer;
 using MMSL.Domain.Entities.StoreCustomers;
+using MMSL.Domain.Repositories.Dealer.Contracts;
 using MMSL.Domain.Repositories.Stores.Contracts;
 using MMSL.Services.StoreCustomerServices.Contracts;
 using System;
@@ -14,9 +16,15 @@ namespace MMSL.Services.StoreCustomerServices {
 
         private readonly IStoreRepositoriesFactory _storeRepositoriesFactory;
 
-        public StoreCustomerProductProfileService(IDbConnectionFactory connectionFactory, IStoreRepositoriesFactory storeRepositoriesFactory) {
+        private readonly IDealerRepositoriesFactory _dealerRepositoriesFactory;
+        
+        public StoreCustomerProductProfileService(
+            IDbConnectionFactory connectionFactory, 
+            IDealerRepositoriesFactory dealerRepositoriesFactory,
+            IStoreRepositoriesFactory storeRepositoriesFactory) {
             _connectionFactory = connectionFactory;
             _storeRepositoriesFactory = storeRepositoriesFactory;
+            _dealerRepositoriesFactory = dealerRepositoriesFactory;
         }
 
         public Task<CustomerProductProfile> GetByIdAsync(long profileId) =>
@@ -42,8 +50,13 @@ namespace MMSL.Services.StoreCustomerServices {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     ICustomerProductProfileRepository profileRepository = _storeRepositoriesFactory.NewCustomerProductProfileRepository(connection);
                     ICustomerProfileSizeValueRepository profileValueRepository = _storeRepositoriesFactory.NewCustomerProfileSizeValueRepository(connection);
+                    IDealerAccountRepository dealerrepository = _dealerRepositoriesFactory.NewDealerAccountRepository(connection);
+
+                    DealerAccount dealer = dealerrepository.GetDealerAccountByIdentity(dealerIdentityId);
 
                     CustomerProductProfile entity = newProfileDataContract.GetEntity();
+                    entity.DealerAccountId = dealer.Id;
+
                     entity.Id = profileRepository.AddCustomerProductProfile(entity);
 
                     foreach (NewCustomerProfileValueDataContract item in newProfileDataContract.Values) {
