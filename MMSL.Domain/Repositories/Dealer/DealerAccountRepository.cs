@@ -198,5 +198,12 @@ namespace MMSL.Domain.Repositories.Dealer {
 
             return dealerAccounts;
         }
+
+        public DealerAccount GetDealerAccountByIdentity(long dealerIdentityId) =>
+            _connection.QuerySingleOrDefault<DealerAccount>(
+                "SELECT [DealerAccount].* " +
+                "FROM [DealerAccount] " +
+                "WHERE [DealerAccount].[UserIdentityId] = @Id",
+                new { Id = dealerIdentityId });
     }
 }

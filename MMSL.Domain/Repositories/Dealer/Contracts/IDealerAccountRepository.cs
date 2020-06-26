@@ -18,5 +18,6 @@ namespace MMSL.Domain.Repositories.Dealer.Contracts {
 
         void UpdateDealerAccount(DealerAccount dealerAccount);
 
+        DealerAccount GetDealerAccountByIdentity(long dealerIdentityId);
     }
 }
