@@ -72,11 +72,11 @@ namespace MMSL.Server.Core.Controllers.Options {
                     optionUnitEntity.ImageName = formData.File.FileName;
                 }
 
-                OptionPrice price = optionUnit.Price.HasValue 
-                    ? new OptionPrice { 
-                        Price = optionUnit.Price.Value, 
+                OptionPrice price = optionUnit.Price.HasValue
+                    ? new OptionPrice {
+                        Price = optionUnit.Price.Value,
                         CurrencyTypeId = optionUnit.CurrencyTypeId.Value
-                    } 
+                    }
                     : null;
 
                 return Ok(SuccessResponseBody(
@@ -107,7 +107,11 @@ namespace MMSL.Server.Core.Controllers.Options {
                     ? Newtonsoft.Json.JsonConvert.DeserializeObject<List<UnitValueDataContract>>(updateOptionUnit.SerializedValues)
                     : null;
 
-                string oldImage = entity.ImageUrl;
+                string oldImage = string.Empty;
+                if (!string.IsNullOrEmpty(entity.ImageUrl)) {
+                    OptionUnit oldEntity = await _optionUnitService.GetOptionUnitByIdAsync(entity.Id);
+                    oldImage = oldEntity.ImageUrl;
+                }
 
                 if (formData.File != null) {
                     entity.ImageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}://{Request.Host}", formData.File);
@@ -124,12 +128,8 @@ namespace MMSL.Server.Core.Controllers.Options {
 
                 OptionUnit result = await _optionUnitService.UpdateOptionUnit(entity, values, price);
 
-                if (string.IsNullOrEmpty(oldImage) || oldImage != entity.ImageUrl) {
-                    OptionUnit oldEntity = await _optionUnitService.GetOptionUnitByIdAsync(entity.Id);
-
-                    if (!string.IsNullOrEmpty(oldEntity.ImageUrl)) {
-                        FileUploadingHelper.DeleteFile($"{Request.Scheme}://{Request.Host}", oldEntity.ImageUrl);
-                    }
+                if ((string.IsNullOrEmpty(oldImage) || oldImage != entity.ImageUrl) && !string.IsNullOrEmpty(oldImage)) {
+                    FileUploadingHelper.DeleteFile($"{Request.Scheme}://{Request.Host}", oldImage);
                 }
 
                 return Ok(SuccessResponseBody(result, Localizer["Successfully updated"]));
