@@ -17,8 +17,9 @@ namespace MMSL.Domain.Repositories.Measurements {
 
         public List<Measurement> GetAll(string searchPhrase) {
             List<Measurement> result = new List<Measurement>();
-            string query = "SELECT [Measurements].*, [MeasurementMapDefinitions].*, [MeasurementDefinitions].* " +
+            string query = "SELECT [Measurements].*, [MeasurementUnits].*, [MeasurementMapDefinitions].*, [MeasurementDefinitions].* " +
                "FROM [Measurements] " +
+               "LEFT JOIN [MeasurementUnits] ON [MeasurementUnits].Id = [Measurements].MeasurementUnitId " +
                "LEFT JOIN [MeasurementMapDefinitions] ON [MeasurementMapDefinitions].MeasurementId = [Measurements].Id " +
                "AND [MeasurementMapDefinitions].IsDeleted = 0 " +
                "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapDefinitions].MeasurementDefinitionId " +
@@ -26,13 +27,14 @@ namespace MMSL.Domain.Repositories.Measurements {
                "AND PATINDEX('%' + @SearchTerm + '%', [Measurements].[Name]) > 0 " +
                "AND [Measurements].ParentMeasurementId IS NULL";
 
-            _connection.Query<Measurement, MeasurementMapDefinition, MeasurementDefinition, Measurement>(
+            _connection.Query<Measurement, MeasurementUnit, MeasurementMapDefinition, MeasurementDefinition, Measurement>(
                query,
-               (measurement, measurementMapDefinition, measurementDefinition) => {
+               (measurement, unit, measurementMapDefinition, measurementDefinition) => {
 
                    if (result.Any(x => x.Id == measurement.Id)) {
                        measurement = result.First(x => x.Id == measurement.Id);
                    } else {
+                       measurement.MeasurementUnit = unit;
                        result.Add(measurement);
                    }
 
@@ -87,22 +89,25 @@ namespace MMSL.Domain.Repositories.Measurements {
         public List<Measurement> GetAllByProduct(long productCategoryId) {
             List<Measurement> measurementsResult = new List<Measurement>();
 
-            _connection.Query<Measurement, MeasurementMapDefinition, MeasurementDefinition, Measurement>(
+            _connection.Query<Measurement, MeasurementUnit, MeasurementMapDefinition, MeasurementDefinition, Measurement>(
                "SELECT [Measurements].* " +
+               ",[MeasurementUnits].*" +
                ",[MeasurementMapDefinitions].* " +
                ",[MeasurementDefinitions].* " +
                "FROM [Measurements] " +
+               "LEFT JOIN [MeasurementUnits] ON [MeasurementUnits].Id = [Measurements].MeasurementUnitId " +
                "LEFT JOIN [MeasurementMapDefinitions] ON [MeasurementMapDefinitions].MeasurementId = [Measurements].Id " +
                "AND [MeasurementMapDefinitions].IsDeleted = 0 " +
                "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapDefinitions].MeasurementDefinitionId " +
                "AND [MeasurementDefinitions].IsDeleted = 0 " +
                "WHERE [Measurements].ProductCategoryId = @ProductCategoryId AND [Measurements].IsDeleted = 0 " +
                "ORDER BY [Measurements].Id, [MeasurementMapDefinitions].OrderIndex",
-               (measurement, measurementMapDefinition, measurementDefinition) => {
+               (measurement, unit, measurementMapDefinition, measurementDefinition) => {
 
                    if (measurementsResult.Any(x => x.Id == measurement.Id)) {
                        measurement = measurementsResult.First(x => x.Id == measurement.Id);
                    } else {
+                       measurement.MeasurementUnit = unit;
                        measurementsResult.Add(measurement);
                    }
 
@@ -127,19 +132,21 @@ namespace MMSL.Domain.Repositories.Measurements {
         public Measurement GetByIdWithDefinitions(long measurementId) {
             Measurement result = null;
 
-            string query = "SELECT [Measurements].*, [MeasurementMapDefinitions].*, [MeasurementDefinitions].* " +
+            string query = "SELECT [Measurements].*, [MeasurementUnits].*, [MeasurementMapDefinitions].*, [MeasurementDefinitions].* " +
                 "FROM [Measurements] " +
+                "LEFT JOIN [MeasurementUnits] ON [MeasurementUnits].Id = [Measurements].MeasurementUnitId " +
                 "LEFT JOIN [MeasurementMapDefinitions] ON [MeasurementMapDefinitions].MeasurementId = [Measurements].Id " +
                 "AND [MeasurementMapDefinitions].IsDeleted = 0 " +
                 "LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [MeasurementMapDefinitions].MeasurementDefinitionId " +
                 "WHERE [Measurements].Id = @Id AND [Measurements].IsDeleted = 0 " +
                 "ORDER BY [MeasurementMapDefinitions].OrderIndex";
 
-            _connection.Query<Measurement, MeasurementMapDefinition, MeasurementDefinition, Measurement>(
+            _connection.Query<Measurement, MeasurementUnit, MeasurementMapDefinition, MeasurementDefinition, Measurement>(
                 query,
-                (measurement, measurementMapDefinition, measurementDefinition) => {
+                (measurement, unit, measurementMapDefinition, measurementDefinition) => {
                     if (result == null) {
                         result = measurement;
+                        result.MeasurementUnit = unit;
                     }
 
                     if (measurementMapDefinition != null) {
