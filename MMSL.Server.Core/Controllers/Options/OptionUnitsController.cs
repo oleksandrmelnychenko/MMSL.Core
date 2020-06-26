@@ -58,7 +58,7 @@ namespace MMSL.Server.Core.Controllers.Options {
             [FromForm] OptionUnitDataContract optionUnit,
             [FromForm] FileFormData formData) {
             try {
-                if (optionUnit.Price.HasValue && !optionUnit.CurrencyTypeId.HasValue)
+                if (optionUnit.Price.HasValue && optionUnit.Price.Value != default(decimal) && !optionUnit.CurrencyTypeId.HasValue)
                     throw new ArgumentNullException(nameof(optionUnit.CurrencyTypeId));
 
                 OptionUnit optionUnitEntity = optionUnit.GetEntity();
@@ -72,7 +72,7 @@ namespace MMSL.Server.Core.Controllers.Options {
                     optionUnitEntity.ImageName = formData.File.FileName;
                 }
 
-                OptionPrice price = optionUnit.Price.HasValue
+                OptionPrice price = optionUnit.Price.HasValue && optionUnit.Price != default(decimal)
                     ? new OptionPrice {
                         Price = optionUnit.Price.Value,
                         CurrencyTypeId = optionUnit.CurrencyTypeId.Value
@@ -92,7 +92,7 @@ namespace MMSL.Server.Core.Controllers.Options {
         [AssignActionRoute(OptionUnitSegments.UPDATE_OPTION_UNIT)]
         public async Task<IActionResult> UpdateOptionUnit([FromForm] OptionUnitUpdateDataContract updateOptionUnit, [FromForm] FileFormData formData) {
             try {
-                if (updateOptionUnit.Price.HasValue && !updateOptionUnit.CurrencyTypeId.HasValue)
+                if (updateOptionUnit.Price.HasValue && updateOptionUnit.Price.Value != default(decimal) && !updateOptionUnit.CurrencyTypeId.HasValue)
                     throw new ArgumentNullException(nameof(updateOptionUnit.CurrencyTypeId));
 
                 if (updateOptionUnit == null)
@@ -118,7 +118,7 @@ namespace MMSL.Server.Core.Controllers.Options {
                     entity.ImageName = formData.File.FileName;
                 }
 
-                OptionPrice price = updateOptionUnit.Price.HasValue && updateOptionUnit.Price.Value != default
+                OptionPrice price = updateOptionUnit.Price.HasValue && updateOptionUnit.Price.Value != default(decimal)
                     ? new OptionPrice {
                         Price = updateOptionUnit.Price.Value,
                         CurrencyTypeId = updateOptionUnit.CurrencyTypeId.Value,

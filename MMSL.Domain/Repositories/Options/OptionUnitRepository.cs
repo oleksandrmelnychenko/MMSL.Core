@@ -101,11 +101,11 @@ namespace MMSL.Domain.Repositories.Options {
                         result.Add(unit);
 
                     if (unitValue != null) {
-                        price.CurrencyType = unitCurrency;
                         unit.UnitValues.Add(unitValue);
                     }
 
                     if (price != null) {
+                        price.CurrencyType = unitCurrency;
                         unit.CurrentPrice = price;
                     }
 
