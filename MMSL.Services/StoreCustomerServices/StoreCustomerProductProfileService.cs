@@ -93,7 +93,7 @@ namespace MMSL.Services.StoreCustomerServices {
                         }
                     }
 
-                    return profileRepository.GetCustomerProductProfile(entity.Id);
+                    return profileRepository.GetCustomerProductProfile(profileDataContract.Id);
                 }
             });
 
