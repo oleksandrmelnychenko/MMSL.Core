@@ -3,6 +3,8 @@
 
         public const string GET_PROFILES = "get/all";
 
+        public const string GET_PROFILE_BY_ID = "get";
+
         public const string ADD_PROFILE = "add";
 
         public const string UPDATE_PROFILE = "update";

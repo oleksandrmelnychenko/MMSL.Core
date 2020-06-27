@@ -46,6 +46,23 @@ namespace MMSL.Server.Core.Controllers.Stores {
             }
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Dealer")]
+        [AssignActionRoute(StoreCustomerProductProfileSegments.GET_PROFILE_BY_ID)]
+        public async Task<IActionResult> Get([FromQuery] long profileId) {
+            try {
+                long dealerIdentityId = ClaimHelper.GetUserId(User);
+
+                CustomerProductProfile profile = await _storeCustomerProductProfileService.GetByIdAsync(profileId);
+
+                return Ok(SuccessResponseBody(profile, Localizer["Successfully completed"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+
         [HttpPost]
         [Authorize(Roles = "Dealer")]
         [AssignActionRoute(StoreCustomerProductProfileSegments.ADD_PROFILE)]
