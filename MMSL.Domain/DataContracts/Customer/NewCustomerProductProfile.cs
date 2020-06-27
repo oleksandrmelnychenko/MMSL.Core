@@ -15,6 +15,8 @@ namespace MMSL.Domain.DataContracts.Customer {
 
         public long? MeasurementId { get; set; }
 
+        public long? MeasurementSizeId { get; set; }
+
         public long? FittingTypeId { get; set; }
 
         public List<NewCustomerProfileValueDataContract> Values { get; set; } = new List<NewCustomerProfileValueDataContract>();
@@ -24,7 +26,10 @@ namespace MMSL.Domain.DataContracts.Customer {
                 Name = Name,
                 Description = Description,
                 ProductCategoryId = ProductCategoryId,
-                StoreCustomerId = StoreCustomerId
+                StoreCustomerId = StoreCustomerId,
+                MeasurementId = MeasurementId,
+                MeasurementSizeId = MeasurementSizeId,
+                FittingTypeId = FittingTypeId
             };
         }
     }
