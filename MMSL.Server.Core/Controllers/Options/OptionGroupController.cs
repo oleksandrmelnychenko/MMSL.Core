@@ -87,8 +87,8 @@ namespace MMSL.Server.Core.Controllers.Options {
                 if (newOptionGroupDataContract.ProductId == default(long))
                     throw new ArgumentNullException("ProductId");
 
-                decimal priceValue;
-                bool priceAvailable = PriceParsingHelper.TryParsePrice(newOptionGroupDataContract.Price, out priceValue);
+                decimal priceValue = 0;
+                bool priceAvailable = newOptionGroupDataContract.Price != null && PriceParsingHelper.TryParsePrice(newOptionGroupDataContract.Price, out priceValue);
 
                 if (priceAvailable && !newOptionGroupDataContract.CurrencyTypeId.HasValue)
                     throw new ArgumentNullException(nameof(newOptionGroupDataContract.CurrencyTypeId));
@@ -116,8 +116,8 @@ namespace MMSL.Server.Core.Controllers.Options {
                 if (optionGroup == null)
                     throw new ArgumentNullException("UpdateOptionGroup");
 
-                decimal priceValue;
-                bool priceAvailable = PriceParsingHelper.TryParsePrice(optionGroup.Price, out priceValue);
+                decimal priceValue = 0;
+                bool priceAvailable = optionGroup.Price != null && PriceParsingHelper.TryParsePrice(optionGroup.Price, out priceValue);
 
                 if (priceAvailable && !optionGroup.CurrencyTypeId.HasValue)
                     throw new ArgumentNullException(nameof(optionGroup.CurrencyTypeId));

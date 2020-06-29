@@ -43,3 +43,4 @@
 {"Timestamp":"2020-06-01T14:40:28.2846096+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'AssignDeliveryTimelineDataContract')"}
 {"Timestamp":"2020-06-01T14:42:36.2968440+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'AssignDeliveryTimelineDataContract')"}
 {"Timestamp":"2020-06-01T14:42:53.8384766+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'AssignDeliveryTimelineDataContract')"}
+{"Timestamp":"2020-06-29T11:00:23.6517277+03:00","Level":"Error","MessageTemplate":"value not found"}
