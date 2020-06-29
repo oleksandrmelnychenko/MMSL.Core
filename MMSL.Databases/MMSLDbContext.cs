@@ -88,6 +88,8 @@ namespace MMSL.Databases {
 
         public DbSet<CustomerProfileSizeValue> CustomerProfileSizeValues { get; set; }
 
+        public DbSet<CustomerProfileStyleConfiguration> CustomerProfileStyleConfigurations { get; set; }
+        
         public DbSet<CustomerProductProfile> CustomerProductProfiles { get; set; }
 
 
@@ -135,6 +137,7 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new DealerMapProductPermissionSettingsMap());
             modelBuilder.AddConfiguration(new CustomerProfileSizeValueMap());
             modelBuilder.AddConfiguration(new CustomerProductProfileMap());
+            modelBuilder.AddConfiguration(new CustomerProfileStyleConfigurationMap());
         }
     }
 }
