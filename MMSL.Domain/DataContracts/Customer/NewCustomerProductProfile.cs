@@ -23,6 +23,8 @@ namespace MMSL.Domain.DataContracts.Customer {
 
         public List<NewCustomerProfileValueDataContract> Values { get; set; } = new List<NewCustomerProfileValueDataContract>();
 
+        public List<NewProfileProductStyleConfigurationDataContract> ProductStyles { get; set; } = new List<NewProfileProductStyleConfigurationDataContract>();
+
         public CustomerProductProfile GetEntity() {
             return new CustomerProductProfile() {
                 Name = Name,

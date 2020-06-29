@@ -9,5 +9,7 @@ namespace MMSL.Domain.Repositories.Stores.Contracts {
         ICustomerProductProfileRepository NewCustomerProductProfileRepository(IDbConnection connection);
 
         ICustomerProfileSizeValueRepository NewCustomerProfileSizeValueRepository(IDbConnection connection);
+
+        ICustomerProfileStyleConfigurationRepository NewCustomerProfileStyleConfigurationRepository(IDbConnection connection);
     }
 }

@@ -7,6 +7,7 @@ using MMSL.Domain.Repositories.Stores.Contracts;
 using MMSL.Services.StoreCustomerServices.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MMSL.Services.StoreCustomerServices {
@@ -51,6 +52,7 @@ namespace MMSL.Services.StoreCustomerServices {
                     ICustomerProductProfileRepository profileRepository = _storeRepositoriesFactory.NewCustomerProductProfileRepository(connection);
                     ICustomerProfileSizeValueRepository profileValueRepository = _storeRepositoriesFactory.NewCustomerProfileSizeValueRepository(connection);
                     IDealerAccountRepository dealerrepository = _dealerRepositoriesFactory.NewDealerAccountRepository(connection);
+                    ICustomerProfileStyleConfigurationRepository styleConfigRepository = _storeRepositoriesFactory.NewCustomerProfileStyleConfigurationRepository(connection);
 
                     DealerAccount dealer = dealerrepository.GetDealerAccountByIdentity(dealerIdentityId);
 
@@ -69,6 +71,13 @@ namespace MMSL.Services.StoreCustomerServices {
                         profileValueRepository.AddSizeValue(newValue);
                     }
 
+                    foreach (NewProfileProductStyleConfigurationDataContract styleDataContract in newProfileDataContract.ProductStyles) {
+                        styleConfigRepository.Add(new CustomerProfileStyleConfiguration {
+                            SelectedValue = styleDataContract.SelectedStyleValue,
+                            OptionUnitId = styleDataContract.OptionUnitId
+                        });
+                    }
+
                     return profileRepository.GetCustomerProductProfile(entity.Id);
                 }
             });
@@ -78,6 +87,7 @@ namespace MMSL.Services.StoreCustomerServices {
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     ICustomerProductProfileRepository profileRepository = _storeRepositoriesFactory.NewCustomerProductProfileRepository(connection);
                     ICustomerProfileSizeValueRepository profileValueRepository = _storeRepositoriesFactory.NewCustomerProfileSizeValueRepository(connection);
+                    ICustomerProfileStyleConfigurationRepository styleConfigRepository = _storeRepositoriesFactory.NewCustomerProfileStyleConfigurationRepository(connection);
 
                     CustomerProductProfile entity = profileDataContract.GetEntity();
                     entity = profileRepository.UpdateCustomerProductProfile(entity);
@@ -90,6 +100,21 @@ namespace MMSL.Services.StoreCustomerServices {
                             profileValueRepository.AddSizeValue(valueToUpdate);
                         } else {
                             profileValueRepository.UpdateSizeValue(valueToUpdate);
+                        }
+                    }
+
+                    foreach (UpdateProfileProductStyleConfigurationDataContract styleDataContract in profileDataContract.ProductStyles) {
+                        CustomerProfileStyleConfiguration styleEntity = new CustomerProfileStyleConfiguration {
+                            Id = styleDataContract.Id,
+                            IsDeleted = styleDataContract.IsDeleted,
+                            SelectedValue = styleDataContract.SelectedStyleValue,
+                            OptionUnitId = styleDataContract.OptionUnitId
+                        };
+
+                        if (styleEntity.IsNew()) {
+                            styleConfigRepository.Add(styleEntity);
+                        } else {
+                            styleConfigRepository.Update(styleEntity);
                         }
                     }
 

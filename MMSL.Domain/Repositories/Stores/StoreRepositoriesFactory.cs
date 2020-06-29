@@ -15,5 +15,8 @@ namespace MMSL.Domain.Repositories.Stores {
 
         public ICustomerProfileSizeValueRepository NewCustomerProfileSizeValueRepository(IDbConnection connection)
             => new CustomerProfileSizeValueRepository(connection);
+
+        public ICustomerProfileStyleConfigurationRepository NewCustomerProfileStyleConfigurationRepository(IDbConnection connection) =>
+            new CustomerProfileStyleConfigurationRepository(connection);
     }
 }

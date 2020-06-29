@@ -14,6 +14,8 @@ namespace MMSL.Domain.DataContracts.Customer {
 
         public List<UpdateCustomerProfileValueDataContract> Values { get; set; } = new List<UpdateCustomerProfileValueDataContract>();
 
+        public List<UpdateProfileProductStyleConfigurationDataContract> ProductStyles { get; set; } = new List<UpdateProfileProductStyleConfigurationDataContract>();
+
         public override CustomerProductProfile GetEntity() {
             return new CustomerProductProfile() {
                 Id = Id,
