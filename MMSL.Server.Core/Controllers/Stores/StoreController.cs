@@ -47,8 +47,8 @@ namespace MMSL.Server.Core.Controllers.BankDetails {
                 long identityId = ClaimHelper.GetUserId(User);
 
                 List<Store> stores = isDealer 
-                    ? await _storeService.GetAllStoresAsync(searchPhrase)
-                    : await _storeService.GetDealerStoresAsync(searchPhrase, identityId);
+                    ? await _storeService.GetDealerStoresAsync(searchPhrase, identityId)
+                    : await _storeService.GetAllStoresAsync(searchPhrase);
 
                 return Ok(SuccessResponseBody(stores, Localizer["Successfully completed"]));
             }
