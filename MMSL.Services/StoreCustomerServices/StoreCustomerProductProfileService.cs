@@ -108,7 +108,8 @@ namespace MMSL.Services.StoreCustomerServices {
                             Id = styleDataContract.Id,
                             IsDeleted = styleDataContract.IsDeleted,
                             SelectedValue = styleDataContract.SelectedStyleValue,
-                            OptionUnitId = styleDataContract.OptionUnitId
+                            OptionUnitId = styleDataContract.OptionUnitId,
+                            CustomerProductProfileId = entity.Id
                         };
 
                         if (styleEntity.IsNew()) {
