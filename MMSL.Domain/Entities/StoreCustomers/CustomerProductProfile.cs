@@ -6,6 +6,8 @@ using System.Collections.Generic;
 namespace MMSL.Domain.Entities.StoreCustomers {
     public class CustomerProductProfile : EntityBaseNamed {
 
+        public ProfileTypes ProfileType { get; set; }
+
         public long DealerAccountId { get; set; }
         public DealerAccount DealerAccount { get; set; }
 

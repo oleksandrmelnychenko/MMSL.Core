@@ -10,6 +10,8 @@ namespace MMSL.Domain.DataContracts.Customer {
 
         public long? MeasurementSizeId { get; set; }
 
+        public ProfileTypes ProfileType { get; set; }
+
         public List<UpdateCustomerProfileValueDataContract> Values { get; set; } = new List<UpdateCustomerProfileValueDataContract>();
 
         public override CustomerProductProfile GetEntity() {
@@ -19,7 +21,8 @@ namespace MMSL.Domain.DataContracts.Customer {
                 Description = Description,
                 MeasurementId = MeasurementId,
                 MeasurementSizeId = MeasurementSizeId,
-                FittingTypeId = FittingTypeId
+                FittingTypeId = FittingTypeId,
+                ProfileType = ProfileType
             };
         }
     }
