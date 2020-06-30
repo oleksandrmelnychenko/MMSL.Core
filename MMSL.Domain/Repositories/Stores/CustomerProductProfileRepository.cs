@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MMSL.Domain.Entities.Measurements;
+using MMSL.Domain.Entities.Options;
 using MMSL.Domain.Entities.Products;
 using MMSL.Domain.Entities.StoreCustomers;
 using MMSL.Domain.Repositories.Stores.Contracts;
@@ -22,6 +23,9 @@ namespace MMSL.Domain.Repositories.Stores {
 ,[FittingTypes].*
 ,[CustomerProfileSizeValues].*
 ,[MeasurementDefinitions].*
+,[CustomerProfileStyleConfigurations].*
+,[OptionUnits].*
+,[UnitValues].*
 FROM [CustomerProductProfiles]
 LEFT JOIN [ProductCategories] ON [ProductCategories].Id = [CustomerProductProfiles].ProductCategoryId 
 LEFT JOIN [StoreCustomers] ON [StoreCustomers].Id = [CustomerProductProfiles].StoreCustomerId
@@ -31,6 +35,12 @@ LEFT JOIN [FittingTypes] ON [FittingTypes].Id = [CustomerProductProfiles].Fittin
 LEFT JOIN [DealerAccount] ON [DealerAccount].Id = [CustomerProductProfiles].DealerAccountId
 LEFT JOIN [CustomerProfileSizeValues] ON [CustomerProfileSizeValues].CustomerProductProfileId = [CustomerProductProfiles].Id
 LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [CustomerProfileSizeValues].MeasurementDefinitionId
+
+LEFT JOIN [CustomerProfileStyleConfigurations] ON [CustomerProfileStyleConfigurations].CustomerProductProfileId = [CustomerProductProfiles].Id 
+AND [CustomerProfileStyleConfigurations].IsDeleted = 0
+LEFT JOIN [OptionUnits] ON [OptionUnits].Id = [CustomerProfileStyleConfigurations].OptionUnitId
+LEFT JOIN [UnitValues] ON [UnitValues].Id = [CustomerProfileStyleConfigurations].UnitValueId AND [UnitValues].OptionUnitId = [OptionUnits].Id
+
 WHERE [CustomerProductProfiles].Id = @Id AND [CustomerProductProfiles].IsDeleted = 0";
 
         private Type[] _types = {
@@ -41,7 +51,11 @@ WHERE [CustomerProductProfiles].Id = @Id AND [CustomerProductProfiles].IsDeleted
                     typeof(MeasurementSize),
                     typeof(FittingType),
                     typeof(CustomerProfileSizeValue),
-                    typeof(MeasurementDefinition)
+                    typeof(MeasurementDefinition),
+
+                    typeof(CustomerProfileStyleConfiguration),
+                    typeof(OptionUnit),
+                    typeof(UnitValue)
                 };
 
         public CustomerProductProfileRepository(IDbConnection connection) {
@@ -139,7 +153,11 @@ WHERE [DealerAccount].UserIdentityId = @DealerIdentityId  " +
                 FittingType fitting = (FittingType)objects[5];
                 CustomerProfileSizeValue sizeValue = (CustomerProfileSizeValue)objects[6];
                 MeasurementDefinition definition = (MeasurementDefinition)objects[7];
-                
+
+                CustomerProfileStyleConfiguration styleConfig = (CustomerProfileStyleConfiguration)objects[8];
+                OptionUnit unit = (OptionUnit)objects[9];
+                UnitValue unitValue = (UnitValue)objects[10];
+
                 if (result == null) {
                     result = profile;
                 }
@@ -150,9 +168,23 @@ WHERE [DealerAccount].UserIdentityId = @DealerIdentityId  " +
                 result.MeasurementSize = size;
                 result.FittingType = fitting;
 
-                if (sizeValue != null) {
+                if (sizeValue != null && result.CustomerProfileSizeValues.All(x => x.Id != sizeValue.Id)) {
                     sizeValue.MeasurementDefinition = definition;
                     result.CustomerProfileSizeValues.Add(sizeValue);
+                }
+
+                if (styleConfig != null) {
+                    if (result.CustomerProfileStyleConfigurations.Any(x => x.Id == styleConfig.Id)) {
+                        styleConfig = result.CustomerProfileStyleConfigurations.First(x => x.Id == styleConfig.Id);
+                    } else {
+                        result.CustomerProfileStyleConfigurations.Add(styleConfig);
+                    }
+
+                    styleConfig.OptionUnit = unit;
+
+                    if (unitValue != null) {
+                        styleConfig.UnitValue = unitValue;
+                    }
                 }
 
                 return profile;
@@ -191,6 +223,10 @@ SELECT SCOPE_IDENTITY();",
                     CustomerProfileSizeValue sizeValue = (CustomerProfileSizeValue)objects[6];
                     MeasurementDefinition definition = (MeasurementDefinition)objects[7];
 
+                    CustomerProfileStyleConfiguration styleConfig = (CustomerProfileStyleConfiguration)objects[8];
+                    OptionUnit unit = (OptionUnit)objects[9];
+                    UnitValue unitValue = (UnitValue)objects[10];
+
                     if (result == null) {
                         result = profile;
                     }
@@ -204,6 +240,20 @@ SELECT SCOPE_IDENTITY();",
                     if (sizeValue != null) {
                         sizeValue.MeasurementDefinition = definition;
                         result.CustomerProfileSizeValues.Add(sizeValue);
+                    }
+
+                    if (styleConfig != null) {
+                        if (result.CustomerProfileStyleConfigurations.Any(x => x.Id == styleConfig.Id)) {
+                            styleConfig = result.CustomerProfileStyleConfigurations.First(x => x.Id == styleConfig.Id);
+                        } else {
+                            result.CustomerProfileStyleConfigurations.Add(styleConfig);
+                        }
+
+                        styleConfig.OptionUnit = unit;
+
+                        if (unitValue != null) {
+                            styleConfig.UnitValue = unitValue;
+                        }
                     }
 
                     return profile;
