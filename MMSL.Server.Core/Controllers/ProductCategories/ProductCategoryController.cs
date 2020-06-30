@@ -57,34 +57,36 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
             }
         }
 
-        /// <summary>
-        ///     UNUSED for now. 
-        ///     Maybe need to delete.
-        /// </summary>
-        /// <param name="searchPhrase"></param>
-        /// <param name="dealerAccountId"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Authorize(Roles = "Administrator,Manufacturer")]
-        [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORIES_WITH_AVAILABILITY)]
-        public async Task<IActionResult> GetWithAvailability([FromQuery] string searchPhrase, [FromQuery] long? dealerAccountId) {
-            try {
-                List<ProductCategory> products = await _productCategoryService.GetProductCategoriesAvailabilitiesAsync(searchPhrase, dealerAccountId);
+        ///// <summary>
+        /////     UNUSED for now. 
+        /////     Maybe need to delete.
+        ///// </summary>
+        ///// <param name="searchPhrase"></param>
+        ///// <param name="dealerAccountId"></param>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Authorize(Roles = "Administrator,Manufacturer")]
+        //[AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORIES_WITH_AVAILABILITY)]
+        //public async Task<IActionResult> GetWithAvailability([FromQuery] string searchPhrase, [FromQuery] long? dealerAccountId) {
+        //    try {
+        //        List<ProductCategory> products = await _productCategoryService.GetProductCategoriesAvailabilitiesAsync(searchPhrase, dealerAccountId);
 
-                return Ok(SuccessResponseBody(products, Localizer["Successfully completed"]));
-            } catch (Exception exc) {
-                Log.Error(exc.Message);
-                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
-            }
-        }
+        //        return Ok(SuccessResponseBody(products, Localizer["Successfully completed"]));
+        //    } catch (Exception exc) {
+        //        Log.Error(exc.Message);
+        //        return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+        //    }
+        //}
 
         [HttpGet]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORY)]
         public async Task<IActionResult> Get([FromQuery] long productCategoryId) {
             try {
+                bool isDealer = ClaimHelper.GetUserRoles(User).Any(x => x == RoleType.Dealer.ToString());
+                long identityId = ClaimHelper.GetUserId(User);
 
-                return Ok(SuccessResponseBody(await _productCategoryService.GetProductCategoryAsync(productCategoryId, true), Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(await _productCategoryService.GetProductCategoryAsync(productCategoryId, identityId, isDealer), Localizer["Successfully completed"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

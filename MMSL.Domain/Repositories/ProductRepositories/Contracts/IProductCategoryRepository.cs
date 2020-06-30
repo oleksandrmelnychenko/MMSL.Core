@@ -13,8 +13,13 @@ namespace MMSL.Domain.Repositories.ProductRepositories.Contracts {
         ProductCategory NewProduct(ProductCategory newProductCategory);
 
         void UpdateProduct(ProductCategory product);
+
         ProductCategory GetById(long productCategoryId);
+
+        ProductCategory GetByIdForDealerIdentity(long productCategoryId, long dealerIdentityId);
+
         ProductCategory GetDetailedById(long productCategoryId);
+
         List<ProductCategory> GetAllByDealerIdentity(string searchPhrase, long? userIdentityId);
     }
 }

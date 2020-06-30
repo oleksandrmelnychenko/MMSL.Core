@@ -53,12 +53,14 @@ namespace MMSL.Services.ProductCategories {
                 }
             });
 
-        public Task<ProductCategory> GetProductCategoryAsync(long productCategoryId, bool includeDetails = false) =>
+        public Task<ProductCategory> GetProductCategoryAsync(long productCategoryId, long? userIdentityId = null, bool isForDealer = false) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IProductCategoryRepository repo = _productCategoryRepositoriesFactory.NewProductCategoryRepository(connection);
-
-                    return includeDetails ? repo.GetDetailedById(productCategoryId) : repo.GetById(productCategoryId);
+                    
+                    return isForDealer && userIdentityId.HasValue
+                        ? repo.GetByIdForDealerIdentity(productCategoryId, userIdentityId.Value)
+                        : repo.GetDetailedById(productCategoryId);
                 }
             });
 

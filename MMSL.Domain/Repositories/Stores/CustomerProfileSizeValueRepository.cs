@@ -38,7 +38,7 @@ SELECT SCOPE_IDENTITY();", sizeValue);
 
         public void UpdateSizeValue(CustomerProfileSizeValue sizeValue) =>
             _connection.Execute(
-                "UPDATE [CustomerProfileSizeValues] SET [IsDeleted]=@IsDeleted [Value]=@Value, [FittingValue]=@FittingValue WHERE [Id] = @Id",
+                "UPDATE [CustomerProfileSizeValues] SET [IsDeleted]=@IsDeleted, [Value]=@Value, [FittingValue]=@FittingValue WHERE [Id] = @Id",
                 sizeValue);
     }
 }
