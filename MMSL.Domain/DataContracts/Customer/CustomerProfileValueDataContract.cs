@@ -17,10 +17,10 @@ namespace MMSL.Domain.DataContracts.Customer {
 
         public CustomerProfileSizeValue GetEntity() {
             float value = 0;
-            bool valueAvailable = string.IsNullOrEmpty(Value) && NumericParsingHelper.TryParseFloat(Value, out value);
+            bool valueAvailable = !string.IsNullOrEmpty(Value) && NumericParsingHelper.TryParseFloat(Value, out value);
 
             float fittingValue = 0;
-            bool fittingValueAvailable = string.IsNullOrEmpty(FittingValue) && NumericParsingHelper.TryParseFloat(FittingValue, out fittingValue);
+            bool fittingValueAvailable = !string.IsNullOrEmpty(FittingValue) && NumericParsingHelper.TryParseFloat(FittingValue, out fittingValue);
 
             return new CustomerProfileSizeValue {
                 Value = valueAvailable ? (float?)value : null,
