@@ -35,9 +35,9 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
 
         [HttpGet]
         [AssignActionRoute(ProductPermissionSegments.GET_PRODUCT_PERMISSION_SETTINGS)]
-        public async Task<IActionResult> GetAll([FromQuery] long productCategoryId) {
+        public async Task<IActionResult> GetAll([FromQuery] long productCategoryId, [FromQuery] string dealerSearchTerm) {
             try {
-                return Ok(SuccessResponseBody(await _productPermissionSettingService.GetSettingsByProduct(productCategoryId), Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(await _productPermissionSettingService.GetSettingsByProduct(productCategoryId, dealerSearchTerm), Localizer["Successfully completed"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

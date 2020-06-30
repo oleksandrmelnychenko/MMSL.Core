@@ -4,14 +4,16 @@ using MMSL.Databases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MMSL.Databases.Migrations
 {
     [DbContext(typeof(MMSLDbContext))]
-    partial class MMSLDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200630141603_SetSelectedStyleValueAsEntity")]
+    partial class SetSelectedStyleValueAsEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

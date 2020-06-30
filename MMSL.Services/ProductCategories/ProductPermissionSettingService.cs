@@ -80,12 +80,12 @@ namespace MMSL.Services.ProductCategories {
                 }
             });
 
-        public Task<List<ProductPermissionSettings>> GetSettingsByProduct(long productCategoryId) =>
+        public Task<List<ProductPermissionSettings>> GetSettingsByProduct(long productCategoryId, string dealerSearchTerm) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     return _productCategoryRepositoriesFactory
                         .NewProductPermissionSettingsRepository(connection)
-                        .GetProductPermissionSettingsByProduct(productCategoryId);
+                        .GetProductPermissionSettingsByProduct(productCategoryId, dealerSearchTerm);
                 }
             });
 

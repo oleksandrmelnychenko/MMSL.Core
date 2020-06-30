@@ -14,15 +14,15 @@ namespace MMSL.Domain.Repositories.Stores {
 
         public CustomerProfileStyleConfiguration GetById(long id) =>
             _connection.QuerySingleOrDefault<CustomerProfileStyleConfiguration>(
-                "SELECT [CustomerProfileStyleConfigurations].*, [OptionUnits].*, [OptionGroups].* " +
+                "SELECT [CustomerProfileStyleConfigurations].* " +
                 "FROM [CustomerProfileStyleConfigurations] " +
                 "AND [CustomerProfileStyleConfigurations].Id = @Id",
                 new { Id = id });
 
         public long Add(CustomerProfileStyleConfiguration styleConfiguration) =>
             _connection.QuerySingleOrDefault<long>(
-                "INSERT INTO [CustomerProfileStyleConfigurations] (IsDeleted,[OptionUnitId],[CustomerProductProfileId],[SelectedValue])" +
-                "VALUES(@IsDeleted, @OptionUnitId, @CustomerProductProfileId, @SelectedValue)" +
+                "INSERT INTO [CustomerProfileStyleConfigurations] (IsDeleted,[OptionUnitId],[CustomerProductProfileId],[UnitValueId])" +
+                "VALUES(@IsDeleted, @OptionUnitId, @CustomerProductProfileId, @UnitValueId)" +
                 "SELECT SCOPE_IDENTITY()",
                 styleConfiguration);
 
@@ -30,7 +30,7 @@ namespace MMSL.Domain.Repositories.Stores {
             _connection.QuerySingleOrDefault<CustomerProfileStyleConfiguration>(
                 "UPDATE [CustomerProfileStyleConfigurations] " +
                 "SET LastModified = GETUTCDATE(), [IsDeleted] = @IsDeleted," +
-                "[OptionUnitId] = @OptionUnitId, [SelectedValue] = @SelectedValue " +
+                "[OptionUnitId] = @OptionUnitId, [UnitValueId] = @UnitValueId " +
                 "WHERE [CustomerProfileStyleConfigurations].Id = @Id",
                 styleConfiguration);
     }

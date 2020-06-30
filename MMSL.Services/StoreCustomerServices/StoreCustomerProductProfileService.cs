@@ -69,7 +69,7 @@ namespace MMSL.Services.StoreCustomerServices {
 
                     foreach (NewProfileProductStyleConfigurationDataContract styleDataContract in newProfileDataContract.ProductStyles) {
                         styleConfigRepository.Add(new CustomerProfileStyleConfiguration {
-                            SelectedValue = styleDataContract.SelectedStyleValue,
+                            UnitValueId = styleDataContract.SelectedStyleValueId,
                             OptionUnitId = styleDataContract.OptionUnitId
                         });
                     }
@@ -112,7 +112,7 @@ namespace MMSL.Services.StoreCustomerServices {
                         CustomerProfileStyleConfiguration styleEntity = new CustomerProfileStyleConfiguration {
                             Id = styleDataContract.Id,
                             IsDeleted = styleDataContract.IsDeleted,
-                            SelectedValue = styleDataContract.SelectedStyleValue,
+                            UnitValueId = styleDataContract.SelectedStyleValueId,
                             OptionUnitId = styleDataContract.OptionUnitId,
                             CustomerProductProfileId = entity.Id
                         };

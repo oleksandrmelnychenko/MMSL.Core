@@ -24,7 +24,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
             return GetProductPermissionSettingsById(id);
         }
 
-        public List<ProductPermissionSettings> GetProductPermissionSettingsByProduct(long productId) {
+        public List<ProductPermissionSettings> GetProductPermissionSettingsByProduct(long productId, string dealerSearchTerm) {
             List<ProductPermissionSettings> result = new List<ProductPermissionSettings>();
 
             string query = 
@@ -42,6 +42,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "AND [PermissionSettings].IsDeleted = 0 " +
                 "WHERE [ProductPermissionSettings].ProductCategoryId = @ProductId " +
                 "AND [ProductPermissionSettings].IsDeleted = 0";
+            //"AND PATINDEX('%' + @SearchTerm + '%', [ProductCategories].Name) > 0"
 
             _connection.Query<ProductPermissionSettings, PermissionSettings, ProductPermissionSettings>(
                 query,

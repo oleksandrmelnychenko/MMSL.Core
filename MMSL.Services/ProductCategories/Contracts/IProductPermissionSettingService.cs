@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace MMSL.Services.ProductCategories.Contracts {
     public interface IProductPermissionSettingService {
         Task SetDealerToProductPermissionSetting(ProductPermissionToDealersBindingDataContract productPermissionToDealersBinding);
-        Task<List<ProductPermissionSettings>> GetSettingsByProduct(long productCategoryId);
+        Task<List<ProductPermissionSettings>> GetSettingsByProduct(long productCategoryId, string dealerSearchTerm);
         Task<ProductPermissionSettings> AddProductPermissionSetting(NewProductPermissionSettingsDataContract productPermissionSettings);
         Task<ProductPermissionSettings> GetPermissionSettingsById(long productPermissionSettingId);
         Task<ProductPermissionSettings> DeletePermissionSettingsById(long productPermissionSettingId);

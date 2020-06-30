@@ -5,7 +5,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories.Contracts {
     public interface IProductPermissionSettingsRepository {
         ProductPermissionSettings AddProductPermissionSettings(ProductPermissionSettings productSettings);
         ProductPermissionSettings GetProductPermissionSettingsById(long productSettingsId, bool includeDeletedSettings = false);
-        List<ProductPermissionSettings> GetProductPermissionSettingsByProduct(long productId);
+        List<ProductPermissionSettings> GetProductPermissionSettingsByProduct(long productId, string dealerSearchTerm);
         ProductPermissionSettings UpdateProductPermissionSettings(ProductPermissionSettings productSettings);
     }
 }
