@@ -31,9 +31,9 @@ namespace MMSL.Domain.DataContracts.Customer {
                 Description = Description,
                 ProductCategoryId = ProductCategoryId,
                 StoreCustomerId = StoreCustomerId,
-                MeasurementId = MeasurementId,
-                MeasurementSizeId = MeasurementSizeId,
-                FittingTypeId = FittingTypeId,
+                MeasurementId = MeasurementId.HasValue && MeasurementId == default(long) ? null : MeasurementId,
+                MeasurementSizeId = MeasurementSizeId.HasValue && MeasurementSizeId == default(long) ? null : MeasurementSizeId,
+                FittingTypeId = FittingTypeId.HasValue && FittingTypeId == default(long) ? null : FittingTypeId,
                 ProfileType = ProfileType
             };
         }

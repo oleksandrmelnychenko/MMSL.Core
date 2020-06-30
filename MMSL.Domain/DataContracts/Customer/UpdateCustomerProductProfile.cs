@@ -21,9 +21,9 @@ namespace MMSL.Domain.DataContracts.Customer {
                 Id = Id,
                 Name = Name,
                 Description = Description,
-                MeasurementId = MeasurementId,
-                MeasurementSizeId = MeasurementSizeId,
-                FittingTypeId = FittingTypeId,
+                MeasurementId = MeasurementId.HasValue && MeasurementId == default(long) ? null : MeasurementId,
+                MeasurementSizeId = MeasurementSizeId.HasValue && MeasurementSizeId == default(long) ? null : MeasurementSizeId,
+                FittingTypeId = FittingTypeId.HasValue && FittingTypeId == default(long) ? null: FittingTypeId,
                 ProfileType = ProfileType
             };
         }

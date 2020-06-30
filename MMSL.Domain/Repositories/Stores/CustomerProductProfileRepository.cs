@@ -33,6 +33,17 @@ LEFT JOIN [CustomerProfileSizeValues] ON [CustomerProfileSizeValues].CustomerPro
 LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [CustomerProfileSizeValues].MeasurementDefinitionId
 WHERE [CustomerProductProfiles].Id = @Id AND [CustomerProductProfiles].IsDeleted = 0";
 
+        private Type[] _types = {
+                    typeof(CustomerProductProfile),
+                    typeof(ProductCategory),
+                    typeof(StoreCustomer),
+                    typeof(Measurement),
+                    typeof(MeasurementSize),
+                    typeof(FittingType),
+                    typeof(CustomerProfileSizeValue),
+                    typeof(MeasurementDefinition)
+                };
+
         public CustomerProductProfileRepository(IDbConnection connection) {
             _connection = connection;
         }
@@ -119,17 +130,6 @@ WHERE [DealerAccount].UserIdentityId = @DealerIdentityId  " +
         public CustomerProductProfile GetCustomerProductProfile(long profileId) {
             CustomerProductProfile result = null;
 
-            Type[] types = {
-                    typeof(CustomerProductProfile),
-                    typeof(ProductCategory),
-                    typeof(StoreCustomer),
-                    typeof(Measurement),
-                    typeof(MeasurementSize),
-                    typeof(FittingType),
-                    typeof(CustomerProfileSizeValue),
-                    typeof(MeasurementDefinition)
-                };
-
             Func<object[], CustomerProductProfile> mapper = objects => {
                 CustomerProductProfile profile = (CustomerProductProfile)objects[0];
                 ProductCategory product = (ProductCategory)objects[1];
@@ -158,7 +158,7 @@ WHERE [DealerAccount].UserIdentityId = @DealerIdentityId  " +
                 return profile;
             };
 
-            _connection.Query(_getByIdQuery, types, mapper,
+            _connection.Query(_getByIdQuery, _types, mapper,
                 new {
                     Id = profileId
                 });
@@ -176,19 +176,34 @@ SELECT SCOPE_IDENTITY();",
         public CustomerProductProfile UpdateCustomerProductProfile(CustomerProductProfile entity) {
             CustomerProductProfile result = null;
 
-            _connection.Query<CustomerProductProfile, CustomerProfileSizeValue, MeasurementDefinition, CustomerProductProfile>(
+            _connection.Query(
                 "UPDATE [CustomerProductProfiles] SET [Name]=@Name, [Description]=@Description, [IsDeleted]=@IsDeleted," +
                 "MeasurementId=@MeasurementId, FittingTypeId=@FittingTypeId, MeasurementSizeId=@MeasurementSizeId,ProfileType=@ProfileType " +
                 "WHERE [CustomerProductProfiles].Id = @Id " +
-                _getByIdQuery,
-                (profile, sizeValue, definition) => {
+                _getByIdQuery, _types, 
+                objects => {
+                    CustomerProductProfile profile = (CustomerProductProfile)objects[0];
+                    ProductCategory product = (ProductCategory)objects[1];
+                    StoreCustomer customer = (StoreCustomer)objects[2];
+                    Measurement measurement = (Measurement)objects[3];
+                    MeasurementSize size = (MeasurementSize)objects[4];
+                    FittingType fitting = (FittingType)objects[5];
+                    CustomerProfileSizeValue sizeValue = (CustomerProfileSizeValue)objects[6];
+                    MeasurementDefinition definition = (MeasurementDefinition)objects[7];
+
                     if (result == null) {
                         result = profile;
                     }
 
+                    result.ProductCategory = product;
+                    result.StoreCustomer = customer;
+                    result.Measurement = measurement;
+                    result.MeasurementSize = size;
+                    result.FittingType = fitting;
+
                     if (sizeValue != null) {
                         sizeValue.MeasurementDefinition = definition;
-                        profile.CustomerProfileSizeValues.Add(sizeValue);
+                        result.CustomerProfileSizeValues.Add(sizeValue);
                     }
 
                     return profile;
