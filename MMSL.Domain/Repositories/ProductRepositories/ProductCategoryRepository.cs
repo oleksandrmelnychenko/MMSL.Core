@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MMSL.Domain.DataContracts;
+using MMSL.Domain.Entities.CurrencyTypes;
 using MMSL.Domain.Entities.DeliveryTimelines;
 using MMSL.Domain.Entities.Options;
 using MMSL.Domain.Entities.Products;
@@ -26,7 +27,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
         public List<ProductCategory> GetAll(string searchPhrase, long? dealerAccountId) {
             List<ProductCategory> result = new List<ProductCategory>();
 
-            string query = 
+            string query =
                 "SELECT [ProductCategories].*, [ProductCategoryMapOptionGroups].*, [OptionGroups].*, [OptionUnits].* " +
                 "FROM [ProductCategories] " +
                 "LEFT JOIN [ProductCategoryMapOptionGroups] ON [ProductCategoryMapOptionGroups].ProductCategoryId = [ProductCategories].Id " +
@@ -74,9 +75,9 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
 
                     return productCategory;
                 },
-                new { 
-                    SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase, 
-                    DealerAccountId = dealerAccountId 
+                new {
+                    SearchTerm = string.IsNullOrEmpty(searchPhrase) ? string.Empty : searchPhrase,
+                    DealerAccountId = dealerAccountId
                 });
 
             return result;
@@ -163,71 +164,119 @@ WHERE [ProductCategories].IsDeleted = 0 ",
 @"SELECT [ProductCategories].*
 ,[ProductCategoryMapOptionGroups].*
 ,[OptionGroups].*
+,[GroupPrice].*
+,[GroupCurrency].*
 ,[OptionUnits].*
+,[UnitValues].*
+,[UnitPrice].*
+,[UnitCurrency].*
 ,[DeliveryTimelineProductMaps].*
-,[DeliveryTimelines].*  
+,[DeliveryTimelines].* 
 FROM[ProductCategories]
-LEFT JOIN[ProductPermissionSettings] ON[ProductPermissionSettings].ProductCategoryId = [ProductCategories].Id
-AND[ProductPermissionSettings].IsDeleted = 0
+
+LEFT JOIN [ProductPermissionSettings] ON[ProductPermissionSettings].ProductCategoryId = [ProductCategories].Id
+AND [ProductPermissionSettings].IsDeleted = 0
 LEFT JOIN[PermissionSettings] ON[PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id
-AND[PermissionSettings].IsDeleted = 0
-AND[PermissionSettings].IsAllow = 1
+AND [PermissionSettings].IsDeleted = 0
+AND [PermissionSettings].IsAllow = 1
 LEFT JOIN[ProductCategoryMapOptionGroups] ON[ProductCategoryMapOptionGroups].ProductCategoryId = [ProductCategories].Id
-AND[ProductCategoryMapOptionGroups].IsDeleted = 0
-AND[ProductCategoryMapOptionGroups].OptionGroupId = [PermissionSettings].OptionGroupId
+AND [ProductCategoryMapOptionGroups].IsDeleted = 0
+AND [ProductCategoryMapOptionGroups].OptionGroupId = [PermissionSettings].OptionGroupId
 AND(SELECT COUNT([OptionGroups].Id) FROM[OptionGroups] WHERE[OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId AND[OptionGroups].IsDeleted = 0) > 0
-LEFT JOIN[OptionGroups] ON[OptionGroups].Id = [PermissionSettings].OptionGroupId
-AND[OptionGroups].IsDeleted = 0
-LEFT JOIN[OptionUnits] ON[OptionUnits].OptionGroupId = [OptionGroups].Id
-AND[OptionUnits].Id = [PermissionSettings].OptionUnitId
-AND[OptionUnits].IsDeleted = 0
-LEFT JOIN[DealerMapProductPermissionSettings] ON[DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id AND[DealerMapProductPermissionSettings].IsDeleted = 0
-LEFT JOIN[DealerAccount] ON[DealerAccount].Id = [DealerMapProductPermissionSettings].DealerAccountId
+LEFT JOIN [OptionGroups] ON [OptionGroups].Id = [PermissionSettings].OptionGroupId
+AND [OptionGroups].IsDeleted = 0
+LEFT JOIN [OptionPrices] AS [GroupPrice] ON [GroupPrice].OptionGroupId = OptionGroups.Id AND [GroupPrice].IsDeleted = 0
+LEFT JOIN [CurrencyTypes] AS [GroupCurrency] ON [GroupCurrency].Id = [GroupPrice].CurrencyTypeId
+LEFT JOIN [OptionUnits] ON[OptionUnits].OptionGroupId = [OptionGroups].Id
+AND [OptionUnits].Id = [PermissionSettings].OptionUnitId
+AND [OptionUnits].IsDeleted = 0
+LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0
+LEFT JOIN [OptionPrices] AS [UnitPrice] ON [UnitPrice].OptionUnitId = [OptionUnits].Id AND [UnitPrice].IsDeleted = 0 
+LEFT JOIN [CurrencyTypes] AS [UnitCurrency] ON [UnitCurrency].Id = [UnitPrice].CurrencyTypeId
+LEFT JOIN [DealerMapProductPermissionSettings] ON[DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id AND[DealerMapProductPermissionSettings].IsDeleted = 0
+LEFT JOIN [DealerAccount] ON[DealerAccount].Id = [DealerMapProductPermissionSettings].DealerAccountId
 LEFT JOIN [DeliveryTimelineProductMaps] ON [DeliveryTimelineProductMaps].ProductCategoryId = [ProductCategories].Id  
 AND [DeliveryTimelineProductMaps].IsDeleted = 0  
 AND (SELECT COUNT([DeliveryTimelines].Id) FROM [DeliveryTimelines] WHERE [DeliveryTimelines].Id = [DeliveryTimelineProductMaps].DeliveryTimelineId AND [DeliveryTimelines].IsDeleted = 0) > 0  
 LEFT JOIN [DeliveryTimelines] ON [DeliveryTimelines].Id = [DeliveryTimelineProductMaps].DeliveryTimelineId  
-AND [DeliveryTimelines].IsDeleted = 0 
+AND [DeliveryTimelines].IsDeleted = 0  
+
 WHERE[ProductCategories].IsDeleted = 0
 AND[DealerMapProductPermissionSettings].Id IS NOT NULL
 AND[DealerAccount].Id IS NOT NULL
 AND[DealerAccount].UserIdentityId = @UserIdentityId
 AND[ProductCategories].Id=@ProductCategoryId";
 
-            _connection.Query<ProductCategory, ProductCategoryMapOptionGroup, OptionGroup, OptionUnit, DeliveryTimelineProductMap, DeliveryTimeline, ProductCategory>(
-                query,
-                (productCategory, productCategoryMapOptionGroup, optionGroup, optionUnit, deliveryTimelineProductMap, deliveryTimeline) => {
-                    if (result == null) {
-                        result = productCategory;
+            Type[] types = new Type[] {
+                typeof(ProductCategory),
+                typeof(ProductCategoryMapOptionGroup),
+                typeof(OptionGroup),
+                typeof(OptionPrice),
+                typeof(CurrencyType),
+                typeof(OptionUnit),
+                typeof(UnitValue),
+                typeof(OptionPrice),
+                typeof(CurrencyType),
+                typeof(DeliveryTimelineProductMap),
+                typeof(DeliveryTimeline)
+            };
+
+            Func<object[], ProductCategory> mapper = objects => {
+                ProductCategory productCategory = (ProductCategory)objects[0];//
+                ProductCategoryMapOptionGroup productCategoryMapOptionGroup = (ProductCategoryMapOptionGroup)objects[1];//
+                OptionGroup optionGroup = (OptionGroup)objects[2];//
+                OptionPrice groupPrice = (OptionPrice)objects[3];
+                CurrencyType groupCurrency = (CurrencyType)objects[4];
+                OptionUnit optionUnit = (OptionUnit)objects[5];
+                UnitValue unitValue = (UnitValue)objects[6];
+                OptionPrice unitPrice = (OptionPrice)objects[7];
+                CurrencyType unitCurrency = (CurrencyType)objects[8];
+                DeliveryTimelineProductMap deliveryTimelineProductMap = (DeliveryTimelineProductMap)objects[9];
+                DeliveryTimeline deliveryTimeline = (DeliveryTimeline)objects[10];
+
+                if (result == null) {
+                    result = productCategory;
+                } else {
+                    productCategory = result;
+                }
+
+                if (productCategoryMapOptionGroup != null) {
+                    if (productCategory.OptionGroupMaps.Any(x => x.Id == productCategoryMapOptionGroup.Id)) {
+                        productCategoryMapOptionGroup = productCategory.OptionGroupMaps.First(x => x.Id == productCategoryMapOptionGroup.Id);
                     } else {
-                        productCategory = result;
-                    }
+                        productCategory.OptionGroupMaps.Add(productCategoryMapOptionGroup);
+                        productCategoryMapOptionGroup.OptionGroup = optionGroup;
 
-                    if (productCategoryMapOptionGroup != null) {
-                        if (productCategory.OptionGroupMaps.Any(x => x.Id == productCategoryMapOptionGroup.Id)) {
-                            productCategoryMapOptionGroup = productCategory.OptionGroupMaps.First(x => x.Id == productCategoryMapOptionGroup.Id);
-                        } else {
-                            productCategory.OptionGroupMaps.Add(productCategoryMapOptionGroup);
-                            productCategoryMapOptionGroup.OptionGroup = optionGroup;
-                        }
-
-                        if (optionUnit != null) {
-                            productCategoryMapOptionGroup.OptionGroup.OptionUnits.Add(optionUnit);
+                        if (groupPrice != null) {
+                            groupPrice.CurrencyType = groupCurrency;
+                            productCategoryMapOptionGroup.OptionGroup.CurrentPrice = groupPrice;
                         }
                     }
 
-                    if (deliveryTimelineProductMap != null) {
-                        if (productCategory.DeliveryTimelineProductMaps.Any(x => x.Id == deliveryTimelineProductMap.Id)) {
-                            deliveryTimelineProductMap = productCategory.DeliveryTimelineProductMaps.First(x => x.Id == deliveryTimelineProductMap.Id);
-                        } else {
-                            productCategory.DeliveryTimelineProductMaps.Add(deliveryTimelineProductMap);
-                            deliveryTimelineProductMap.DeliveryTimeline = deliveryTimeline;
+                    if (optionUnit != null) {
+                        if (unitPrice != null) {
+                            unitPrice.CurrencyType = unitCurrency;
+                            optionUnit.CurrentPrice = unitPrice;
                         }
-                    }
 
-                    return productCategory;
-                },
-                new { 
+                        productCategoryMapOptionGroup.OptionGroup.OptionUnits.Add(optionUnit);
+                    }
+                }
+
+                if (deliveryTimelineProductMap != null) {
+                    if (productCategory.DeliveryTimelineProductMaps.Any(x => x.Id == deliveryTimelineProductMap.Id)) {
+                        deliveryTimelineProductMap = productCategory.DeliveryTimelineProductMaps.First(x => x.Id == deliveryTimelineProductMap.Id);
+                    } else {
+                        productCategory.DeliveryTimelineProductMaps.Add(deliveryTimelineProductMap);
+                        deliveryTimelineProductMap.DeliveryTimeline = deliveryTimeline;
+                    }
+                }
+
+                return productCategory;
+            };
+
+            _connection.Query(query, types, mapper,
+                new {
                     ProductCategoryId = productCategoryId,
                     UserIdentityId = dealerIdentityId
                 });
@@ -257,7 +306,7 @@ AND[ProductCategories].Id=@ProductCategoryId";
                 "AND [OptionGroups].IsDeleted = 0 " +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id " +
                 "AND [OptionUnits].IsDeleted = 0 " +
-                
+
                 "LEFT JOIN [DeliveryTimelineProductMaps] ON [DeliveryTimelineProductMaps].ProductCategoryId = [ProductCategories].Id " +
                 "AND [DeliveryTimelineProductMaps].IsDeleted = 0 " +
                 "AND (SELECT COUNT([DeliveryTimelines].Id) FROM [DeliveryTimelines] WHERE [DeliveryTimelines].Id = [DeliveryTimelineProductMaps].DeliveryTimelineId AND [DeliveryTimelines].IsDeleted = 0) > 0 " +
@@ -285,7 +334,7 @@ AND[ProductCategories].Id=@ProductCategoryId";
                             productCategoryMapOptionGroup.OptionGroup.OptionUnits.Add(optionUnit);
                         }
                     }
-                   
+
                     if (deliveryTimelineProductMap != null) {
                         if (productCategory.DeliveryTimelineProductMaps.Any(x => x.Id == deliveryTimelineProductMap.Id)) {
                             deliveryTimelineProductMap = productCategory.DeliveryTimelineProductMaps.First(x => x.Id == deliveryTimelineProductMap.Id);
