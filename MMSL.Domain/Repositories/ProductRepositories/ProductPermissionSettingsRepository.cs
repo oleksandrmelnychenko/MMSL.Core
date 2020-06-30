@@ -42,7 +42,18 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "AND [PermissionSettings].IsDeleted = 0 " +
                 "WHERE [ProductPermissionSettings].ProductCategoryId = @ProductId " +
                 "AND [ProductPermissionSettings].IsDeleted = 0";
-            //"AND PATINDEX('%' + @SearchTerm + '%', [ProductCategories].Name) > 0"
+
+            if (!string.IsNullOrEmpty(dealerSearchTerm)) {
+                query += "AND EXISTS (" +
+                    "SELECT [DealerMapProductPermissionSettings].Id " +
+                    "FROM [DealerMapProductPermissionSettings] " +
+                    "LEFT JOIN [DealerAccount] ON [DealerAccount].Id = [DealerMapProductPermissionSettings].DealerAccountId " +
+                    "AND [DealerAccount].IsDeleted = 0 " +
+                    "WHERE [DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
+                    "AND [DealerMapProductPermissionSettings].IsDeleted = 0 " +
+                    "AND [DealerAccount].Id IS NOT NULL " +
+                    "AND PATINDEX('%' + @SearchTerm + '%', [DealerAccount].[Name]) > 0 )";
+            }
 
             _connection.Query<ProductPermissionSettings, PermissionSettings, ProductPermissionSettings>(
                 query,
@@ -59,7 +70,10 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
 
                     return productPermissionSettings;
                 },
-                new { ProductId = productId });
+                new {
+                    ProductId = productId,
+                    SearchTerm = dealerSearchTerm
+                });
 
             return result;
         }
