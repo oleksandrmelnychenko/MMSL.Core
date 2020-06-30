@@ -86,7 +86,16 @@ namespace MMSL.Services.StoreCustomerServices {
                     ICustomerProfileStyleConfigurationRepository styleConfigRepository = _storeRepositoriesFactory.NewCustomerProfileStyleConfigurationRepository(connection);
 
                     CustomerProductProfile entity = profileDataContract.GetEntity();
+                    CustomerProductProfile oldEntity = profileRepository.GetCustomerProductProfile(profileDataContract.Id);
+
                     entity = profileRepository.UpdateCustomerProductProfile(entity);
+
+                    if (entity.MeasurementId != oldEntity.MeasurementId) {
+                        foreach (CustomerProfileSizeValue value in oldEntity.CustomerProfileSizeValues) {
+                            value.IsDeleted = true;
+                            profileValueRepository.UpdateSizeValue(value);
+                        }
+                    }
 
                     foreach (UpdateCustomerProfileValueDataContract item in profileDataContract.Values) {
                         CustomerProfileSizeValue valueToUpdate = item.GetEntity();
