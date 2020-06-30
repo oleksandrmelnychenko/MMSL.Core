@@ -61,7 +61,7 @@ namespace MMSL.Server.Core.Controllers.Options {
             [FromForm] FileFormData formData) {
             try {
                 decimal priceValue = 0;
-                bool priceAvailable = optionUnit.Price != null && PriceParsingHelper.TryParsePrice(optionUnit.Price, out priceValue);
+                bool priceAvailable = optionUnit.Price != null && NumericParsingHelper.TryParsePrice(optionUnit.Price, out priceValue);
 
                 if (priceAvailable && !optionUnit.CurrencyTypeId.HasValue)
                     throw new ArgumentNullException(nameof(optionUnit.CurrencyTypeId));
@@ -98,7 +98,7 @@ namespace MMSL.Server.Core.Controllers.Options {
         public async Task<IActionResult> UpdateOptionUnit([FromForm] OptionUnitUpdateDataContract updateOptionUnit, [FromForm] FileFormData formData) {
             try {
                 decimal priceValue = 0;
-                bool priceAvailable = updateOptionUnit.Price != null && PriceParsingHelper.TryParsePrice(updateOptionUnit.Price, out priceValue);
+                bool priceAvailable = updateOptionUnit.Price != null && NumericParsingHelper.TryParsePrice(updateOptionUnit.Price, out priceValue);
 
                 if (priceAvailable && !updateOptionUnit.CurrencyTypeId.HasValue)
                     throw new ArgumentNullException(nameof(updateOptionUnit.CurrencyTypeId));

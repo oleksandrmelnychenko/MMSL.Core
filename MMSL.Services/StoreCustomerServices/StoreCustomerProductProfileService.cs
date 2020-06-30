@@ -62,11 +62,7 @@ namespace MMSL.Services.StoreCustomerServices {
                     entity.Id = profileRepository.AddCustomerProductProfile(entity);
 
                     foreach (NewCustomerProfileValueDataContract item in newProfileDataContract.Values) {
-                        CustomerProfileSizeValue newValue = new CustomerProfileSizeValue() {
-                            MeasurementDefinitionId = item.MeasurementDefinitionId,
-                            Value = item.Value,
-                            FittingValue = item.FittingValue
-                        };
+                        CustomerProfileSizeValue newValue = item.GetEntity();
 
                         profileValueRepository.AddSizeValue(newValue);
                     }
