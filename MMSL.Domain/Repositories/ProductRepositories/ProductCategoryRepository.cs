@@ -110,7 +110,6 @@ LEFT JOIN[DealerAccount] ON[DealerAccount].Id = [DealerMapProductPermissionSetti
 WHERE[ProductCategories].IsDeleted = 0
 AND[DealerMapProductPermissionSettings].Id IS NOT NULL
 AND[DealerAccount].Id IS NOT NULL
-AND[PermissionSettings].Id IS NOT NULL
 AND[DealerAccount].UserIdentityId = @UserIdentityId
 AND PATINDEX('%' + @SearchTerm + '%', [ProductCategories].Name) > 0";
 
