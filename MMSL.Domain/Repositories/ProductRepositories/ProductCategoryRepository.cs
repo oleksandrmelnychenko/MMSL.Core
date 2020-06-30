@@ -254,6 +254,17 @@ AND[ProductCategories].Id=@ProductCategoryId";
                     }
 
                     if (optionUnit != null) {
+
+                        if (productCategoryMapOptionGroup.OptionGroup.OptionUnits.Any(x => x.Id == optionUnit.Id)) {
+                            optionUnit = productCategoryMapOptionGroup.OptionGroup.OptionUnits.First(x => x.Id == optionUnit.Id);
+                        } else {
+                            productCategoryMapOptionGroup.OptionGroup.OptionUnits.Add(optionUnit);
+                        }
+
+                        if (unitValue != null) {
+                            optionUnit.UnitValues.Add(unitValue);
+                        }
+
                         if (unitPrice != null) {
                             unitPrice.CurrencyType = unitCurrency;
                             optionUnit.CurrentPrice = unitPrice;
