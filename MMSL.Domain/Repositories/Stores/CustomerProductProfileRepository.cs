@@ -210,7 +210,7 @@ SELECT SCOPE_IDENTITY();",
 
             _connection.Query(
                 "UPDATE [CustomerProductProfiles] SET [Name]=@Name, [Description]=@Description, [IsDeleted]=@IsDeleted," +
-                "MeasurementId=@MeasurementId, FittingTypeId=@FittingTypeId, MeasurementSizeId=@MeasurementSizeId,ProfileType=@ProfileType " +
+                "MeasurementId=@MeasurementId, FittingTypeId=@FittingTypeId, MeasurementSizeId=@MeasurementSizeId,ProfileType=@ProfileType,[StoreCustomerId]=@StoreCustomerId " +
                 "WHERE [CustomerProductProfiles].Id = @Id " +
                 _getByIdQuery, _types, 
                 objects => {

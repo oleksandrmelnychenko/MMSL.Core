@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace MMSL.Domain.DataContracts.Customer {
     public class UpdateCustomerProductProfile : NamedEntityDataContractBase<CustomerProductProfile> {
+        public long StoreCustomerId { get; set; }
 
         public long? MeasurementId { get; set; }
 
@@ -24,7 +25,8 @@ namespace MMSL.Domain.DataContracts.Customer {
                 MeasurementId = MeasurementId.HasValue && MeasurementId == default(long) ? null : MeasurementId,
                 MeasurementSizeId = MeasurementSizeId.HasValue && MeasurementSizeId == default(long) ? null : MeasurementSizeId,
                 FittingTypeId = FittingTypeId.HasValue && FittingTypeId == default(long) ? null: FittingTypeId,
-                ProfileType = ProfileType
+                ProfileType = ProfileType,
+                StoreCustomerId = StoreCustomerId
             };
         }
     }
