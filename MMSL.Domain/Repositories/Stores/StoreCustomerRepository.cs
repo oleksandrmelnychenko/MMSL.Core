@@ -120,12 +120,14 @@ namespace MMSL.Domain.Repositories.Stores {
             }
 
             query += ") " +
-                "SELECT [Paginated_StoreCustomer_CTE].RowNumber, [StoreCustomers].*, [Stores].* " +
+                "SELECT [Paginated_StoreCustomer_CTE].RowNumber, [StoreCustomers].*, [Stores].*, [BillingAddress].*, [DeliveryAddress].* " +
                 "FROM [StoreCustomers] " +
                 "LEFT JOIN [Paginated_StoreCustomer_CTE] ON [Paginated_StoreCustomer_CTE].Id = [StoreCustomers].Id " +
                 "LEFT JOIN [Stores] ON [Stores].Id = [StoreCustomers].StoreId AND [Stores].IsDeleted = 0 " +
                 "LEFT JOIN [StoreMapDealerAccounts] ON [StoreMapDealerAccounts].StoreId = [Stores].Id AND [StoreMapDealerAccounts].IsDeleted = 0 " +
                 "LEFT JOIN [DealerAccount] ON [DealerAccount].Id = [StoreMapDealerAccounts].DealerAccountId AND [DealerAccount].IsDeleted = 0 " +
+                "LEFT JOIN [Address] AS [BillingAddress] ON [BillingAddress].Id = [StoreCustomers].BillingAddressId AND [BillingAddress].IsDeleted = 0 " +
+                "LEFT JOIN [Address] AS [DeliveryAddress] ON [DeliveryAddress].Id = [StoreCustomers].DeliveryAddressId AND [DeliveryAddress].IsDeleted = 0 " +
                 "WHERE [StoreCustomers].IsDeleted = 0 " +
                 "AND [Paginated_StoreCustomer_CTE].RowNumber > @Offset " +
                 "AND [Paginated_StoreCustomer_CTE].RowNumber <= @Offset + @Limit " +
@@ -138,10 +140,12 @@ namespace MMSL.Domain.Repositories.Stores {
                 ) +
                 "ORDER BY [Paginated_StoreCustomer_CTE].RowNumber";
 
-            result.Entities = _connection.Query<StoreCustomer, Store, StoreCustomer>(
+            result.Entities = _connection.Query<StoreCustomer, Store, Address, Address, StoreCustomer>(
                 query,
-                (storeCustomer, store) => {
+                (storeCustomer, store, billingAddress, deliveryAddress) => {
                     storeCustomer.Store = store;
+                    storeCustomer.BillingAddress = billingAddress;
+                    storeCustomer.DeliveryAddress = deliveryAddress;
                     return storeCustomer;
                 },
                 queryParams).ToList();
