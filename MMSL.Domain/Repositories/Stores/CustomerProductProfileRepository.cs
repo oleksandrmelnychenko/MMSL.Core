@@ -77,11 +77,15 @@ WHERE [CustomerProductProfiles].Id = @Id AND [CustomerProductProfiles].IsDeleted
 ,[OptionUnits].*
 ,[UnitValues].*
 FROM [ProductCategories]
-LEFT JOIN [CustomerProductProfiles] ON [CustomerProductProfiles].ProductCategoryId = [ProductCategories].Id AND [CustomerProductProfiles].IsDeleted = 0
+LEFT JOIN [ProductPermissionSettings] ON [ProductPermissionSettings].ProductCategoryId = [ProductCategories].Id AND [ProductPermissionSettings].IsDeleted = 0
+LEFT JOIN [DealerMapProductPermissionSettings] ON [DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id AND [DealerMapProductPermissionSettings].IsDeleted = 0
+LEFT JOIN [DealerAccount] ON [DealerAccount].Id = [DealerMapProductPermissionSettings].DealerAccountId AND [DealerAccount].UserIdentityId = @DealerIdentityId
+
+LEFT JOIN [CustomerProductProfiles] ON [CustomerProductProfiles].ProductCategoryId = [ProductCategories].Id AND [CustomerProductProfiles].IsDeleted = 0 
+AND [CustomerProductProfiles].StoreCustomerId = @StoreCustomerId
 LEFT JOIN [Measurements] ON [Measurements].Id = [CustomerProductProfiles].MeasurementId
 LEFT JOIN [MeasurementSizes] ON [MeasurementSizes].Id = [CustomerProductProfiles].MeasurementSizeId
 LEFT JOIN [FittingTypes] ON [FittingTypes].Id = [CustomerProductProfiles].FittingTypeId
-LEFT JOIN [DealerAccount] ON [DealerAccount].Id = [CustomerProductProfiles].DealerAccountId
 LEFT JOIN [CustomerProfileSizeValues] ON [CustomerProfileSizeValues].CustomerProductProfileId = [CustomerProductProfiles].Id
 LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [CustomerProfileSizeValues].MeasurementDefinitionId
 LEFT JOIN [CustomerProfileStyleConfigurations] ON [CustomerProfileStyleConfigurations].CustomerProductProfileId = [CustomerProductProfiles].Id 
@@ -89,8 +93,7 @@ AND [CustomerProfileStyleConfigurations].IsDeleted = 0
 LEFT JOIN [OptionUnits] ON [OptionUnits].Id = [CustomerProfileStyleConfigurations].OptionUnitId
 LEFT JOIN [UnitValues] ON [UnitValues].Id = [CustomerProfileStyleConfigurations].UnitValueId AND [UnitValues].OptionUnitId = [OptionUnits].Id
 WHERE [ProductCategories].IsDeleted = 0
-AND [DealerAccount].UserIdentityId = @DealerIdentityId
-AND [CustomerProductProfiles].StoreCustomerId = @StoreCustomerId";
+AND [DealerAccount].Id IS NOT NULL";
 
             Type[] types = {
                 typeof(ProductCategory),
@@ -129,28 +132,32 @@ AND [CustomerProductProfiles].StoreCustomerId = @StoreCustomerId";
                     product.CustomerProductProfiles.Add(profile);
                 }
 
-                profile.Measurement = measurement;
-                profile.MeasurementSize = size;
-                profile.FittingType = fittingType;
+                if (profile != null) {
+                    profile.Measurement = measurement;
+                    profile.MeasurementSize = size;
+                    profile.FittingType = fittingType;
 
-                if (sizeValue != null) {
-                    sizeValue.MeasurementDefinition = definition;
-                    profile.CustomerProfileSizeValues.Add(sizeValue);
-                }
-
-                if (styleConfiguration != null) {
-                    if (profile.CustomerProfileStyleConfigurations.Any(x => x.Id == styleConfiguration.Id)) {
-                        styleConfiguration = profile.CustomerProfileStyleConfigurations.First(x => x.Id == styleConfiguration.Id);
-                    } else {
-                        profile.CustomerProfileStyleConfigurations.Add(styleConfiguration);
+                    if (sizeValue != null) {
+                        sizeValue.MeasurementDefinition = definition;
+                        profile.CustomerProfileSizeValues.Add(sizeValue);
                     }
 
-                    styleConfiguration.OptionUnit = unit;
+                    if (styleConfiguration != null) {
+                        if (profile.CustomerProfileStyleConfigurations.Any(x => x.Id == styleConfiguration.Id)) {
+                            styleConfiguration = profile.CustomerProfileStyleConfigurations.First(x => x.Id == styleConfiguration.Id);
+                        } else {
+                            profile.CustomerProfileStyleConfigurations.Add(styleConfiguration);
+                        }
 
-                    if (unitValue != null) {
-                        styleConfiguration.UnitValue = unitValue;
+                        styleConfiguration.OptionUnit = unit;
+
+                        if (unitValue != null) {
+                            styleConfiguration.UnitValue = unitValue;
+                        }
                     }
+
                 }
+
                 return null;
             };
 
@@ -313,7 +320,7 @@ SELECT SCOPE_IDENTITY();",
                 "UPDATE [CustomerProductProfiles] SET [Name]=@Name, [Description]=@Description, [IsDeleted]=@IsDeleted," +
                 "MeasurementId=@MeasurementId, FittingTypeId=@FittingTypeId, MeasurementSizeId=@MeasurementSizeId,ProfileType=@ProfileType,[StoreCustomerId]=@StoreCustomerId " +
                 "WHERE [CustomerProductProfiles].Id = @Id " +
-                _getByIdQuery, _types, 
+                _getByIdQuery, _types,
                 objects => {
                     CustomerProductProfile profile = (CustomerProductProfile)objects[0];
                     ProductCategory product = (ProductCategory)objects[1];
