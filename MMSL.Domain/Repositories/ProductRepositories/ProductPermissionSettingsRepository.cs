@@ -42,7 +42,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "WHERE [ProductCategoryId] = @ProductId " +
                 "AND [PS].IsDefault = 1 " +
                 "AND [PS].Id != [ProductPermissionSettings].Id" +
-                ") AS [IsDefaultDefined]" +
+                ") AS [CanBeDefault]" +
                 ", [PermissionSettings].* " +
                 "FROM [ProductPermissionSettings] " +
                 "LEFT JOIN [PermissionSettings] ON [PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
@@ -100,7 +100,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "WHERE [ProductCategoryId] = @Id " +
                 "AND [PS].IsDefault = 1 " +
                 "AND [PS].Id != [ProductPermissionSettings].Id" +
-                ") AS [IsDefaultDefined]" +
+                ") AS [CanBeDefault]" +
                 ", [PermissionSettings].* " +
                 "FROM [ProductPermissionSettings] " +
                 "LEFT JOIN [PermissionSettings] ON [PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
