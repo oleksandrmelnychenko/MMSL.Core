@@ -12,6 +12,7 @@ using MMSL.Domain.Entities.Identity;
 using MMSL.Domain.Entities.Products;
 using MMSL.Server.Core.Helpers;
 using MMSL.Services.ProductCategories.Contracts;
+using MMSL.Services.StoreCustomerServices.Contracts;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
     public class ProductCategoryController : WebApiControllerBase {
 
         private readonly IProductCategoryService _productCategoryService;
+        private readonly IStoreCustomerProductProfileService _storeCustomerProductProfileService;
 
         /// <summary>
         ///     ctor().
@@ -34,10 +36,12 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         /// <param name="localizer"></param>
         public ProductCategoryController(
             IProductCategoryService productCategoryService,
+            IStoreCustomerProductProfileService storeCustomerProductProfileService,
             IResponseFactory responseFactory,
             IStringLocalizer<ProductCategoryController> localizer) : base(responseFactory, localizer) {
 
             _productCategoryService = productCategoryService;
+            _storeCustomerProductProfileService = storeCustomerProductProfileService;
         }
 
         [HttpGet]
@@ -50,6 +54,22 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
 
                 return Ok(SuccessResponseBody(
                     await _productCategoryService.GetProductCategoriesAsync(searchPhrase, dealerAccountId, identityId, isDealer),
+                    Localizer["Successfully completed"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Dealer")]
+        [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CUSTOMER_PROFILES)]
+        public async Task<IActionResult> GetCustomerProfiles([FromQuery] long storeCustomerId) {
+            try {
+                long identityId = ClaimHelper.GetUserId(User);
+
+                return Ok(SuccessResponseBody(
+                    await _storeCustomerProductProfileService.GetProductsWithProfilesByCustomerAsync(storeCustomerId, identityId),
                     Localizer["Successfully completed"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);

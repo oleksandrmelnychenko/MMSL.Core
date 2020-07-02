@@ -1,4 +1,5 @@
 ﻿using MMSL.Domain.DataContracts.Customer;
+using MMSL.Domain.Entities.Products;
 using MMSL.Domain.Entities.StoreCustomers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 namespace MMSL.Services.StoreCustomerServices.Contracts {
     public interface IStoreCustomerProductProfileService {
         Task<List<CustomerProductProfile>> GetAllAsync(long dealerIdentityId, long? productId, string searchPhrase = null);
+        Task<List<ProductCategory>> GetProductsWithProfilesByCustomerAsync(long storeCustomerId, long dealerIdentityId);
         Task<CustomerProductProfile> GetByIdAsync(long profileId);
         Task<CustomerProductProfile> AddAsync(long dealerIdentityId, NewCustomerProductProfile newProfileDataContract);
         Task<CustomerProductProfile> UpdateAsync(UpdateCustomerProductProfile profileDataContract);

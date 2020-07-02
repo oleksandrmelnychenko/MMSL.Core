@@ -1,5 +1,6 @@
 ﻿using MMSL.Domain.Entities.DeliveryTimelines;
 using MMSL.Domain.Entities.Measurements;
+using MMSL.Domain.Entities.StoreCustomers;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,5 +23,7 @@ namespace MMSL.Domain.Entities.Products {
 
         [NotMapped]
         public bool IsDisabled { get; set; }
+
+        public ICollection<CustomerProductProfile> CustomerProductProfiles { get; set; } = new HashSet<CustomerProductProfile>();
     }
 }

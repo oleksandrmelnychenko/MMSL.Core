@@ -44,22 +44,123 @@ LEFT JOIN [UnitValues] ON [UnitValues].Id = [CustomerProfileStyleConfigurations]
 WHERE [CustomerProductProfiles].Id = @Id AND [CustomerProductProfiles].IsDeleted = 0";
 
         private Type[] _types = {
-                    typeof(CustomerProductProfile),
-                    typeof(ProductCategory),
-                    typeof(StoreCustomer),
-                    typeof(Measurement),
-                    typeof(MeasurementSize),
-                    typeof(FittingType),
-                    typeof(CustomerProfileSizeValue),
-                    typeof(MeasurementDefinition),
+            typeof(CustomerProductProfile),
+            typeof(ProductCategory),
+            typeof(StoreCustomer),
+            typeof(Measurement),
+            typeof(MeasurementSize),
+            typeof(FittingType),
+            typeof(CustomerProfileSizeValue),
+            typeof(MeasurementDefinition),
 
-                    typeof(CustomerProfileStyleConfiguration),
-                    typeof(OptionUnit),
-                    typeof(UnitValue)
-                };
+            typeof(CustomerProfileStyleConfiguration),
+            typeof(OptionUnit),
+            typeof(UnitValue)
+        };
 
         public CustomerProductProfileRepository(IDbConnection connection) {
             _connection = connection;
+        }
+
+        public List<ProductCategory> GetProductsWithProfiles(long dealerIdentityId, long storeCustomerId) {
+            List<ProductCategory> results = new List<ProductCategory>();
+
+            string query =
+@"SELECT [ProductCategories].*
+,[CustomerProductProfiles].*
+,[Measurements].*
+,[MeasurementSizes].*
+,[FittingTypes].*
+,[CustomerProfileSizeValues].*
+,[MeasurementDefinitions].*
+,[CustomerProfileStyleConfigurations].*
+,[OptionUnits].*
+,[UnitValues].*
+FROM [ProductCategories]
+LEFT JOIN [CustomerProductProfiles] ON [CustomerProductProfiles].ProductCategoryId = [ProductCategories].Id AND [CustomerProductProfiles].IsDeleted = 0
+LEFT JOIN [Measurements] ON [Measurements].Id = [CustomerProductProfiles].MeasurementId
+LEFT JOIN [MeasurementSizes] ON [MeasurementSizes].Id = [CustomerProductProfiles].MeasurementSizeId
+LEFT JOIN [FittingTypes] ON [FittingTypes].Id = [CustomerProductProfiles].FittingTypeId
+LEFT JOIN [DealerAccount] ON [DealerAccount].Id = [CustomerProductProfiles].DealerAccountId
+LEFT JOIN [CustomerProfileSizeValues] ON [CustomerProfileSizeValues].CustomerProductProfileId = [CustomerProductProfiles].Id
+LEFT JOIN [MeasurementDefinitions] ON [MeasurementDefinitions].Id = [CustomerProfileSizeValues].MeasurementDefinitionId
+LEFT JOIN [CustomerProfileStyleConfigurations] ON [CustomerProfileStyleConfigurations].CustomerProductProfileId = [CustomerProductProfiles].Id 
+AND [CustomerProfileStyleConfigurations].IsDeleted = 0
+LEFT JOIN [OptionUnits] ON [OptionUnits].Id = [CustomerProfileStyleConfigurations].OptionUnitId
+LEFT JOIN [UnitValues] ON [UnitValues].Id = [CustomerProfileStyleConfigurations].UnitValueId AND [UnitValues].OptionUnitId = [OptionUnits].Id
+WHERE [ProductCategories].IsDeleted = 0
+AND [DealerAccount].UserIdentityId = @DealerIdentityId
+AND [CustomerProductProfiles].StoreCustomerId = @StoreCustomerId";
+
+            Type[] types = {
+                typeof(ProductCategory),
+                typeof(CustomerProductProfile),
+                typeof(Measurement),
+                typeof(MeasurementSize),
+                typeof(FittingType),
+                typeof(CustomerProfileSizeValue),
+                typeof(MeasurementDefinition),
+                typeof(CustomerProfileStyleConfiguration),
+                typeof(OptionUnit),
+                typeof(UnitValue)
+            };
+
+            Func<object[], ProductCategory> mapper = objects => {
+                ProductCategory product = (ProductCategory)objects[0];
+                CustomerProductProfile profile = (CustomerProductProfile)objects[1];
+                Measurement measurement = (Measurement)objects[2];
+                MeasurementSize size = (MeasurementSize)objects[3];
+                FittingType fittingType = (FittingType)objects[4];
+                CustomerProfileSizeValue sizeValue = (CustomerProfileSizeValue)objects[5];
+                MeasurementDefinition definition = (MeasurementDefinition)objects[6];
+                CustomerProfileStyleConfiguration styleConfiguration = (CustomerProfileStyleConfiguration)objects[7];
+                OptionUnit unit = (OptionUnit)objects[8];
+                UnitValue unitValue = (UnitValue)objects[9];
+
+                if (results.Any(x => x.Id == product.Id)) {
+                    product = results.First(x => x.Id == product.Id);
+                } else {
+                    results.Add(product);
+                }
+
+                if (product.CustomerProductProfiles.Any(x => x.Id == profile.Id)) {
+                    profile = product.CustomerProductProfiles.First(x => x.Id == profile.Id);
+                } else {
+                    product.CustomerProductProfiles.Add(profile);
+                }
+
+                profile.Measurement = measurement;
+                profile.MeasurementSize = size;
+                profile.FittingType = fittingType;
+
+                if (sizeValue != null) {
+                    sizeValue.MeasurementDefinition = definition;
+                    profile.CustomerProfileSizeValues.Add(sizeValue);
+                }
+
+                if (styleConfiguration != null) {
+                    if (profile.CustomerProfileStyleConfigurations.Any(x => x.Id == styleConfiguration.Id)) {
+                        styleConfiguration = profile.CustomerProfileStyleConfigurations.First(x => x.Id == styleConfiguration.Id);
+                    } else {
+                        profile.CustomerProfileStyleConfigurations.Add(styleConfiguration);
+                    }
+
+                    styleConfiguration.OptionUnit = unit;
+
+                    if (unitValue != null) {
+                        styleConfiguration.UnitValue = unitValue;
+                    }
+                }
+                return null;
+            };
+
+            _connection.Query(query, types, mapper,
+                new {
+                    DealerIdentityId = dealerIdentityId,
+                    StoreCustomerId = storeCustomerId
+                });
+
+            return results;
         }
 
         public List<CustomerProductProfile> GetCustomerProductProfilesByDealerIdentity(long dealerIdentityId, long? productCategoryId) {

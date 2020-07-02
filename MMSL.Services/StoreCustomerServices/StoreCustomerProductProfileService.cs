@@ -1,6 +1,7 @@
 ﻿using MMSL.Domain.DataContracts.Customer;
 using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Dealer;
+using MMSL.Domain.Entities.Products;
 using MMSL.Domain.Entities.StoreCustomers;
 using MMSL.Domain.Repositories.Dealer.Contracts;
 using MMSL.Domain.Repositories.Stores.Contracts;
@@ -145,6 +146,15 @@ namespace MMSL.Services.StoreCustomerServices {
                     profileRepository.UpdateCustomerProductProfile(entity);
 
                     return entity;
+                }
+            });
+
+        public Task<List<ProductCategory>> GetProductsWithProfilesByCustomerAsync(long storeCustomerId, long dealerIdentityId) =>
+            Task.Run(() => {
+                using (var connection = _connectionFactory.NewSqlConnection()) {
+                    return _storeRepositoriesFactory
+                        .NewCustomerProductProfileRepository(connection)
+                        .GetProductsWithProfiles(dealerIdentityId, storeCustomerId);
                 }
             });
     }

@@ -2,6 +2,8 @@
     public class ProductCategorySegments {
         public const string GET_PRODUCT_CATEGORIES = "get/all";
 
+        public const string GET_PRODUCT_CUSTOMER_PROFILES = "customer/profiles";
+
         public const string GET_PRODUCT_CATEGORIES_WITH_AVAILABILITY = "get/availability";
 
         public const string GET_PRODUCT_CATEGORY = "get/product/category";
