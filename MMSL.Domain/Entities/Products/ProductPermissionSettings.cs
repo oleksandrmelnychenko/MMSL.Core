@@ -8,10 +8,15 @@ namespace MMSL.Domain.Entities.Products {
         public long ProductCategoryId { get; set; }
         public ProductCategory ProductCategory { get; set; }
 
+        public bool IsDefault { get; set; }
+
         public ICollection<PermissionSettings> PermissionSettings { get; set; } = new HashSet<PermissionSettings>();
         public ICollection<DealerMapProductPermissionSettings> DealerMapProductPermissionSettings { get; set; } = new HashSet<DealerMapProductPermissionSettings>();
 
         [NotMapped]
         public int DealersAppliedCount { get; set; }
+
+        [NotMapped]
+        public bool CanBeDefault { get; set; }
     }
 }

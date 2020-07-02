@@ -7,13 +7,16 @@ namespace MMSL.Domain.DataContracts.Products {
 
         public string Description { get; set; }
 
+        public bool IsDefault { get; set; }
+
         public List<UpdatePermissionSettingDataContract> PermissionSettings { get; set; } = new List<UpdatePermissionSettingDataContract>();
 
         public override ProductPermissionSettings GetEntity() {
             return new ProductPermissionSettings {
                 Id = Id,
                 Name = Name,
-                Description = Description
+                Description = Description,
+                IsDefault = IsDefault
             };
         }
     }

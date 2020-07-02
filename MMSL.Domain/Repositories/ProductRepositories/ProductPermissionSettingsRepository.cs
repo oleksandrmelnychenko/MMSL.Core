@@ -16,8 +16,8 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
 
         public ProductPermissionSettings AddProductPermissionSettings(ProductPermissionSettings productSettings) {
             long id = _connection.QuerySingleOrDefault<long>(
-                "INSERT INTO [ProductPermissionSettings] ([IsDeleted], [Name], [Description], [ProductCategoryId]) " +
-                "VALUES (0, @Name, @Description, @ProductCategoryId);" +
+                "INSERT INTO [ProductPermissionSettings] ([IsDeleted], [Name], [Description], [ProductCategoryId], [IsDefault]) " +
+                "VALUES (0, @Name, @Description, @ProductCategoryId, @IsDefault);" +
                 "SELECT SCOPE_IDENTITY()",
                 productSettings);
 
@@ -36,6 +36,13 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "WHERE [DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
                 "AND [DealerMapProductPermissionSettings].IsDeleted = 0 " +
                 "AND [DealerAccount].Id IS NOT NULL) AS [DealersAppliedCount]" +
+                ",(" +
+                "SELECT IIF(COUNT([PS].Id) > 0, 0,1) " +
+                "FROM [ProductPermissionSettings] AS [PS] " +
+                "WHERE [ProductCategoryId] = @ProductId " +
+                "AND [PS].IsDefault = 1 " +
+                "AND [PS].Id != [ProductPermissionSettings].Id" +
+                ") AS [IsDefaultDefined]" +
                 ", [PermissionSettings].* " +
                 "FROM [ProductPermissionSettings] " +
                 "LEFT JOIN [PermissionSettings] ON [PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
@@ -87,6 +94,13 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
                 "FROM [DealerMapProductPermissionSettings] " +
                 "WHERE [DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
                 "AND [DealerMapProductPermissionSettings].IsDeleted = 0) AS [DealersAppliedCount]" +
+                ",(" +
+                "SELECT IIF(COUNT([PS].Id) > 0, 0,1) " +
+                "FROM [ProductPermissionSettings] AS [PS] " +
+                "WHERE [ProductCategoryId] = @Id " +
+                "AND [PS].IsDefault = 1 " +
+                "AND [PS].Id != [ProductPermissionSettings].Id" +
+                ") AS [IsDefaultDefined]" +
                 ", [PermissionSettings].* " +
                 "FROM [ProductPermissionSettings] " +
                 "LEFT JOIN [PermissionSettings] ON [PermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id " +
@@ -112,11 +126,20 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
         public ProductPermissionSettings UpdateProductPermissionSettings(ProductPermissionSettings productSettings) {
             _connection.Execute(
                 "UPDATE [ProductPermissionSettings] " +
-                "SET [IsDeleted] = @IsDeleted, [LastModified] = GETUTCDATE(), [Name] = @Name, [Description] = @Description " +
+                "SET [IsDeleted] = @IsDeleted, [LastModified] = GETUTCDATE(), [Name] = @Name, [Description] = @Description, [IsDefault] = @IsDefault" +
                 "WHERE [ProductPermissionSettings].Id = @Id",
                 productSettings);
 
             return GetProductPermissionSettingsById(productSettings.Id);
         }
+
+        public ProductPermissionSettings GetDefault(long productId) {
+            return _connection.QuerySingleOrDefault<ProductPermissionSettings>(
+                "SELECT [ProductPermissionSettings].* FROM [ProductPermissionSettings] WHERE [ProductCategoryId] = @Id AND [ProductPermissionSettings].IsDefault = 1",
+                new { 
+                    Id = productId
+                });
+        }
+
     }
 }

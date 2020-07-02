@@ -7,5 +7,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories.Contracts {
         ProductPermissionSettings GetProductPermissionSettingsById(long productSettingsId, bool includeDeletedSettings = false);
         List<ProductPermissionSettings> GetProductPermissionSettingsByProduct(long productId, string dealerSearchTerm);
         ProductPermissionSettings UpdateProductPermissionSettings(ProductPermissionSettings productSettings);
+
+        ProductPermissionSettings GetDefault(long productId);
     }
 }

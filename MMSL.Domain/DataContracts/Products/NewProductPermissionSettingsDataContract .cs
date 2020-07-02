@@ -11,13 +11,16 @@ namespace MMSL.Domain.DataContracts.Products {
 
         public long ProductCategoryId { get; set; }
 
+        public bool IsDefault { get; set; }
+
         public List<NewPermissionSettingDataContract> PermissionSettings { get; set; } = new List<NewPermissionSettingDataContract>();
 
         public override ProductPermissionSettings GetEntity() {
             return new ProductPermissionSettings {
                 Name = Name,
                 Description = Description,
-                ProductCategoryId = ProductCategoryId
+                ProductCategoryId = ProductCategoryId,
+                IsDefault = IsDefault
             };
         }
     }

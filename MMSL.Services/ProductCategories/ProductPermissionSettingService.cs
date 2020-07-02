@@ -35,6 +35,13 @@ namespace MMSL.Services.ProductCategories {
                     IProductPermissionSettingsRepository productSettingsRepository = _productCategoryRepositoriesFactory.NewProductPermissionSettingsRepository(connection);
                     IPermissionSettingsRepository settingsRepository = _productCategoryRepositoriesFactory.NewPermissionSettingsRepository(connection);
 
+                    ProductPermissionSettings defaultPermission = productSettingsRepository.GetDefault(productPermissionSettings.ProductCategoryId);
+
+                    if (productPermissionSettings.IsDefault && defaultPermission != null) {
+                        defaultPermission.IsDefault = false;
+                        productSettingsRepository.UpdateProductPermissionSettings(defaultPermission);
+                    }
+
                     ProductPermissionSettings settingEntity = productSettingsRepository.AddProductPermissionSettings(productPermissionSettings.GetEntity());
 
                     foreach (NewPermissionSettingDataContract setting in productPermissionSettings.PermissionSettings) {
@@ -118,10 +125,20 @@ namespace MMSL.Services.ProductCategories {
                     IProductPermissionSettingsRepository productSettingsRepository = _productCategoryRepositoriesFactory.NewProductPermissionSettingsRepository(connection);
                     IPermissionSettingsRepository settingsRepository = _productCategoryRepositoriesFactory.NewPermissionSettingsRepository(connection);
 
+                    ProductPermissionSettings existPermission = productSettingsRepository.GetProductPermissionSettingsById(productPermissionSettings.Id);
+                    ProductPermissionSettings defaultPermission = productSettingsRepository.GetDefault(existPermission.ProductCategoryId);
+
+                    if (existPermission == null)
+                        throw new Exception("Updating permission not found");
+
+                    if (existPermission.IsDefault && defaultPermission != null && existPermission.Id != defaultPermission.Id) {
+                        defaultPermission.IsDefault = false;
+                        productSettingsRepository.UpdateProductPermissionSettings(defaultPermission);
+                    }
+
                     ProductPermissionSettings productSettings = productSettingsRepository.UpdateProductPermissionSettings(productPermissionSettings.GetEntity());
 
                     foreach (UpdatePermissionSettingDataContract settingsDataContract in productPermissionSettings.PermissionSettings) {
-                        //TODO: get entity by unit ID and PermissionSettingId
                         PermissionSettings settings = productSettings.PermissionSettings
                             .FirstOrDefault(x => x.OptionUnitId == settingsDataContract.OptionUnitId);
 
