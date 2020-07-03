@@ -126,7 +126,7 @@ namespace MMSL.Domain.Repositories.ProductRepositories {
         public ProductPermissionSettings UpdateProductPermissionSettings(ProductPermissionSettings productSettings) {
             _connection.Execute(
                 "UPDATE [ProductPermissionSettings] " +
-                "SET [IsDeleted] = @IsDeleted, [LastModified] = GETUTCDATE(), [Name] = @Name, [Description] = @Description, [IsDefault] = @IsDefault" +
+                "SET [IsDeleted] = @IsDeleted, [LastModified] = GETUTCDATE(), [Name] = @Name, [Description] = @Description, [IsDefault] = @IsDefault " +
                 "WHERE [ProductPermissionSettings].Id = @Id",
                 productSettings);
 
