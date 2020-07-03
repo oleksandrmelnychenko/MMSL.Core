@@ -44,6 +44,17 @@ namespace MMSL.Services.ProductCategories {
 
                     ProductPermissionSettings settingEntity = productSettingsRepository.AddProductPermissionSettings(productPermissionSettings.GetEntity());
 
+                    if (settingEntity.IsDefault) {
+                        //TODO: set default permission to all free dealers per product
+                        //SetDefaultPermissions(settingEntity);
+
+                        var product = settingEntity.ProductCategoryId;
+
+                        //var productSettingsRepository = _productCategoryRepositoriesFactory.NewProductPermissionSettingsRepository(connection);
+
+
+                    }
+
                     foreach (NewPermissionSettingDataContract setting in productPermissionSettings.PermissionSettings) {
 
                         var detailEntity = settingsRepository.AddPermissionSettings(
@@ -67,10 +78,6 @@ namespace MMSL.Services.ProductCategories {
                     IProductPermissionSettingsRepository repository = _productCategoryRepositoriesFactory.NewProductPermissionSettingsRepository(connection);
 
                     ProductPermissionSettings permissionSetting = repository.GetProductPermissionSettingsById(productPermissionSettingId);
-
-                    if (permissionSetting == null) {
-                        //TODO: throw not found
-                    }
 
                     permissionSetting.IsDeleted = true;
 
@@ -136,6 +143,8 @@ namespace MMSL.Services.ProductCategories {
                         productSettingsRepository.UpdateProductPermissionSettings(defaultPermission);
                     }
 
+                    //TODO: set default permission to all free dealers per product
+
                     ProductPermissionSettings productSettings = productSettingsRepository.UpdateProductPermissionSettings(productPermissionSettings.GetEntity());
 
                     foreach (UpdatePermissionSettingDataContract settingsDataContract in productPermissionSettings.PermissionSettings) {
@@ -167,5 +176,9 @@ namespace MMSL.Services.ProductCategories {
                     return productSettings;
                 }
             });
+
+        private void SetDefaultPermissions(ProductPermissionSettings settingEntity) {
+            throw new NotImplementedException();
+        }
     }
 }

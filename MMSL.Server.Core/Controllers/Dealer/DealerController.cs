@@ -117,6 +117,9 @@ namespace MMSL.Server.Core.Controllers.Dealer {
 
                 dealerAccount.UserIdentityId = dealerIdentity.Id;
 
+                //TODO: set default permissions to this dealer per product
+
+
                 //TODO: send email to dealer with login info
 
                 return Ok(SuccessResponseBody(await _dealerAccountService.AddDealerAccount(dealerAccount), Localizer["Dealer account successfully created"]));
