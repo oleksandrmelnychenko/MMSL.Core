@@ -64,6 +64,7 @@ namespace MMSL.Services.StoreCustomerServices {
 
                     foreach (NewCustomerProfileValueDataContract item in newProfileDataContract.Values) {
                         CustomerProfileSizeValue newValue = item.GetEntity();
+                        newValue.CustomerProductProfileId = entity.Id;
 
                         profileValueRepository.AddSizeValue(newValue);
                     }
@@ -73,7 +74,8 @@ namespace MMSL.Services.StoreCustomerServices {
                             UnitValueId = styleDataContract.SelectedStyleValueId.HasValue && styleDataContract.SelectedStyleValueId != default(long) 
                                 ? styleDataContract.SelectedStyleValueId 
                                 : null,
-                            OptionUnitId = styleDataContract.OptionUnitId
+                            OptionUnitId = styleDataContract.OptionUnitId,
+                            CustomerProductProfileId = entity.Id
                         });
                     }
 
