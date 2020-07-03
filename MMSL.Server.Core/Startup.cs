@@ -164,7 +164,7 @@ namespace MMSL.Server.Core
                     In = ParameterLocation.Header,
                     Description = "Please insert JWT with Bearer into field",
                     Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey
+                    Type = SecuritySchemeType.ApiKey,
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement {
                     {
@@ -178,6 +178,7 @@ namespace MMSL.Server.Core
                         }, new string[] { }
                     }
                 });
+                //c.DocInclusionPredicate
             });
 #endif
 
@@ -261,6 +262,7 @@ namespace MMSL.Server.Core
             app.UseSwaggerUI(c => {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "MMSL API V1");
                 c.RoutePrefix = string.Empty;
+                c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
             });
 #endif
 
