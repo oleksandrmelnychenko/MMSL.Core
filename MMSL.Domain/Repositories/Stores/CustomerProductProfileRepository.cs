@@ -126,13 +126,13 @@ AND [DealerAccount].Id IS NOT NULL";
                     results.Add(product);
                 }
 
-                if (product.CustomerProductProfiles.Any(x => x.Id == profile.Id)) {
-                    profile = product.CustomerProductProfiles.First(x => x.Id == profile.Id);
-                } else {
-                    product.CustomerProductProfiles.Add(profile);
-                }
-
                 if (profile != null) {
+                    if (product.CustomerProductProfiles.Any(x => x.Id == profile.Id)) {
+                        profile = product.CustomerProductProfiles.First(x => x.Id == profile.Id);
+                    } else {
+                        product.CustomerProductProfiles.Add(profile);
+                    }
+
                     profile.Measurement = measurement;
                     profile.MeasurementSize = size;
                     profile.FittingType = fittingType;
