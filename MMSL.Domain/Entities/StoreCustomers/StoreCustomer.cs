@@ -3,9 +3,13 @@ using MMSL.Domain.Entities.Identity;
 using MMSL.Domain.Entities.Stores;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MMSL.Domain.Entities.StoreCustomers {
     public class StoreCustomer : EntityBase {
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public long UniqueId { get; set; }
 
         [Required]
         public string UserName { get; set; }

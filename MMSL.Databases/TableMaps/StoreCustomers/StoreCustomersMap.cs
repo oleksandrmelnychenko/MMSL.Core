@@ -8,6 +8,10 @@ namespace MMSL.Databases.TableMaps.StoreCustomers {
             base.Map(entity);
 
             entity.ToTable("StoreCustomers");
+
+            entity
+                .Property(x => x.UniqueId)
+                .HasComputedColumnSql("[Id] + 10004000");
         }
     }
 }
