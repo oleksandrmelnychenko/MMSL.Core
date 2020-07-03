@@ -18,13 +18,16 @@ namespace MMSL.Domain.DataContracts.ProductOptions {
 
         public long? CurrencyTypeId { get; set; }
 
+        public bool IsBodyPosture { get; set; }
+
         public override OptionUnit GetEntity() {
             return new OptionUnit {
                 Id = Id,
                 OrderIndex = OrderIndex,
                 IsMandatory = IsMandatory,
                 Value = Value,
-                ImageUrl = ImageUrl
+                ImageUrl = ImageUrl,
+                IsBodyPosture = IsBodyPosture
             };
         }
 

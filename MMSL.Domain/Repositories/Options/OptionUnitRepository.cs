@@ -18,8 +18,8 @@ namespace MMSL.Domain.Repositories.Options {
         public long AddOptionUnit(OptionUnit optionUnit) =>
             _connection.QuerySingleOrDefault<long>(
                 "INSERT INTO [OptionUnits] " +
-                "([IsDeleted], [OrderIndex], [Value], [ImageUrl], [ImageName], [IsMandatory], [OptionGroupId]) " +
-                "VALUES (0, @OrderIndex, @Value, @ImageUrl, @ImageName, @IsMandatory, @OptionGroupId); " +
+                "([IsDeleted], [OrderIndex], [Value], [ImageUrl], [ImageName], [IsMandatory], [OptionGroupId],[IsBodyPosture]) " +
+                "VALUES (0, @OrderIndex, @Value, @ImageUrl, @ImageName, @IsMandatory, @OptionGroupId, @IsBodyPosture); " +
                 "SELECT SCOPE_IDENTITY()",
                 optionUnit);
 
@@ -132,7 +132,7 @@ namespace MMSL.Domain.Repositories.Options {
                 "UPDATE [OptionUnits] " +
                 "SET [IsDeleted]=@IsDeleted, [LastModified] = getutcdate(), " +
                 "[Value] = @Value, [ImageUrl] = @ImageUrl, [ImageName] = @ImageName, [IsMandatory] = @IsMandatory, " +
-                "[OrderIndex] = @OrderIndex " +
+                "[OrderIndex] = @OrderIndex, [IsBodyPosture] = @IsBodyPosture " +
                 "WHERE [OptionUnits].Id = @Id;",
                 optionUnit);
 
