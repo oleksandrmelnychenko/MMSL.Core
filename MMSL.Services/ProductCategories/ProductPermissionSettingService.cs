@@ -45,14 +45,7 @@ namespace MMSL.Services.ProductCategories {
                     ProductPermissionSettings settingEntity = productSettingsRepository.AddProductPermissionSettings(productPermissionSettings.GetEntity());
 
                     if (settingEntity.IsDefault) {
-                        //TODO: set default permission to all free dealers per product
-                        //SetDefaultPermissions(settingEntity);
-
-                        var product = settingEntity.ProductCategoryId;
-
-                        //var productSettingsRepository = _productCategoryRepositoriesFactory.NewProductPermissionSettingsRepository(connection);
-
-
+                        SetDefaultPermissions(settingEntity, connection);
                     }
 
                     foreach (NewPermissionSettingDataContract setting in productPermissionSettings.PermissionSettings) {
@@ -143,7 +136,9 @@ namespace MMSL.Services.ProductCategories {
                         productSettingsRepository.UpdateProductPermissionSettings(defaultPermission);
                     }
 
-                    //TODO: set default permission to all free dealers per product
+                    if (existPermission.IsDefault) {
+                        SetDefaultPermissions(existPermission, connection);
+                    }
 
                     ProductPermissionSettings productSettings = productSettingsRepository.UpdateProductPermissionSettings(productPermissionSettings.GetEntity());
 
@@ -177,8 +172,20 @@ namespace MMSL.Services.ProductCategories {
                 }
             });
 
-        private void SetDefaultPermissions(ProductPermissionSettings settingEntity) {
-            throw new NotImplementedException();
+        private void SetDefaultPermissions(ProductPermissionSettings settingEntity, IDbConnection connection) {
+            IDealerAccountRepository dealerRepository = _dealerRepositoriesFactory.NewDealerAccountRepository(connection);
+            IDealerAccountMapProductPermissionSettingsRepository repository = _dealerRepositoriesFactory.NewDealerAccountProductPermissionRepository(connection);
+
+            List<DealerAccount> dealers = dealerRepository.GetDealerAccountWithoutProductPermission(settingEntity.ProductCategoryId);
+
+            foreach (DealerAccount dealer in dealers) {
+                DealerMapProductPermissionSettings map = new DealerMapProductPermissionSettings {
+                    ProductPermissionSettingsId = settingEntity.Id,
+                    DealerAccountId = dealer.Id
+                };
+
+                repository.Add(map);
+            }
         }
     }
 }

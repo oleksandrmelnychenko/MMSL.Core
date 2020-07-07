@@ -205,5 +205,25 @@ namespace MMSL.Domain.Repositories.Dealer {
                 "FROM [DealerAccount] " +
                 "WHERE [DealerAccount].[UserIdentityId] = @Id",
                 new { Id = dealerIdentityId });
+
+        public List<DealerAccount> GetDealerAccountWithoutProductPermission(long productCategoryId) =>
+            _connection.Query<DealerAccount>(
+@"SELECT [DealerAccount].*
+FROM [DealerAccount] 
+WHERE [DealerAccount].IsDeleted = 0
+AND (
+	SELECT COUNT([Dealer].Id)
+	FROM [DealerAccount] AS [Dealer]
+		LEFT JOIN [DealerMapProductPermissionSettings] ON [DealerMapProductPermissionSettings].DealerAccountId = [Dealer].Id 
+			AND [DealerMapProductPermissionSettings].IsDeleted = 0 
+		LEFT JOIN [ProductPermissionSettings] ON [ProductPermissionSettings].Id = [DealerMapProductPermissionSettings].ProductPermissionSettingsId 
+			AND [ProductPermissionSettings].IsDeleted = 0 
+			AND [ProductPermissionSettings].ProductCategoryId = @ProductCategoryId
+	WHERE [Dealer].IsDeleted = 0
+		AND [Dealer].Id = [DealerAccount].Id
+		AND [ProductPermissionSettings].Id IS NOT NULL
+) <= 0",
+                new { ProductCategoryId = productCategoryId }
+                ).ToList();
     }
 }

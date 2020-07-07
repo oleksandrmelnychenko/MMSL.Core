@@ -14,6 +14,8 @@ namespace MMSL.Domain.Repositories.Dealer.Contracts {
 
         DealerAccount GetDealerAccount(long dealerAccountId);
 
+        List<DealerAccount> GetDealerAccountWithoutProductPermission(long productCategoryId);
+
         long AddDealerAccount(DealerAccount dealerAccount);
 
         void UpdateDealerAccount(DealerAccount dealerAccount);
