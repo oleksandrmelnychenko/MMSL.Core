@@ -22,6 +22,8 @@ using MMSL.Domain.Entities.Measurements;
 using MMSL.Databases.TableMaps.Measurements;
 using MMSL.Databases.TableMaps.DeliveryTimelines;
 using MMSL.Domain.Entities.DeliveryTimelines;
+using MMSL.Databases.TableMaps.Fabrics;
+using MMSL.Domain.Entities.Fabrics;
 
 namespace MMSL.Databases {
     public class MMSLDbContext : DbContext {       
@@ -92,6 +94,7 @@ namespace MMSL.Databases {
         
         public DbSet<CustomerProductProfile> CustomerProductProfiles { get; set; }
 
+        public DbSet<Fabric> Fabrics { get; set; }
 
         /// <summary>
         ///     ctor().
@@ -138,6 +141,7 @@ namespace MMSL.Databases {
             modelBuilder.AddConfiguration(new CustomerProfileSizeValueMap());
             modelBuilder.AddConfiguration(new CustomerProductProfileMap());
             modelBuilder.AddConfiguration(new CustomerProfileStyleConfigurationMap());
+            modelBuilder.AddConfiguration(new FabricMap());
         }
     }
 }
