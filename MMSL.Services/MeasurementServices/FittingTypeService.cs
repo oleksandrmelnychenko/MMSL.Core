@@ -29,7 +29,7 @@ namespace MMSL.Services.MeasurementServices {
                  using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                      var fittingTypeRepository = _measurementsRepositoriesFactory.NewFittingTypeRepository(connection);
 
-                     return fittingTypeRepository.GetAll(searchPhrase, measurementId); ;
+                     return fittingTypeRepository.GetAll(searchPhrase, measurementId);
                  }
              });
 
