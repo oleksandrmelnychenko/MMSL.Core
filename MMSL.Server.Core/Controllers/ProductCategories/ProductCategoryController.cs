@@ -101,12 +101,12 @@ namespace MMSL.Server.Core.Controllers.ProductCategories {
         [HttpGet]
         [Authorize]
         [AssignActionRoute(ProductCategorySegments.GET_PRODUCT_CATEGORY)]
-        public async Task<IActionResult> Get([FromQuery] long productCategoryId) {
+        public async Task<IActionResult> Get([FromQuery] long productCategoryId, [FromQuery] bool showBodyPostureOnly) {
             try {
                 bool isDealer = ClaimHelper.GetUserRoles(User).Any(x => x == RoleType.Dealer.ToString());
                 long identityId = ClaimHelper.GetUserId(User);
 
-                return Ok(SuccessResponseBody(await _productCategoryService.GetProductCategoryAsync(productCategoryId, identityId, isDealer), Localizer["Successfully completed"]));
+                return Ok(SuccessResponseBody(await _productCategoryService.GetProductCategoryAsync(productCategoryId, identityId, isDealer, showBodyPostureOnly), Localizer["Successfully completed"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

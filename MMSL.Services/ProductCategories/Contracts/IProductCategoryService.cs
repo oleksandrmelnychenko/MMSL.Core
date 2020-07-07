@@ -9,7 +9,7 @@ namespace MMSL.Services.ProductCategories.Contracts {
     public interface IProductCategoryService {
         Task<List<ProductCategory>> GetProductCategoriesAsync(string searchPhrase, long? dealerAccountId, long? userIdentityId, bool isForDealer = false);
         Task<List<ProductCategory>> GetProductCategoriesAvailabilitiesAsync(string searchPhrase, long? dealerAccountId);
-        Task<ProductCategory> GetProductCategoryAsync(long productCategoryId, long? userIdentityId = null, bool isForDealer = false);
+        Task<ProductCategory> GetProductCategoryAsync(long productCategoryId, long? userIdentityId = null, bool isForDealer = false, bool isBodyPostureOnly = false);
         Task<ProductCategory> NewProductCategoryAsync(ProductCategory newProductCategory, IEnumerable<long> groupIds = null);
         Task UpdateProductCategoryAsync(ProductCategory product);
         Task DeleteProductCategoryAsync(long productCategoryId);

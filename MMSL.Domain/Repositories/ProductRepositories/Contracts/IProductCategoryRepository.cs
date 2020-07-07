@@ -16,9 +16,9 @@ namespace MMSL.Domain.Repositories.ProductRepositories.Contracts {
 
         ProductCategory GetById(long productCategoryId);
 
-        ProductCategory GetByIdForDealerIdentity(long productCategoryId, long dealerIdentityId);
+        ProductCategory GetByIdForDealerIdentity(long productCategoryId, long dealerIdentityId, bool isBodyPostureOnly = false);
 
-        ProductCategory GetDetailedById(long productCategoryId);
+        ProductCategory GetDetailedById(long productCategoryId, bool isBodyPostureOnly = false);
 
         List<ProductCategory> GetAllByDealerIdentity(string searchPhrase, long? userIdentityId);
     }

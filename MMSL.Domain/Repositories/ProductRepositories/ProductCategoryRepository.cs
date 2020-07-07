@@ -157,8 +157,10 @@ WHERE [ProductCategories].IsDeleted = 0 ",
                 new { DealerAccountId = dealerAccountId }
                 ).ToList();
 
-        public ProductCategory GetByIdForDealerIdentity(long productCategoryId, long dealerIdentityId) {
+        public ProductCategory GetByIdForDealerIdentity(long productCategoryId, long dealerIdentityId, bool isBodyPostureOnly = false) {
             ProductCategory result = null;
+
+            //bool isBodyPostureOnly = true;
 
             string query =
 @"SELECT [ProductCategories].*
@@ -189,8 +191,9 @@ LEFT JOIN [OptionPrices] AS [GroupPrice] ON [GroupPrice].OptionGroupId = OptionG
 LEFT JOIN [CurrencyTypes] AS [GroupCurrency] ON [GroupCurrency].Id = [GroupPrice].CurrencyTypeId
 LEFT JOIN [OptionUnits] ON[OptionUnits].OptionGroupId = [OptionGroups].Id
 AND [OptionUnits].Id = [PermissionSettings].OptionUnitId
-AND [OptionUnits].IsDeleted = 0
-LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0
+AND [OptionUnits].IsDeleted = 0 " +
+(isBodyPostureOnly ? "AND [OptionUnits].IsBodyPosture = 1 " : string.Empty) +
+@"LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0
 LEFT JOIN [OptionPrices] AS [UnitPrice] ON [UnitPrice].OptionUnitId = [OptionUnits].Id AND [UnitPrice].IsDeleted = 0 
 LEFT JOIN [CurrencyTypes] AS [UnitCurrency] ON [UnitCurrency].Id = [UnitPrice].CurrencyTypeId
 LEFT JOIN [DealerMapProductPermissionSettings] ON[DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id AND[DealerMapProductPermissionSettings].IsDeleted = 0
@@ -303,7 +306,7 @@ AND[ProductCategories].Id=@ProductCategoryId";
                 new { Id = productCategoryId })
             .SingleOrDefault();
 
-        public ProductCategory GetDetailedById(long productCategoryId) {
+        public ProductCategory GetDetailedById(long productCategoryId, bool isBodyPostureOnly = false) {
             ProductCategory result = null;
 
             _connection.Query<ProductCategory, ProductCategoryMapOptionGroup, OptionGroup, OptionUnit, DeliveryTimelineProductMap, DeliveryTimeline, ProductCategory>(
@@ -317,7 +320,7 @@ AND[ProductCategories].Id=@ProductCategoryId";
                 "AND [OptionGroups].IsDeleted = 0 " +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id " +
                 "AND [OptionUnits].IsDeleted = 0 " +
-
+                (isBodyPostureOnly ? "AND [OptionUnits].IsBodyPosture = 1 " : string.Empty) +
                 "LEFT JOIN [DeliveryTimelineProductMaps] ON [DeliveryTimelineProductMaps].ProductCategoryId = [ProductCategories].Id " +
                 "AND [DeliveryTimelineProductMaps].IsDeleted = 0 " +
                 "AND (SELECT COUNT([DeliveryTimelines].Id) FROM [DeliveryTimelines] WHERE [DeliveryTimelines].Id = [DeliveryTimelineProductMaps].DeliveryTimelineId AND [DeliveryTimelines].IsDeleted = 0) > 0 " +
