@@ -8,6 +8,8 @@ using MMSL.Domain.Repositories.Stores.Contracts;
 using MMSL.Services.StoreCustomerServices.Contracts;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -49,6 +51,10 @@ namespace MMSL.Services.StoreCustomerServices {
 
         public Task<CustomerProductProfile> AddAsync(long dealerIdentityId, NewCustomerProductProfile newProfileDataContract) =>
             Task.Run(() => {
+                if (newProfileDataContract.Values.Any(x => string.IsNullOrEmpty(x.Value))) {
+                    throw new ValidationException("Measurement values are required");
+                }
+
                 using (var connection = _connectionFactory.NewSqlConnection()) {
                     ICustomerProductProfileRepository profileRepository = _storeRepositoriesFactory.NewCustomerProductProfileRepository(connection);
                     ICustomerProfileSizeValueRepository profileValueRepository = _storeRepositoriesFactory.NewCustomerProfileSizeValueRepository(connection);

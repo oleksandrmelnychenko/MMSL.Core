@@ -8,8 +8,7 @@ namespace MMSL.Common.Helpers {
         }
 
         public static bool TryParseFloat(string price, out float priceValue) {
-            return float.TryParse(price.Replace(',', '.'), NumberStyles.Currency, CultureInfo.InvariantCulture, out priceValue)
-                && priceValue != default(float);
+            return float.TryParse(price.Replace(',', '.'), NumberStyles.Currency, CultureInfo.InvariantCulture, out priceValue);
         }
     }
 }
