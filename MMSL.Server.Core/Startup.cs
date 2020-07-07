@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Threading.Tasks;
-using Akka.Actor;
+﻿using Akka.Actor;
 using Akka.DI.Core;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -22,6 +16,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using MMSL.Actors;
 using MMSL.Actors.Infrastructure;
 using MMSL.Common;
@@ -37,50 +32,54 @@ using MMSL.Domain.DataSourceAdapters.SQL.Contracts;
 using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Repositories.Addresses;
 using MMSL.Domain.Repositories.Addresses.Contracts;
-using MMSL.Domain.Repositories.Stores;
-using MMSL.Domain.Repositories.Stores.Contracts;
 using MMSL.Domain.Repositories.Dealer;
 using MMSL.Domain.Repositories.Dealer.Contracts;
-using MMSL.Domain.Repositories.Identity;
-using MMSL.Domain.Repositories.Identity.Contracts;
-using MMSL.Server.Core.Localization;
-using MMSL.Services.BankDetailsServices;
-using MMSL.Services.StoreServices.Contracts;
-using MMSL.Services.DealerServices;
-using MMSL.Services.DealerServices.Contracts;
-using MMSL.Services.IdentityServices;
-using MMSL.Services.IdentityServices.Contracts;
-using Newtonsoft.Json.Serialization;
-using Serilog;
-using Serilog.Formatting.Json;
-using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
-using IWebHostEnvironment = Microsoft.AspNetCore.Hosting.IWebHostEnvironment;
-using MMSL.Services.StoreCustomerServices.Contracts;
-using MMSL.Services.StoreCustomerServices;
-using MMSL.Services.OptionServices;
-using MMSL.Services.OptionServices.Contracts;
-using MMSL.Domain.Repositories.Options;
-using MMSL.Domain.Repositories.Options.Contracts;
-using MMSL.Services.Types;
-using MMSL.Services.Types.Contracts;
-using MMSL.Domain.Repositories.Types;
-using MMSL.Domain.Repositories.Types.Contracts;
-using Microsoft.OpenApi.Models;
-using MMSL.Services.ProductCategories;
-using MMSL.Services.ProductCategories.Contracts;
-using MMSL.Domain.Repositories.ProductRepositories;
-using MMSL.Domain.Repositories.ProductRepositories.Contracts;
-using MMSL.Services.MeasurementServices.Contracts;
-using MMSL.Services.MeasurementServices;
-using MMSL.Domain.Repositories.Measurements;
-using MMSL.Domain.Repositories.Measurements.Contracts;
-using MMSL.Services.DeliveryTimelines.Contracts;
-using MMSL.Services.DeliveryTimelines;
 using MMSL.Domain.Repositories.DeliveryTimelines;
 using MMSL.Domain.Repositories.DeliveryTimelines.Contracts;
+using MMSL.Domain.Repositories.Fabrics;
+using MMSL.Domain.Repositories.Fabrics.Contracts;
+using MMSL.Domain.Repositories.Identity;
+using MMSL.Domain.Repositories.Identity.Contracts;
+using MMSL.Domain.Repositories.Measurements;
+using MMSL.Domain.Repositories.Measurements.Contracts;
+using MMSL.Domain.Repositories.Options;
+using MMSL.Domain.Repositories.Options.Contracts;
+using MMSL.Domain.Repositories.ProductRepositories;
+using MMSL.Domain.Repositories.ProductRepositories.Contracts;
+using MMSL.Domain.Repositories.Stores;
+using MMSL.Domain.Repositories.Stores.Contracts;
+using MMSL.Domain.Repositories.Types;
+using MMSL.Domain.Repositories.Types.Contracts;
+using MMSL.Server.Core.Localization;
+using MMSL.Services.BankDetailsServices;
+using MMSL.Services.DealerServices;
+using MMSL.Services.DealerServices.Contracts;
+using MMSL.Services.DeliveryTimelines;
+using MMSL.Services.DeliveryTimelines.Contracts;
+using MMSL.Services.FabricServices;
+using MMSL.Services.FabricServices.Contracts;
+using MMSL.Services.IdentityServices;
+using MMSL.Services.IdentityServices.Contracts;
+using MMSL.Services.MeasurementServices;
+using MMSL.Services.MeasurementServices.Contracts;
+using MMSL.Services.OptionServices;
+using MMSL.Services.OptionServices.Contracts;
+using MMSL.Services.ProductCategories;
+using MMSL.Services.ProductCategories.Contracts;
+using MMSL.Services.StoreCustomerServices;
+using MMSL.Services.StoreCustomerServices.Contracts;
+using MMSL.Services.StoreServices.Contracts;
+using MMSL.Services.Types;
+using MMSL.Services.Types.Contracts;
+using Serilog;
+using Serilog.Formatting.Json;
+using System;
+using System.Collections.Generic;
+using System.IO.Compression;
+using System.Threading.Tasks;
+using IWebHostEnvironment = Microsoft.AspNetCore.Hosting.IWebHostEnvironment;
 
-namespace MMSL.Server.Core
-{
+namespace MMSL.Server.Core {
     public class Startup
     {
         public IConfiguration Configuration { get; private set; }
@@ -203,7 +202,8 @@ namespace MMSL.Server.Core
             builder.RegisterType<IdentityRepositoriesFactory>().As<IIdentityRepositoriesFactory>();
             builder.RegisterType<MeasurementsRepositoriesFactory>().As<IMeasurementsRepositoriesFactory>();
             builder.RegisterType<ProductCategoryRepositoriesFactory>().As<IProductCategoryRepositoriesFactory>();
-            builder.RegisterType<DeliveryTimelineRepositoriesFactory>().As<IDeliveryTimelineRepositoriesFactory>();            
+            builder.RegisterType<DeliveryTimelineRepositoriesFactory>().As<IDeliveryTimelineRepositoriesFactory>();
+            builder.RegisterType<FabricRepositoriesFactory>().As<IFabricRepositoriesFactory>();
 
             // Services.
             builder.RegisterType<StoreService>().As<IStoreService>();
@@ -224,6 +224,7 @@ namespace MMSL.Server.Core
             builder.RegisterType<ProductPermissionSettingService>().As<IProductPermissionSettingService>();
             builder.RegisterType<DealerProductAvailabilityService>().As<IDealerProductAvailabilityService>();
             builder.RegisterType<StoreCustomerProductProfileService>().As<IStoreCustomerProductProfileService>();
+            builder.RegisterType<FabricService>().As<IFabricService>();
 
             builder.RegisterType<SqlDbContext>().As<ISqlDbContext>();
             builder.RegisterType<SqlContextFactory>().As<ISqlContextFactory>();

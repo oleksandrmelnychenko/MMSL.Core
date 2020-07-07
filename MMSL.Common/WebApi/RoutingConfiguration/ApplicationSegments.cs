@@ -33,5 +33,7 @@
         public const string FittingTypes = "measurements/fitting/types";
 
         public const string DeliveryTimelines = "delivery/timelines";
+
+        public const string Fabrics = "fabrics";
     }
 }
