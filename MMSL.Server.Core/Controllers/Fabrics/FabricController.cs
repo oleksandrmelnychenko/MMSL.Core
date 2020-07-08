@@ -8,6 +8,7 @@ using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.Fabrics;
 using MMSL.Domain.DataContracts.Fabrics;
 using MMSL.Domain.Entities.Fabrics;
+using MMSL.Domain.EntityHelpers;
 using MMSL.Server.Core.Helpers;
 using MMSL.Services.FabricServices.Contracts;
 using Serilog;
@@ -33,11 +34,15 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
         [HttpGet]
         [AssignActionRoute(FabricSegments.GET_ALL)]
 
-        public IActionResult GetAll() {
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int pageNumber,
+            [FromQuery] int limit,
+            [FromQuery] string searchPhrase
+            ) {
             try {
-                List<Fabric> fabrics = new List<Fabric>();
                 //TODO: get all with filters
-                return Ok(SuccessResponseBody(null, Localizer["All fabrics"]));
+                PaginatingResult<Fabric> fabrics = await _fabricService.GetFabrics(pageNumber, limit, searchPhrase);
+                return Ok(SuccessResponseBody(fabrics, Localizer["All fabrics"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

@@ -1,5 +1,6 @@
 ﻿using MMSL.Domain.DataContracts.Fabrics;
 using MMSL.Domain.Entities.Fabrics;
+using MMSL.Domain.EntityHelpers;
 using System.Threading.Tasks;
 
 namespace MMSL.Services.FabricServices.Contracts {
@@ -9,5 +10,6 @@ namespace MMSL.Services.FabricServices.Contracts {
         Task<Fabric> UpdateFabric(UpdateFabricDataContract fabric, string newImageUrl = null);
         Task<Fabric> DeleteFabric(long fabricId);
         Task<Fabric> UpdateFabricVisibilities(UpdateFabricVisibilitiesDataContract fabric);
+        Task<PaginatingResult<Fabric>> GetFabrics(int pageNumber, int limit, string searchPhrase);
     }
 }

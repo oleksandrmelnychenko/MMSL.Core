@@ -1,6 +1,7 @@
 ﻿using MMSL.Domain.DataContracts.Fabrics;
 using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Fabrics;
+using MMSL.Domain.EntityHelpers;
 using MMSL.Domain.Repositories.Fabrics.Contracts;
 using MMSL.Services.FabricServices.Contracts;
 using System;
@@ -86,5 +87,14 @@ namespace MMSL.Services.FabricServices {
                     return repository.GetById(fabricEntity.Id);
                 }
             });
-        }
+
+        public Task<PaginatingResult<Fabric>> GetFabrics(int pageNumber, int limit, string searchPhrase) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    return _fabricRepositoriesFactory
+                        .NewFabricRepository(connection)
+                        .GetPagination(pageNumber, limit, searchPhrase);
+                }
+            }); 
+    }
 }
