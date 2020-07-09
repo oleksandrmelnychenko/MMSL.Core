@@ -1,4 +1,6 @@
-﻿namespace MMSL.Domain.Entities.Fabrics {
+﻿using MMSL.Domain.Entities.Identity;
+
+namespace MMSL.Domain.Entities.Fabrics {
     public class Fabric : EntityBase {
         public string FabricCode { get; set; }
         public string Description { get; set; }
@@ -29,5 +31,8 @@
         
         public string Pattern { get; set; }
         public bool IsPatternVisible { get; set; }
+
+        public long UserIdentityId { get; set; }
+        public UserIdentity UserIdentity { get; set; }
     }
 }
