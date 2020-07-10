@@ -1,10 +1,12 @@
 ﻿using MMSL.Domain.DataContracts.Fabrics;
+using MMSL.Domain.DataContracts.Filters;
 using MMSL.Domain.DbConnectionFactory;
 using MMSL.Domain.Entities.Fabrics;
 using MMSL.Domain.EntityHelpers;
 using MMSL.Domain.Repositories.Fabrics.Contracts;
 using MMSL.Services.FabricServices.Contracts;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
@@ -29,13 +31,14 @@ namespace MMSL.Services.FabricServices {
                  }
              });
 
-        public Task<Fabric> AddFabric(NewFabricDataContract fabric, string imageUrl = null) =>
+        public Task<Fabric> AddFabric(NewFabricDataContract fabric, long userIdentityId, string imageUrl = null) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IFabricRepository repository = _fabricRepositoriesFactory.NewFabricRepository(connection);
 
                     Fabric fabricEntity = fabric.GetEntity();
-
+                    fabricEntity.UserIdentityId = userIdentityId;
+                    
                     if (!string.IsNullOrEmpty(imageUrl))
                         fabricEntity.ImageUrl = imageUrl;
 
@@ -95,6 +98,15 @@ namespace MMSL.Services.FabricServices {
                         .NewFabricRepository(connection)
                         .GetPagination(pageNumber, limit, searchPhrase);
                 }
-            }); 
+            });
+
+        public Task<List<FilterItem>> GetFabricFilters() =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    return _fabricRepositoriesFactory
+                        .NewFabricRepository(connection)
+                        .GetFilters();
+                }
+            });
     }
 }

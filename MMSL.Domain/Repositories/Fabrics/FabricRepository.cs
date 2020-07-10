@@ -1,9 +1,13 @@
 ﻿using Dapper;
+using MMSL.Domain.DataContracts.Filters;
 using MMSL.Domain.Entities.Fabrics;
 using MMSL.Domain.EntityHelpers;
 using MMSL.Domain.Repositories.Fabrics.Contracts;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 
 namespace MMSL.Domain.Repositories.Fabrics {
     class FabricRepository : IFabricRepository {
@@ -111,9 +115,9 @@ WHERE Id = @Id",
         public Fabric AddFabric(Fabric fabricEntity) {
             long id = _connection.QuerySingleOrDefault<long>(
 @"INSERT INTO [Fabrics]([IsDeleted],[IsMetresVisible],[IsMillVisible],[IsColorVisible],[IsCompositionVisible],[IsGSMVisible],[IsCountVisible],[IsWeaveVisible],[IsPatternVisible]
-,[FabricCode],[Description],[ImageUrl],[Status],[Metres],[Mill],[Color],[Composition],[GSM],[Count],[Weave],[Pattern])
+,[FabricCode],[Description],[ImageUrl],[Status],[Metres],[Mill],[Color],[Composition],[GSM],[Count],[Weave],[Pattern],[UserIdentityId])
 VALUES (0,1,1,1,1,1,1,1,1
-,@FabricCode,@Description,@ImageUrl,@Status,@Metres,@Mill,@Color,@Composition,@GSM,@Count,@Weave,@Pattern);
+,@FabricCode,@Description,@ImageUrl,@Status,@Metres,@Mill,@Color,@Composition,@GSM,@Count,@Weave,@Pattern,@UserIdentityId);
 SELECT SCOPE_IDENTITY()",
                 fabricEntity
                 );
@@ -149,6 +153,73 @@ WHERE [Id] = @Id",
                     );
 
             return GetById(fabricEntity.Id);
+        }
+
+        public List<FilterItem> GetFilters() {
+            List<FilterItem> filters = new List<FilterItem> {
+                new FilterItem("Color"),
+                new FilterItem("Mill"),
+                new FilterItem("Composition"),
+                new FilterItem("GSM"),
+                new FilterItem("Weave"),
+                new FilterItem("Pattern"),
+                new FilterItem("Metres", true),
+                new FilterItem("Count", true)
+            };
+
+            Type[] columnQueryTypes = new Type[] { typeof(FilterQueryResult) };
+            Func<object[], FilterQueryResult> columnQueryMapper = (objects) => {
+                FilterQueryResult result = (FilterQueryResult)objects[0];
+
+                FilterItem filter = filters.FirstOrDefault(x => x.Name == result.Name);
+
+                if (filter != null) {
+                    filter.Values.Add(new FabricFilterValue(result.Value));
+                }
+
+                return result;
+            };
+
+            Type[] rangeQueryTypes = new Type[] { typeof(FilterQueryResult) };
+            Func<object[], FilterQueryResult> rangeQueryMapper = (objects) => {
+                FilterQueryResult result = (FilterQueryResult)objects[0];
+
+                FilterItem filter = filters.FirstOrDefault(x => x.Name == result.Name);
+
+                if (filter != null) {
+                    filter.Max = result.Max;
+                    filter.Min = result.Min;
+                }
+
+                return result;
+            };
+
+            string columnReplacer = "{COLUMN_NAME}";
+            string rangeQuery = "SELECT TOP(1) '{COLUMN_NAME}' AS [Name], MAX({COLUMN_NAME}) AS [Max], MIN({COLUMN_NAME}) AS [Min] FROM [Fabrics] ";
+            string columnQuery = "SELECT '{COLUMN_NAME}' AS [Name], {COLUMN_NAME} AS [Value] FROM [Fabrics] GROUP BY {COLUMN_NAME} ";
+
+            StringBuilder builder = new StringBuilder();
+
+            foreach (FilterItem filter in filters) {
+                if (filter.IsRange) {
+                    builder.Append(rangeQuery.Replace(columnReplacer, filter.Name));
+                } else {
+                    builder.Append(columnQuery.Replace(columnReplacer, filter.Name));
+                }
+            }
+
+            using (SqlMapper.GridReader reader = _connection.QueryMultiple(builder.ToString())) {
+                reader.Read(columnQueryTypes, columnQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
+                reader.Read(rangeQueryTypes, rangeQueryMapper);
+                reader.Read(rangeQueryTypes, rangeQueryMapper);
+            }
+
+            return filters;
         }
     }
 }

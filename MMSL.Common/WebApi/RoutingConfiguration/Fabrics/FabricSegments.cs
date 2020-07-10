@@ -6,5 +6,6 @@
         public const string UPDATE_FABRIC = "update";
         public const string UPDATE_FABRIC_VISIBILITIES = "update/visibilities";
         public const string DELETE_FABRIC = "delete";
+        public const string GET_FILTERS = "filters";
     }
 }

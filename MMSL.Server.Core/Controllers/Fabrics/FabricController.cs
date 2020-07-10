@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using MMSL.Common;
+using MMSL.Common.Helpers;
 using MMSL.Common.ResponseBuilder.Contracts;
 using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
@@ -15,10 +16,11 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MMSL.Server.Core.Controllers.Fabrics {
-    [Authorize]
+    [Authorize(Roles = "Administrator,Manufacturer")]
     [AssignControllerLocalizedRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Fabrics)]
     [AssignControllerRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Fabrics)]
 
@@ -31,9 +33,9 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
             _fabricService = fabricService;
         }
 
+        [Authorize(Roles = "Administrator,Manufacturer,Dealer")]
         [HttpGet]
         [AssignActionRoute(FabricSegments.GET_ALL)]
-
         public async Task<IActionResult> GetAll(
             [FromQuery] int pageNumber,
             [FromQuery] int limit,
@@ -49,9 +51,9 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
             }
         }
 
+        [Authorize(Roles = "Administrator,Manufacturer,Dealer")]
         [HttpGet]
         [AssignActionRoute(FabricSegments.GET)]
-
         public async Task<IActionResult> GetById([FromQuery] long fabricId) {
             try {
                 return Ok(SuccessResponseBody(await _fabricService.GetByIdAsync(fabricId), Localizer["Successful"]));
@@ -61,19 +63,31 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
             }
         }
 
+        [Authorize(Roles = "Administrator,Manufacturer,Dealer")]
+        [HttpGet]
+        [AssignActionRoute(FabricSegments.GET_FILTERS)]
+        public async Task<IActionResult> GetFilters() {
+            try {
+                return Ok(SuccessResponseBody(await _fabricService.GetFabricFilters(), Localizer["Successful"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
 
         [HttpPost]
         [AssignActionRoute(FabricSegments.ADD_FABRIC)]
-
         public async Task<IActionResult> Add([FromForm] NewFabricDataContract fabric, [FromForm] FileFormData fabricImage) {
             try {
+                long identityId = ClaimHelper.GetUserId(User);
+
                 string imageUrl = string.Empty;
 
                 if (fabricImage.File != null) {
                     imageUrl = await FileUploadingHelper.UploadFile($"{Request.Scheme}://{Request.Host}", fabricImage.File);
                 }
 
-                return Ok(SuccessResponseBody(await _fabricService.AddFabric(fabric, imageUrl), Localizer["Successful"]));
+                return Ok(SuccessResponseBody(await _fabricService.AddFabric(fabric, identityId, imageUrl), Localizer["Successful"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

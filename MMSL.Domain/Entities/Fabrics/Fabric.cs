@@ -10,7 +10,7 @@ namespace MMSL.Domain.Entities.Fabrics {
 
         public string Metres { get; set; }
         public bool IsMetresVisible { get; set; }
-        
+
         public string Mill { get; set; }
         public bool IsMillVisible { get; set; }
         
