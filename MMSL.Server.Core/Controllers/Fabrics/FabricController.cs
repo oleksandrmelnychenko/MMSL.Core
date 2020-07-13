@@ -45,13 +45,29 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
             [FromQuery] string filterBuilder
             ) {
             try {
-                //TODO: get all with filters
                 FilterItem[] filters = !string.IsNullOrEmpty(filterBuilder) 
                     ? JsonConvert.DeserializeObject<FilterItem[]>(filterBuilder)
                     : null;
 
                 PaginatingResult<Fabric> fabrics = await _fabricService.GetFabrics(pageNumber, limit, searchPhrase, filters);
                 return Ok(SuccessResponseBody(fabrics, Localizer["All fabrics"]));
+            } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [Authorize(Roles = "Administrator,Manufacturer,Dealer")]
+        [HttpGet]
+        [AssignActionRoute(FabricSegments.GET_PDF)]
+        public async Task<IActionResult> GetFabricsPdf([FromQuery] string searchPhrase, [FromQuery] string filterBuilder) {
+            try {
+                FilterItem[] filters = !string.IsNullOrEmpty(filterBuilder) 
+                    ? JsonConvert.DeserializeObject<FilterItem[]>(filterBuilder)
+                    : null;
+
+                string downloadUrl = await _fabricService.PrepareFabricsPdf(searchPhrase, filters);
+                return Ok(SuccessResponseBody(downloadUrl, Localizer["Download link"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
@@ -131,7 +147,8 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
 
         public async Task<IActionResult> UpdateFabricVisibilities([FromBody] UpdateFabricVisibilitiesDataContract fabric) {
             try {
-                return Ok(SuccessResponseBody(await _fabricService.UpdateFabricVisibilities(fabric), Localizer["Successful"]));
+                await _fabricService.UpdateFabricVisibilities(fabric, ClaimHelper.GetUserId(User));
+                return Ok(SuccessResponseBody(null, Localizer["Successful"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

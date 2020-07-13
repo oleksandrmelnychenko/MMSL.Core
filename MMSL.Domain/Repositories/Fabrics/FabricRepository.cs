@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using MMSL.Common.Helpers;
+using MMSL.Domain.DataContracts.Fabrics;
 using MMSL.Domain.DataContracts.Filters;
 using MMSL.Domain.Entities.Fabrics;
 using MMSL.Domain.EntityHelpers;
@@ -244,6 +245,32 @@ WHERE [Id] = @Id",
             }
 
             return filters;
+        }
+
+        public void UpdateFabricVisibilities(UpdateFabricVisibilitiesDataContract fabric, long userIdentityId) {
+            string query = @"UPDATE [Fabrics] SET 
+[IsMetresVisible] = @IsMetresVisible
+,[IsMillVisible] = @IsMillVisible
+,[IsColorVisible]= @IsColorVisible
+,[IsCompositionVisible]= @IsCompositionVisible
+,[IsGSMVisible]= @IsGSMVisible
+,[IsCountVisible]= @IsCountVisible
+,[IsWeaveVisible]= @IsWeaveVisible
+,[IsPatternVisible]= @IsPatternVisible
+WHERE [UserIdentityId] = @UserIdentityId";
+
+            _connection.Execute(query,
+                new {
+                    IsMetresVisible = fabric.IsColorVisible,
+                    IsMillVisible = fabric.IsColorVisible,
+                    IsColorVisible = fabric.IsColorVisible,
+                    IsCompositionVisible = fabric.IsColorVisible,
+                    IsGSMVisible = fabric.IsColorVisible,
+                    IsCountVisible = fabric.IsColorVisible,
+                    IsWeaveVisible = fabric.IsColorVisible,
+                    IsPatternVisible = fabric.IsColorVisible,
+                    UserIdentityId = userIdentityId
+                });
         }
     }
 }

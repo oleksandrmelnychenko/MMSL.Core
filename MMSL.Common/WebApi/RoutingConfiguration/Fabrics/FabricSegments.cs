@@ -2,6 +2,7 @@
     public static class FabricSegments {
         public const string GET = "get";
         public const string GET_ALL = "get/all";
+        public const string GET_PDF = "get/pdf";
         public const string ADD_FABRIC = "add";
         public const string UPDATE_FABRIC = "update";
         public const string UPDATE_FABRIC_VISIBILITIES = "update/visibilities";

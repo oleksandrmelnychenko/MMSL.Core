@@ -76,18 +76,18 @@ namespace MMSL.Services.FabricServices {
                 }
             });
 
-        public Task<Fabric> UpdateFabricVisibilities(UpdateFabricVisibilitiesDataContract fabric) =>
+        public Task UpdateFabricVisibilities(UpdateFabricVisibilitiesDataContract fabric, long userIdentityId) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     IFabricRepository repository = _fabricRepositoriesFactory.NewFabricRepository(connection);
 
-                    Fabric fabricEntity = repository.GetById(fabric.Id);
+                    //Fabric defaultFabricEntity = repository.GetById(fabric.Id);
 
-                    fabricEntity = fabric.MapFabric(fabricEntity);
+                    //defaultFabricEntity = fabric.MapFabric(defaultFabricEntity);
 
-                    repository.UpdateFabric(fabricEntity);
+                    repository.UpdateFabricVisibilities(fabric, userIdentityId);
 
-                    return repository.GetById(fabricEntity.Id);
+                    //return repository.GetById(defaultFabricEntity.Id);
                 }
             });
 
@@ -108,5 +108,9 @@ namespace MMSL.Services.FabricServices {
                         .GetFilters();
                 }
             });
+
+        public Task<string> PrepareFabricsPdf(string searchPhrase, FilterItem[] filters) {
+            throw new NotImplementedException();
+        }
     }
 }
