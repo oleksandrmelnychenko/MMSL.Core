@@ -257,7 +257,8 @@ WHERE [Id] = @Id",
 ,[IsCountVisible]= @IsCountVisible
 ,[IsWeaveVisible]= @IsWeaveVisible
 ,[IsPatternVisible]= @IsPatternVisible
-WHERE [UserIdentityId] = @UserIdentityId";
+WHERE [UserIdentityId] = @UserIdentityId
+AND [IsDeleted]= 0";
 
             _connection.Execute(query,
                 new {
