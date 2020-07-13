@@ -12,7 +12,7 @@ namespace MMSL.Services.FabricServices.Contracts {
         Task<Fabric> UpdateFabric(UpdateFabricDataContract fabric, string newImageUrl = null);
         Task<Fabric> DeleteFabric(long fabricId);
         Task<Fabric> UpdateFabricVisibilities(UpdateFabricVisibilitiesDataContract fabric);
-        Task<PaginatingResult<Fabric>> GetFabrics(int pageNumber, int limit, string searchPhrase);
+        Task<PaginatingResult<Fabric>> GetFabrics(int pageNumber, int limit, string searchPhrase, FilterItem[] filters);
         Task<List<FilterItem>> GetFabricFilters();
     }
 }

@@ -8,10 +8,12 @@ using MMSL.Common.WebApi;
 using MMSL.Common.WebApi.RoutingConfiguration;
 using MMSL.Common.WebApi.RoutingConfiguration.Fabrics;
 using MMSL.Domain.DataContracts.Fabrics;
+using MMSL.Domain.DataContracts.Filters;
 using MMSL.Domain.Entities.Fabrics;
 using MMSL.Domain.EntityHelpers;
 using MMSL.Server.Core.Helpers;
 using MMSL.Services.FabricServices.Contracts;
+using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -39,11 +41,16 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
         public async Task<IActionResult> GetAll(
             [FromQuery] int pageNumber,
             [FromQuery] int limit,
-            [FromQuery] string searchPhrase
+            [FromQuery] string searchPhrase,
+            [FromQuery] string filterBuilder
             ) {
             try {
                 //TODO: get all with filters
-                PaginatingResult<Fabric> fabrics = await _fabricService.GetFabrics(pageNumber, limit, searchPhrase);
+                FilterItem[] filters = !string.IsNullOrEmpty(filterBuilder) 
+                    ? JsonConvert.DeserializeObject<FilterItem[]>(filterBuilder)
+                    : null;
+
+                PaginatingResult<Fabric> fabrics = await _fabricService.GetFabrics(pageNumber, limit, searchPhrase, filters);
                 return Ok(SuccessResponseBody(fabrics, Localizer["All fabrics"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using MMSL.Common.Helpers;
 using MMSL.Domain.DataContracts.Filters;
 using MMSL.Domain.Entities.Fabrics;
 using MMSL.Domain.EntityHelpers;
@@ -17,10 +18,11 @@ namespace MMSL.Domain.Repositories.Fabrics {
             this._connection = connection;
         }
 
-        public PaginatingResult<Fabric> GetPagination(int pageNumber, int limit, string searchPhrase) {
+        public PaginatingResult<Fabric> GetPagination(int pageNumber, int limit, string searchPhrase, FilterItem[] filters) {
             PaginatingResult<Fabric> result = new PaginatingResult<Fabric>();
 
             PagerParams pager = new PagerParams(pageNumber, limit, searchPhrase);
+
 
             string searchPart =
 @"AND (
@@ -74,8 +76,30 @@ FROM [Fabrics]
 LEFT JOIN [Paginated_Fabrics_CTE] ON [Paginated_Fabrics_CTE].Id = [Fabrics].Id  
 WHERE [Fabrics].IsDeleted = 0  
 AND [Paginated_Fabrics_CTE].RowNumber > @Offset  
-AND [Paginated_Fabrics_CTE].RowNumber <= @Offset + @Limit  
-ORDER BY [Paginated_Fabrics_CTE].RowNumber";
+AND [Paginated_Fabrics_CTE].RowNumber <= @Offset + @Limit";
+
+            if (filters != null) {
+                foreach (FilterItem filter in filters) {
+                    if (filter.IsRange) {
+                        //string
+
+                        //NumericParsingHelper.TryParseFloat()
+                        string filterRangeQueryPart = $" AND CONVERT(float, {filter.Name}) <= CONVERT(float, '{filter.Max.ToString(System.Globalization.CultureInfo.InvariantCulture)}') AND CONVERT(float, {filter.Name}) >= CONVERT(float, '{filter.Min.ToString(System.Globalization.CultureInfo.InvariantCulture)}') ";
+
+                        paginatingDetailQuery += filterRangeQueryPart;
+                        query += filterRangeQueryPart;
+                    } else if (filter.Values != null && filter.Values.Count > 0) {
+                        foreach (FabricFilterValue filterValue in filter.Values.Where(x => x.Applied)) {
+                            string filterValueTemplate = $" AND {filter.Name} = '{filterValue.Value}' ";
+
+                            paginatingDetailQuery += filterValueTemplate;
+                            query += filterValueTemplate;
+                        }
+                    }
+                }
+            }
+
+            query += " ORDER BY [Paginated_Fabrics_CTE].RowNumber ";
 
             result.Entities = _connection.Query<Fabric>(query,
                 new {

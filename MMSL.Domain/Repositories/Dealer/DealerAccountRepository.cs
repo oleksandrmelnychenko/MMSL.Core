@@ -57,7 +57,6 @@ namespace MMSL.Domain.Repositories.Dealer {
 
                 paginatingDetailQuery += searchPart;
                 query += searchPart;
-
             }
 
             if (from.HasValue) {

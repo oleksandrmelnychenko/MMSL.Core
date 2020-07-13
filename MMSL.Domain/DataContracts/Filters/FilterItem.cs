@@ -16,6 +16,4 @@ namespace MMSL.Domain.DataContracts.Filters {
             IsRange = isRange;
         }
     }
-
-
 }
