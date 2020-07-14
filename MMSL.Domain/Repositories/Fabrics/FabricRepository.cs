@@ -262,14 +262,14 @@ AND [IsDeleted]= 0";
 
             _connection.Execute(query,
                 new {
-                    IsMetresVisible = fabric.IsColorVisible,
-                    IsMillVisible = fabric.IsColorVisible,
+                    IsMetresVisible = fabric.IsMetresVisible,
+                    IsMillVisible = fabric.IsMillVisible,
                     IsColorVisible = fabric.IsColorVisible,
-                    IsCompositionVisible = fabric.IsColorVisible,
-                    IsGSMVisible = fabric.IsColorVisible,
-                    IsCountVisible = fabric.IsColorVisible,
-                    IsWeaveVisible = fabric.IsColorVisible,
-                    IsPatternVisible = fabric.IsColorVisible,
+                    IsCompositionVisible = fabric.IsCompositionVisible,
+                    IsGSMVisible = fabric.IsGSMVisible,
+                    IsCountVisible = fabric.IsCountVisible,
+                    IsWeaveVisible = fabric.IsWeaveVisible,
+                    IsPatternVisible = fabric.IsPatternVisible,
                     UserIdentityId = userIdentityId
                 });
         }
