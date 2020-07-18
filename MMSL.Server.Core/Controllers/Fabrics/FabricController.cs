@@ -28,7 +28,7 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
 
     public class FabricController : WebApiControllerBase {
 
-        private readonly IFabricService _fabricService;
+        private readonly IFabricService _fabricService; 
 
         public FabricController(IFabricService fabricService, IResponseFactory responseFactory, IStringLocalizer<FabricController> localizer)
             : base(responseFactory, localizer) {
@@ -160,7 +160,6 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
 
         public async Task<IActionResult> Delete([FromQuery] long fabricId) {
             try {
-                //TODO: delete entity
                 Fabric deleted = await _fabricService.DeleteFabric(fabricId);
                 return Ok(SuccessResponseBody(deleted, Localizer["Successful"]));
             } catch (Exception exc) {

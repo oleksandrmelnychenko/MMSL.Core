@@ -9,6 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+
 
 namespace MMSL.Services.FabricServices {
     public class FabricService : IFabricService {
@@ -38,7 +41,7 @@ namespace MMSL.Services.FabricServices {
 
                     Fabric fabricEntity = fabric.GetEntity();
                     fabricEntity.UserIdentityId = userIdentityId;
-                    
+
                     if (!string.IsNullOrEmpty(imageUrl))
                         fabricEntity.ImageUrl = imageUrl;
 
@@ -109,8 +112,25 @@ namespace MMSL.Services.FabricServices {
                 }
             });
 
-        public Task<string> PrepareFabricsPdf(string searchPhrase, FilterItem[] filters) {
-            throw new NotImplementedException();
-        }
+        public Task<string> PrepareFabricsPdf(string searchPhrase, FilterItem[] filters) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                    IEnumerable<Fabric> fabrics = _fabricRepositoriesFactory
+                        .NewFabricRepository(connection)
+                        .GetAllFabrics(searchPhrase, filters);
+
+                    //TODO: create pdf
+                    Document doc1 = new Document(PageSize.A4);
+
+                    //string path = Server.MapPath("PDFs");
+
+                    //PdfWriter.GetInstance(doc1, new FileStream(path + "/Doc1.pdf", FileMode.Create));
+
+
+
+
+                    return "";
+                }
+            });
     }
 }

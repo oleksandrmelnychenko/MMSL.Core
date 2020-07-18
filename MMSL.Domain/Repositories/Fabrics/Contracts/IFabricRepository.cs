@@ -11,6 +11,7 @@ namespace MMSL.Domain.Repositories.Fabrics.Contracts {
         Fabric UpdateFabric(Fabric fabricEntity);
         Fabric AddFabric(Fabric fabricEntity);
         PaginatingResult<Fabric> GetPagination(int pageNumber, int limit, string searchPhrase, FilterItem[] filters);
+        IEnumerable<Fabric> GetAllFabrics(string searchPhrase, FilterItem[] filters);
         List<FilterItem> GetFilters();
         void UpdateFabricVisibilities(UpdateFabricVisibilitiesDataContract fabric, long userIdentityId);
     }

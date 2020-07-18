@@ -77,7 +77,8 @@ FROM [Fabrics]
 LEFT JOIN [Paginated_Fabrics_CTE] ON [Paginated_Fabrics_CTE].Id = [Fabrics].Id  
 WHERE [Fabrics].IsDeleted = 0  
 AND [Paginated_Fabrics_CTE].RowNumber > @Offset  
-AND [Paginated_Fabrics_CTE].RowNumber <= @Offset + @Limit";
+AND [Paginated_Fabrics_CTE].RowNumber <= @Offset + @Limit
+{(!string.IsNullOrEmpty(searchPhrase) ? searchPart : string.Empty)}";
 
             if (filters != null) {
                 foreach (FilterItem filter in filters) {
@@ -118,6 +119,64 @@ AND [Paginated_Fabrics_CTE].RowNumber <= @Offset + @Limit";
                 });
 
             return result;
+        }
+
+        public IEnumerable<Fabric> GetAllFabrics(string searchPhrase, FilterItem[] filters) {
+            
+            string query =
+$@"SELECT [Fabrics].[Id]
+,[IsDeleted]
+,[Created]
+,[LastModified]
+,[FabricCode]
+,[Description]
+,[ImageUrl]
+,[Status]
+,IIF([IsMetresVisible]=1,[Metres],NULL) AS [Metres]
+,[IsMetresVisible]
+,IIF([IsMillVisible]=1,[Mill],NULL) AS [Mill]
+,[IsMillVisible]
+,IIF([IsColorVisible]=1,[Color],NULL) AS [Color]
+,[IsColorVisible]
+,IIF([IsCompositionVisible]=1,[Composition],NULL) AS [Composition]
+,[IsCompositionVisible]
+,IIF([IsGSMVisible]=1,[GSM],NULL) AS [GSM]
+,[IsGSMVisible]
+,IIF([IsCountVisible]=1,[Count],NULL) AS [Count]
+,[IsCountVisible]
+,IIF([IsWeaveVisible]=1,[Weave],NULL) AS [Weave]
+,[IsWeaveVisible]
+,IIF([IsPatternVisible]=1,[Pattern],NULL) AS [Pattern]
+,[IsPatternVisible]
+FROM [Fabrics]  
+WHERE [Fabrics].IsDeleted = 0 
+{(!string.IsNullOrEmpty(searchPhrase) 
+? @"AND (
+PATINDEX('%' + @SearchTerm + '%', [Fabrics].[FabricCode]) > 0 
+OR PATINDEX('%' + @SearchTerm + '%', [Fabrics].[Description]) > 0 
+)" 
+: string.Empty)}";
+
+            if (filters != null) {
+                foreach (FilterItem filter in filters) {
+                    if (filter.IsRange) {
+                        string filterRangeQueryPart = $" AND CONVERT(float, {filter.Name}) <= CONVERT(float, '{filter.Max.ToString(System.Globalization.CultureInfo.InvariantCulture)}') AND CONVERT(float, {filter.Name}) >= CONVERT(float, '{filter.Min.ToString(System.Globalization.CultureInfo.InvariantCulture)}') ";
+
+                        query += filterRangeQueryPart;
+                    } else if (filter.Values != null && filter.Values.Count > 0) {
+                        foreach (FabricFilterValue filterValue in filter.Values.Where(x => x.Applied)) {
+                            string filterValueTemplate = $" AND {filter.Name} = '{filterValue.Value}' ";
+
+                            query += filterValueTemplate;
+                        }
+                    }
+                }
+            }
+
+            return _connection.Query<Fabric>(query,
+                new { 
+                    SearchTerm = searchPhrase
+                });
         }
 
         public Fabric GetById(long fabricId) =>
