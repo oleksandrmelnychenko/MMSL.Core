@@ -15,6 +15,8 @@ namespace MMSL.Domain.Entities.Options {
 
         public bool IsMandatory { get; set; }
 
+        public bool IsBodyPosture { get; set; }
+
         public ICollection<OptionUnit> OptionUnits { get; set; }
 
         public ICollection<ProductCategoryMapOptionGroup> ProductCategoryMaps { get; set; }

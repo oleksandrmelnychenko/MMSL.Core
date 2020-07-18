@@ -16,8 +16,6 @@ namespace MMSL.Domain.Entities.Options {
 
         public long OptionGroupId { get; set; }
 
-        public bool IsBodyPosture { get; set; }
-
         [NotMapped]
         public bool IsAllow { get; set; }
 

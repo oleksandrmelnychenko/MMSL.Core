@@ -11,5 +11,7 @@ namespace MMSL.Domain.DataContracts.ProductOptions {
         public string Price { get; set; }
 
         public long? CurrencyTypeId { get; set; }
+
+        public bool IsBodyPosture { get; set; }
     }
 }

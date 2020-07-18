@@ -65,7 +65,8 @@ namespace MMSL.Services.OptionServices {
 
                      OptionGroup optionGroup = new OptionGroup {
                          Name = newOptionGroupDataContract.Name,
-                         IsMandatory = newOptionGroupDataContract.IsMandatory
+                         IsMandatory = newOptionGroupDataContract.IsMandatory,
+                         IsBodyPosture = newOptionGroupDataContract.IsBodyPosture
                      };
 
                      optionGroup = optionGroupRepository.NewOptionGroup(optionGroup);

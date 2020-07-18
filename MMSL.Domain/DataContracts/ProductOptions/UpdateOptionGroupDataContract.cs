@@ -12,12 +12,15 @@ namespace MMSL.Domain.DataContracts.ProductOptions {
 
         public long? CurrencyTypeId { get; set; }
 
+        public bool IsBodyPosture { get; set; }
+
         public override OptionGroup GetEntity() {
             return new OptionGroup {
                 Id = Id,
                 IsDeleted = IsDeleted,
                 IsMandatory = IsMandatory,
-                Name = Name
+                Name = Name,
+                IsBodyPosture = IsBodyPosture
             };
         }
     }

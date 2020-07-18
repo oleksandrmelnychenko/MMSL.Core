@@ -198,10 +198,10 @@ namespace MMSL.Domain.Repositories.Options {
             return groupResult;
         }
 
-        public OptionGroup NewOptionGroup(OptionGroup optionGroup) =>
+        public OptionGroup NewOptionGroup(OptionGroup optionGroup) =>//[IsBodyPosture] = @IsBodyPosture
             _connection.Query<OptionGroup>(
-                "INSERT INTO[OptionGroups](IsDeleted,[Name],[IsMandatory]) " +
-                "VALUES(0,@Name,@IsMandatory) " +
+                "INSERT INTO[OptionGroups](IsDeleted,[Name],[IsMandatory],[IsBodyPosture]) " +
+                "VALUES(0,@Name,@IsMandatory,@IsBodyPosture) " +
                 "SELECT[OptionGroups].* " +
                 "FROM [OptionGroups] " +
                 "WHERE [OptionGroups].Id = SCOPE_IDENTITY()", optionGroup)
@@ -211,7 +211,7 @@ namespace MMSL.Domain.Repositories.Options {
             _connection.Execute(
                 "UPDATE OptionGroups " +
                 "SET IsDeleted = @IsDeleted, Name=@Name,IsMandatory=@IsMandatory, " +
-                "LastModified = getutcdate() " +
+                "LastModified = getutcdate(), [IsBodyPosture] = @IsBodyPosture " +
                 "WHERE [OptionGroups].Id = @Id;"
                 , optionGroup);
     }
