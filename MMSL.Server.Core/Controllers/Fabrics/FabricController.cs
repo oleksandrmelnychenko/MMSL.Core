@@ -22,7 +22,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MMSL.Server.Core.Controllers.Fabrics {
-    [Authorize(Roles = "Administrator,Manufacturer")]
     [AssignControllerLocalizedRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Fabrics)]
     [AssignControllerRoute(WebApiEnvironmnet.Current, WebApiVersion.ApiVersion1, ApplicationSegments.Fabrics)]
 
@@ -98,6 +97,7 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
             }
         }
 
+        [Authorize(Roles = "Administrator,Manufacturer")]
         [HttpPost]
         [AssignActionRoute(FabricSegments.ADD_FABRIC)]
         public async Task<IActionResult> Add([FromForm] NewFabricDataContract fabric, [FromForm] FileFormData fabricImage) {
@@ -117,9 +117,9 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
             }
         }
 
+        [Authorize(Roles = "Administrator,Manufacturer")]
         [HttpPut]
         [AssignActionRoute(FabricSegments.UPDATE_FABRIC)]
-
         public async Task<IActionResult> Update([FromForm] UpdateFabricDataContract fabric, [FromForm] FileFormData fabricImage) {
             try {
                 string oldImageUrl = fabric.ImageUrl;
@@ -142,9 +142,9 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
             }
         }
 
+        [Authorize(Roles = "Administrator,Manufacturer")]
         [HttpPut]
         [AssignActionRoute(FabricSegments.UPDATE_FABRIC_VISIBILITIES)]
-
         public async Task<IActionResult> UpdateFabricVisibilities([FromBody] UpdateFabricVisibilitiesDataContract fabric) {
             try {
                 await _fabricService.UpdateFabricVisibilities(fabric, ClaimHelper.GetUserId(User));
@@ -155,9 +155,9 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
             }
         }
 
+        [Authorize(Roles = "Administrator,Manufacturer")]
         [HttpDelete]
         [AssignActionRoute(FabricSegments.DELETE_FABRIC)]
-
         public async Task<IActionResult> Delete([FromQuery] long fabricId) {
             try {
                 Fabric deleted = await _fabricService.DeleteFabric(fabricId);
