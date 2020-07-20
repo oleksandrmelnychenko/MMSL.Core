@@ -198,7 +198,7 @@ namespace MMSL.Domain.Repositories.Options {
             return groupResult;
         }
 
-        public OptionGroup NewOptionGroup(OptionGroup optionGroup) =>//[IsBodyPosture] = @IsBodyPosture
+        public OptionGroup NewOptionGroup(OptionGroup optionGroup) =>
             _connection.Query<OptionGroup>(
                 "INSERT INTO[OptionGroups](IsDeleted,[Name],[IsMandatory],[IsBodyPosture]) " +
                 "VALUES(0,@Name,@IsMandatory,@IsBodyPosture) " +

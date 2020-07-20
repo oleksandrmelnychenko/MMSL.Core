@@ -160,8 +160,6 @@ WHERE [ProductCategories].IsDeleted = 0 ",
         public ProductCategory GetByIdForDealerIdentity(long productCategoryId, long dealerIdentityId, bool isBodyPostureOnly = false) {
             ProductCategory result = null;
 
-            //bool isBodyPostureOnly = true;
-
             string query =
 @"SELECT [ProductCategories].*
 ,[ProductCategoryMapOptionGroups].*
@@ -186,14 +184,14 @@ AND [ProductCategoryMapOptionGroups].IsDeleted = 0
 AND [ProductCategoryMapOptionGroups].OptionGroupId = [PermissionSettings].OptionGroupId
 AND(SELECT COUNT([OptionGroups].Id) FROM[OptionGroups] WHERE[OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId AND[OptionGroups].IsDeleted = 0) > 0
 LEFT JOIN [OptionGroups] ON [OptionGroups].Id = [PermissionSettings].OptionGroupId
-AND [OptionGroups].IsDeleted = 0
-LEFT JOIN [OptionPrices] AS [GroupPrice] ON [GroupPrice].OptionGroupId = OptionGroups.Id AND [GroupPrice].IsDeleted = 0
+AND [OptionGroups].IsDeleted = 0 "+
+(isBodyPostureOnly ? "AND [OptionGroups].IsBodyPosture = 1 " : string.Empty) +
+@"LEFT JOIN [OptionPrices] AS [GroupPrice] ON [GroupPrice].OptionGroupId = OptionGroups.Id AND [GroupPrice].IsDeleted = 0
 LEFT JOIN [CurrencyTypes] AS [GroupCurrency] ON [GroupCurrency].Id = [GroupPrice].CurrencyTypeId
 LEFT JOIN [OptionUnits] ON[OptionUnits].OptionGroupId = [OptionGroups].Id
 AND [OptionUnits].Id = [PermissionSettings].OptionUnitId
-AND [OptionUnits].IsDeleted = 0 " +
-(isBodyPostureOnly ? "AND [OptionUnits].IsBodyPosture = 1 " : string.Empty) +
-@"LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0
+AND [OptionUnits].IsDeleted = 0 
+LEFT JOIN [UnitValues] ON [UnitValues].OptionUnitId = [OptionUnits].Id AND [UnitValues].IsDeleted = 0
 LEFT JOIN [OptionPrices] AS [UnitPrice] ON [UnitPrice].OptionUnitId = [OptionUnits].Id AND [UnitPrice].IsDeleted = 0 
 LEFT JOIN [CurrencyTypes] AS [UnitCurrency] ON [UnitCurrency].Id = [UnitPrice].CurrencyTypeId
 LEFT JOIN [DealerMapProductPermissionSettings] ON[DealerMapProductPermissionSettings].ProductPermissionSettingsId = [ProductPermissionSettings].Id AND[DealerMapProductPermissionSettings].IsDeleted = 0
@@ -265,7 +263,11 @@ AND[ProductCategories].Id=@ProductCategoryId";
                         }
 
                         if (unitValue != null) {
-                            optionUnit.UnitValues.Add(unitValue);
+                            if (optionUnit.UnitValues.Any(x => x.Id == unitValue.Id)) {
+                                unitValue = optionUnit.UnitValues.First(x => x.Id == unitValue.Id);
+                            } else {
+                                optionUnit.UnitValues.Add(unitValue);
+                            }
                         }
 
                         if (unitPrice != null) {
@@ -318,9 +320,9 @@ AND[ProductCategories].Id=@ProductCategoryId";
                 "AND (SELECT COUNT([OptionGroups].Id) FROM [OptionGroups] WHERE [OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId AND [OptionGroups].IsDeleted = 0) > 0 " +
                 "LEFT JOIN [OptionGroups] ON [OptionGroups].Id = [ProductCategoryMapOptionGroups].OptionGroupId " +
                 "AND [OptionGroups].IsDeleted = 0 " +
+                (isBodyPostureOnly ? "AND [OptionGroups].IsBodyPosture = 1 " : string.Empty) +
                 "LEFT JOIN [OptionUnits] ON [OptionUnits].OptionGroupId = [OptionGroups].Id " +
                 "AND [OptionUnits].IsDeleted = 0 " +
-                (isBodyPostureOnly ? "AND [OptionUnits].IsBodyPosture = 1 " : string.Empty) +
                 "LEFT JOIN [DeliveryTimelineProductMaps] ON [DeliveryTimelineProductMaps].ProductCategoryId = [ProductCategories].Id " +
                 "AND [DeliveryTimelineProductMaps].IsDeleted = 0 " +
                 "AND (SELECT COUNT([DeliveryTimelines].Id) FROM [DeliveryTimelines] WHERE [DeliveryTimelines].Id = [DeliveryTimelineProductMaps].DeliveryTimelineId AND [DeliveryTimelines].IsDeleted = 0) > 0 " +
