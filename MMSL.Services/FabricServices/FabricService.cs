@@ -94,12 +94,12 @@ namespace MMSL.Services.FabricServices {
                 }
             });
 
-        public Task<PaginatingResult<Fabric>> GetFabrics(int pageNumber, int limit, string searchPhrase, FilterItem[] filters) =>
+        public Task<PaginatingResult<Fabric>> GetFabrics(int pageNumber, int limit, string searchPhrase, FilterItem[] filters, long? ownerUserIdentityId) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
                     return _fabricRepositoriesFactory
                         .NewFabricRepository(connection)
-                        .GetPagination(pageNumber, limit, searchPhrase, filters);
+                        .GetPagination(pageNumber, limit, searchPhrase, filters, ownerUserIdentityId);
                 }
             });
 

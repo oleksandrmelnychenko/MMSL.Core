@@ -19,7 +19,7 @@ namespace MMSL.Domain.Repositories.Fabrics {
             this._connection = connection;
         }
 
-        public PaginatingResult<Fabric> GetPagination(int pageNumber, int limit, string searchPhrase, FilterItem[] filters) {
+        public PaginatingResult<Fabric> GetPagination(int pageNumber, int limit, string searchPhrase, FilterItem[] filters, long? ownerUserIdentityId) {
             PaginatingResult<Fabric> result = new PaginatingResult<Fabric>();
 
             PagerParams pager = new PagerParams(pageNumber, limit, searchPhrase);
@@ -39,7 +39,8 @@ $@"SELECT TOP(1)
 [PagesCount] = CEILING(CONVERT(float, COUNT(DISTINCT[Fabrics].Id)) / @Limit) 
 FROM [Fabrics] 
 WHERE [Fabrics].[IsDeleted] = 0 
-{(!string.IsNullOrEmpty(searchPhrase) ? searchPart : string.Empty)}";
+{(!string.IsNullOrEmpty(searchPhrase) ? searchPart : string.Empty)}
+{(ownerUserIdentityId.HasValue ? "AND [UserIdentityId] = @OwnerUserIdentityId" : string.Empty)}";
 
             string query =
 $@";WITH [Paginated_Fabrics_CTE] AS ( 
@@ -57,35 +58,33 @@ SELECT [Paginated_Fabrics_CTE].RowNumber
 ,[Description]
 ,[ImageUrl]
 ,[Status]
-,IIF([IsMetresVisible]=1,[Metres],NULL) AS [Metres]
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsMetresVisible]=1,[Metres],NULL) AS [Metres]" : "[Metres]")}
 ,[IsMetresVisible]
-,IIF([IsMillVisible]=1,[Mill],NULL) AS [Mill]
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsMillVisible]=1,[Mill],NULL) AS [Mill]" : "[Mill]")}
 ,[IsMillVisible]
-,IIF([IsColorVisible]=1,[Color],NULL) AS [Color]
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsColorVisible]=1,[Color],NULL) AS [Color]" : "[Color]")}
 ,[IsColorVisible]
-,IIF([IsCompositionVisible]=1,[Composition],NULL) AS [Composition]
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsCompositionVisible]=1,[Composition],NULL) AS [Composition]" : "[Composition]")}
 ,[IsCompositionVisible]
-,IIF([IsGSMVisible]=1,[GSM],NULL) AS [GSM]
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsGSMVisible]=1,[GSM],NULL) AS [GSM]" : "[GSM]")}
 ,[IsGSMVisible]
-,IIF([IsCountVisible]=1,[Count],NULL) AS [Count]
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsCountVisible]=1,[Count],NULL) AS [Count]" : "[Count]")}
 ,[IsCountVisible]
-,IIF([IsWeaveVisible]=1,[Weave],NULL) AS [Weave]
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsWeaveVisible]=1,[Weave],NULL) AS [Weave]" : "[Weave]")}
 ,[IsWeaveVisible]
-,IIF([IsPatternVisible]=1,[Pattern],NULL) AS [Pattern]
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsPatternVisible]=1,[Pattern],NULL) AS [Pattern]" : "[Pattern]")}
 ,[IsPatternVisible]
 FROM [Fabrics]  
 LEFT JOIN [Paginated_Fabrics_CTE] ON [Paginated_Fabrics_CTE].Id = [Fabrics].Id  
 WHERE [Fabrics].IsDeleted = 0  
 AND [Paginated_Fabrics_CTE].RowNumber > @Offset  
 AND [Paginated_Fabrics_CTE].RowNumber <= @Offset + @Limit
-{(!string.IsNullOrEmpty(searchPhrase) ? searchPart : string.Empty)}";
+{(!string.IsNullOrEmpty(searchPhrase) ? searchPart : string.Empty)} 
+{(ownerUserIdentityId.HasValue ? "AND [UserIdentityId] = @OwnerUserIdentityId" : string.Empty)}";
 
             if (filters != null) {
                 foreach (FilterItem filter in filters) {
                     if (filter.IsRange) {
-                        //string
-
-                        //NumericParsingHelper.TryParseFloat()
                         string filterRangeQueryPart = $" AND CONVERT(float, {filter.Name}) <= CONVERT(float, '{filter.Max.ToString(System.Globalization.CultureInfo.InvariantCulture)}') AND CONVERT(float, {filter.Name}) >= CONVERT(float, '{filter.Min.ToString(System.Globalization.CultureInfo.InvariantCulture)}') ";
 
                         paginatingDetailQuery += filterRangeQueryPart;
@@ -108,6 +107,7 @@ AND [Paginated_Fabrics_CTE].RowNumber <= @Offset + @Limit
                     pager.Offset,
                     pager.Limit,
                     pager.SearchTerm,
+                    OwnerUserIdentityId = ownerUserIdentityId
                 })
                 .ToList();
 
@@ -116,6 +116,7 @@ AND [Paginated_Fabrics_CTE].RowNumber <= @Offset + @Limit
                     pager.Offset,
                     pager.Limit,
                     pager.SearchTerm,
+                    OwnerUserIdentityId = ownerUserIdentityId
                 });
 
             return result;
@@ -212,14 +213,6 @@ SELECT SCOPE_IDENTITY()",
         public Fabric UpdateFabric(Fabric fabricEntity) {
             _connection.Execute(
 @"UPDATE [Fabrics] SET [IsDeleted]= @IsDeleted
-,[IsMetresVisible] = @IsMetresVisible
-,[IsMillVisible] = @IsMillVisible
-,[IsColorVisible]= @IsColorVisible
-,[IsCompositionVisible]= @IsCompositionVisible
-,[IsGSMVisible]= @IsGSMVisible
-,[IsCountVisible]= @IsCountVisible
-,[IsWeaveVisible]= @IsWeaveVisible
-,[IsPatternVisible]= @IsPatternVisible
 ,[FabricCode]= @FabricCode
 ,[Description]= @Description
 ,[ImageUrl]= @ImageUrl
@@ -247,7 +240,7 @@ WHERE [Id] = @Id",
                 new FilterItem("GSM"),
                 new FilterItem("Weave"),
                 new FilterItem("Pattern"),
-                new FilterItem("Metres", true),
+                new FilterItem("Metres"),
                 new FilterItem("Count", true)
             };
 
@@ -280,7 +273,7 @@ WHERE [Id] = @Id",
 
             string columnReplacer = "{COLUMN_NAME}";
             string rangeQuery = "SELECT TOP(1) '{COLUMN_NAME}' AS [Name], MAX({COLUMN_NAME}) AS [Max], MIN({COLUMN_NAME}) AS [Min] FROM [Fabrics] ";
-            string columnQuery = "SELECT '{COLUMN_NAME}' AS [Name], {COLUMN_NAME} AS [Value] FROM [Fabrics] GROUP BY {COLUMN_NAME} ";
+            string columnQuery = "SELECT '{COLUMN_NAME}' AS [Name], {COLUMN_NAME} AS [Value] FROM [Fabrics] WHERE {COLUMN_NAME} IS NOT NULL GROUP BY {COLUMN_NAME} ";
 
             StringBuilder builder = new StringBuilder();
 
@@ -299,7 +292,7 @@ WHERE [Id] = @Id",
                 reader.Read(columnQueryTypes, columnQueryMapper);
                 reader.Read(columnQueryTypes, columnQueryMapper);
                 reader.Read(columnQueryTypes, columnQueryMapper);
-                reader.Read(rangeQueryTypes, rangeQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
                 reader.Read(rangeQueryTypes, rangeQueryMapper);
             }
 

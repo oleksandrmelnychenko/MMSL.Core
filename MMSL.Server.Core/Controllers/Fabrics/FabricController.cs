@@ -10,6 +10,7 @@ using MMSL.Common.WebApi.RoutingConfiguration.Fabrics;
 using MMSL.Domain.DataContracts.Fabrics;
 using MMSL.Domain.DataContracts.Filters;
 using MMSL.Domain.Entities.Fabrics;
+using MMSL.Domain.Entities.Identity;
 using MMSL.Domain.EntityHelpers;
 using MMSL.Server.Core.Helpers;
 using MMSL.Services.FabricServices.Contracts;
@@ -17,6 +18,7 @@ using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -48,7 +50,11 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
                     ? JsonConvert.DeserializeObject<FilterItem[]>(filterBuilder)
                     : null;
 
-                PaginatingResult<Fabric> fabrics = await _fabricService.GetFabrics(pageNumber, limit, searchPhrase, filters);
+                long? manufacturerUserIdentity = ClaimHelper.GetUserRoles(User).All(x => x != RoleType.Dealer.ToString()) 
+                    ? (long?)ClaimHelper.GetUserId(User)
+                    : null;
+
+                PaginatingResult<Fabric> fabrics = await _fabricService.GetFabrics(pageNumber, limit, searchPhrase, filters, manufacturerUserIdentity);
                 return Ok(SuccessResponseBody(fabrics, Localizer["All fabrics"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
