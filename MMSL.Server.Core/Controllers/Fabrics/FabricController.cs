@@ -137,7 +137,7 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
 
                 Fabric updated = await _fabricService.UpdateFabric(fabric, newImageUrl);
 
-                if (!string.IsNullOrEmpty(oldImageUrl)) {
+                if (!string.IsNullOrEmpty(oldImageUrl) && !string.IsNullOrEmpty(newImageUrl)) {
                     FileUploadingHelper.DeleteFile($"{Request.Scheme}://{Request.Host}", oldImageUrl);
                 }
 
@@ -151,11 +151,27 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
         [Authorize(Roles = "Administrator,Manufacturer")]
         [HttpPut]
         [AssignActionRoute(FabricSegments.UPDATE_FABRIC_VISIBILITIES)]
-        public async Task<IActionResult> UpdateFabricVisibilities([FromBody] UpdateFabricVisibilitiesDataContract fabric) {
+        public async Task<IActionResult> UpdateFabricVisibilities([FromBody] FabricVisibilitiesDataContract fabric) {
             try {
                 await _fabricService.UpdateFabricVisibilities(fabric, ClaimHelper.GetUserId(User));
                 return Ok(SuccessResponseBody(null, Localizer["Successful"]));
             } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+        [Authorize(Roles = "Administrator,Manufacturer")]
+        [HttpGet]
+        [AssignActionRoute(FabricSegments.GET_FABRIC_VISIBILITIES)]
+        public async Task<IActionResult> GetFabricVisibilities()
+        {
+            try
+            {
+                return Ok(SuccessResponseBody(await _fabricService.GetFabricVisibilities(ClaimHelper.GetUserId(User)), Localizer["Successful"]));
+            }
+            catch (Exception exc)
+            {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }

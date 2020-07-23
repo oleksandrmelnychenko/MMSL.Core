@@ -13,6 +13,7 @@ namespace MMSL.Domain.Repositories.Fabrics.Contracts {
         PaginatingResult<Fabric> GetPagination(int pageNumber, int limit, string searchPhrase, FilterItem[] filters, long? ownerUserIdentityId);
         IEnumerable<Fabric> GetAllFabrics(string searchPhrase, FilterItem[] filters);
         List<FilterItem> GetFilters();
-        void UpdateFabricVisibilities(UpdateFabricVisibilitiesDataContract fabric, long userIdentityId);
+        void UpdateFabricVisibilities(FabricVisibilitiesDataContract fabric, long userIdentityId);
+        FabricVisibilitiesDataContract GetFabricsVisibilities(long userIdentityId);
     }
 }

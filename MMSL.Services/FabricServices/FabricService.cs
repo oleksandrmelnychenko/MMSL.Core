@@ -13,21 +13,25 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 
 
-namespace MMSL.Services.FabricServices {
-    public class FabricService : IFabricService {
+namespace MMSL.Services.FabricServices
+{
+    public class FabricService : IFabricService
+    {
 
         private readonly IFabricRepositoriesFactory _fabricRepositoriesFactory;
 
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public FabricService(IFabricRepositoriesFactory fabricRepositoriesFactory, IDbConnectionFactory connectionFactory) {
+        public FabricService(IFabricRepositoriesFactory fabricRepositoriesFactory, IDbConnectionFactory connectionFactory)
+        {
             _connectionFactory = connectionFactory;
             _fabricRepositoriesFactory = fabricRepositoriesFactory;
         }
 
         public Task<Fabric> GetByIdAsync(long fabricId) =>
              Task.Run(() => {
-                 using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                 using (IDbConnection connection = _connectionFactory.NewSqlConnection())
+                 {
                      return _fabricRepositoriesFactory
                         .NewFabricRepository(connection)
                         .GetById(fabricId);
@@ -36,7 +40,8 @@ namespace MMSL.Services.FabricServices {
 
         public Task<Fabric> AddFabric(NewFabricDataContract fabric, long userIdentityId, string imageUrl = null) =>
             Task.Run(() => {
-                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection())
+                {
                     IFabricRepository repository = _fabricRepositoriesFactory.NewFabricRepository(connection);
 
                     Fabric fabricEntity = fabric.GetEntity();
@@ -51,7 +56,8 @@ namespace MMSL.Services.FabricServices {
 
         public Task<Fabric> UpdateFabric(UpdateFabricDataContract fabric, string imageUrl = null) =>
             Task.Run(() => {
-                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection())
+                {
                     IFabricRepository repository = _fabricRepositoriesFactory.NewFabricRepository(connection);
 
                     Fabric fabricEntity = fabric.GetEntity();
@@ -65,7 +71,8 @@ namespace MMSL.Services.FabricServices {
 
         public Task<Fabric> DeleteFabric(long fabricId) =>
             Task.Run(() => {
-                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection())
+                {
                     IFabricRepository repository = _fabricRepositoriesFactory.NewFabricRepository(connection);
 
                     Fabric fabricEntity = repository.GetById(fabricId);
@@ -79,9 +86,10 @@ namespace MMSL.Services.FabricServices {
                 }
             });
 
-        public Task UpdateFabricVisibilities(UpdateFabricVisibilitiesDataContract fabric, long userIdentityId) =>
+        public Task UpdateFabricVisibilities(FabricVisibilitiesDataContract fabric, long userIdentityId) =>
             Task.Run(() => {
-                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection())
+                {
                     IFabricRepository repository = _fabricRepositoriesFactory.NewFabricRepository(connection);
 
                     //Fabric defaultFabricEntity = repository.GetById(fabric.Id);
@@ -94,9 +102,20 @@ namespace MMSL.Services.FabricServices {
                 }
             });
 
+        public Task<FabricVisibilitiesDataContract> GetFabricVisibilities(long userIdentityId) =>
+           Task.Run(() => {
+               using (IDbConnection connection = _connectionFactory.NewSqlConnection())
+               {
+                   IFabricRepository repository = _fabricRepositoriesFactory.NewFabricRepository(connection);
+
+                   return repository.GetFabricsVisibilities(userIdentityId);
+               }
+           });
+
         public Task<PaginatingResult<Fabric>> GetFabrics(int pageNumber, int limit, string searchPhrase, FilterItem[] filters, long? ownerUserIdentityId) =>
             Task.Run(() => {
-                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection())
+                {
                     return _fabricRepositoriesFactory
                         .NewFabricRepository(connection)
                         .GetPagination(pageNumber, limit, searchPhrase, filters, ownerUserIdentityId);
@@ -105,7 +124,8 @@ namespace MMSL.Services.FabricServices {
 
         public Task<List<FilterItem>> GetFabricFilters() =>
             Task.Run(() => {
-                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection())
+                {
                     return _fabricRepositoriesFactory
                         .NewFabricRepository(connection)
                         .GetFilters();
@@ -114,7 +134,8 @@ namespace MMSL.Services.FabricServices {
 
         public Task<string> PrepareFabricsPdf(string searchPhrase, FilterItem[] filters) =>
             Task.Run(() => {
-                using (IDbConnection connection = _connectionFactory.NewSqlConnection()) {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection())
+                {
                     IEnumerable<Fabric> fabrics = _fabricRepositoriesFactory
                         .NewFabricRepository(connection)
                         .GetAllFabrics(searchPhrase, filters);

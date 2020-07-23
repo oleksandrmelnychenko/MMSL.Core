@@ -1,7 +1,7 @@
 ﻿using MMSL.Domain.Entities.Fabrics;
 
 namespace MMSL.Domain.DataContracts.Fabrics {
-    public class UpdateFabricVisibilitiesDataContract {
+    public class FabricVisibilitiesDataContract {
         public bool IsMetresVisible { get; set; }
         public bool IsMillVisible { get; set; }
         public bool IsColorVisible { get; set; }

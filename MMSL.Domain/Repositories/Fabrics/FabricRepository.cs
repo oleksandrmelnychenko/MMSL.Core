@@ -40,7 +40,7 @@ $@"SELECT TOP(1)
 FROM [Fabrics] 
 WHERE [Fabrics].[IsDeleted] = 0 
 {(!string.IsNullOrEmpty(searchPhrase) ? searchPart : string.Empty)}
-{(ownerUserIdentityId.HasValue ? "AND [UserIdentityId] = @OwnerUserIdentityId" : string.Empty)}";
+{(ownerUserIdentityId.HasValue ? " AND [UserIdentityId] = @OwnerUserIdentityId " : string.Empty)}";
 
             string query =
 $@";WITH [Paginated_Fabrics_CTE] AS ( 
@@ -80,24 +80,42 @@ WHERE [Fabrics].IsDeleted = 0
 AND [Paginated_Fabrics_CTE].RowNumber > @Offset  
 AND [Paginated_Fabrics_CTE].RowNumber <= @Offset + @Limit
 {(!string.IsNullOrEmpty(searchPhrase) ? searchPart : string.Empty)} 
-{(ownerUserIdentityId.HasValue ? "AND [UserIdentityId] = @OwnerUserIdentityId" : string.Empty)}";
+{(ownerUserIdentityId.HasValue ? " AND [UserIdentityId] = @OwnerUserIdentityId " : string.Empty)}";
+
+            string filtersQuery = string.Empty;
 
             if (filters != null) {
                 foreach (FilterItem filter in filters) {
                     if (filter.IsRange) {
-                        string filterRangeQueryPart = $" AND CONVERT(float, {filter.Name}) <= CONVERT(float, '{filter.Max.ToString(System.Globalization.CultureInfo.InvariantCulture)}') AND CONVERT(float, {filter.Name}) >= CONVERT(float, '{filter.Min.ToString(System.Globalization.CultureInfo.InvariantCulture)}') ";
+                        string filterRangeQueryPart = $" CONVERT(float, {filter.Name}) <= CONVERT(float, '{filter.Max.ToString(System.Globalization.CultureInfo.InvariantCulture)}') AND CONVERT(float, {filter.Name}) >= CONVERT(float, '{filter.Min.ToString(System.Globalization.CultureInfo.InvariantCulture)}') ";
+                        
+                        if (string.IsNullOrEmpty(filtersQuery))
+                            filtersQuery = filterRangeQueryPart;
+                        else
+                            filtersQuery += " OR " + filterRangeQueryPart;
 
-                        paginatingDetailQuery += filterRangeQueryPart;
-                        query += filterRangeQueryPart;
+                        //paginatingDetailQuery += filterRangeQueryPart;
+                        //query += filterRangeQueryPart;
                     } else if (filter.Values != null && filter.Values.Count > 0) {
                         foreach (FabricFilterValue filterValue in filter.Values.Where(x => x.Applied)) {
-                            string filterValueTemplate = $" AND {filter.Name} = '{filterValue.Value}' ";
+                            string filterValueTemplate = $" {filter.Name} = '{filterValue.Value}' ";
 
-                            paginatingDetailQuery += filterValueTemplate;
-                            query += filterValueTemplate;
+                            if (string.IsNullOrEmpty(filtersQuery))
+                                filtersQuery = filterValueTemplate;
+                            else
+                                filtersQuery += " OR " + filterValueTemplate;
+
+                            //paginatingDetailQuery += filterValueTemplate;
+                            //query += filterValueTemplate;
                         }
                     }
                 }
+            }
+
+            if (!string.IsNullOrEmpty(filtersQuery))
+            {
+                query += $"AND ({filtersQuery})";
+                paginatingDetailQuery += $"AND ({filtersQuery})";
             }
 
             query += " ORDER BY [Paginated_Fabrics_CTE].RowNumber ";
@@ -299,7 +317,7 @@ WHERE [Id] = @Id",
             return filters;
         }
 
-        public void UpdateFabricVisibilities(UpdateFabricVisibilitiesDataContract fabric, long userIdentityId) {
+        public void UpdateFabricVisibilities(FabricVisibilitiesDataContract fabric, long userIdentityId) {
             string query = @"UPDATE [Fabrics] SET 
 [IsMetresVisible] = @IsMetresVisible
 ,[IsMillVisible] = @IsMillVisible
@@ -324,6 +342,20 @@ AND [IsDeleted]= 0";
                     IsPatternVisible = fabric.IsPatternVisible,
                     UserIdentityId = userIdentityId
                 });
+        }
+
+        public FabricVisibilitiesDataContract GetFabricsVisibilities(long userIdentityId) {
+            string query =
+@"SELECT TOP(1) [Id]
+,[UserIdentityId],[IsMetresVisible]
+,[IsMillVisible],[IsColorVisible]
+,[IsCompositionVisible],[IsGSMVisible]
+,[IsCountVisible],[IsWeaveVisible]
+,[IsPatternVisible]
+FROM [Fabrics] 
+WHERE IsDeleted = 0 AND UserIdentityId = @UserIdentityId";
+
+            return _connection.QuerySingleOrDefault<FabricVisibilitiesDataContract>(query, new { UserIdentityId = userIdentityId });
         }
     }
 }

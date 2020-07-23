@@ -11,9 +11,10 @@ namespace MMSL.Services.FabricServices.Contracts {
         Task<Fabric> AddFabric(NewFabricDataContract fabric, long userIdentityId, string imageUrl = null);
         Task<Fabric> UpdateFabric(UpdateFabricDataContract fabric, string newImageUrl = null);
         Task<Fabric> DeleteFabric(long fabricId);
-        Task UpdateFabricVisibilities(UpdateFabricVisibilitiesDataContract fabric, long userIdentityId);
+        Task UpdateFabricVisibilities(FabricVisibilitiesDataContract fabric, long userIdentityId);
         Task<PaginatingResult<Fabric>> GetFabrics(int pageNumber, int limit, string searchPhrase, FilterItem[] filters, long? ownerUserIdentityId);
         Task<List<FilterItem>> GetFabricFilters();
+        Task<FabricVisibilitiesDataContract> GetFabricVisibilities(long userIdentityId);
         Task<string> PrepareFabricsPdf(string searchPhrase, FilterItem[] filters);
     }
 }
