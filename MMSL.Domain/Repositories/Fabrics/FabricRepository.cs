@@ -59,21 +59,21 @@ SELECT [Paginated_Fabrics_CTE].RowNumber
 ,[ImageUrl]
 ,[Status]
 ,{(!ownerUserIdentityId.HasValue ? "IIF([IsMetresVisible]=1,[Metres],NULL) AS [Metres]" : "[Metres]")}
-,[IsMetresVisible]
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsMetresVisible]" : "[IsMetresVisible]")} 
 ,{(!ownerUserIdentityId.HasValue ? "IIF([IsMillVisible]=1,[Mill],NULL) AS [Mill]" : "[Mill]")}
-,[IsMillVisible]
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsMillVisible]" : "[IsMillVisible]")} 
 ,{(!ownerUserIdentityId.HasValue ? "IIF([IsColorVisible]=1,[Color],NULL) AS [Color]" : "[Color]")}
-,[IsColorVisible]
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsColorVisible]" : "[IsColorVisible]")} 
 ,{(!ownerUserIdentityId.HasValue ? "IIF([IsCompositionVisible]=1,[Composition],NULL) AS [Composition]" : "[Composition]")}
-,[IsCompositionVisible]
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsCompositionVisible]" : "[IsCompositionVisible]")} 
 ,{(!ownerUserIdentityId.HasValue ? "IIF([IsGSMVisible]=1,[GSM],NULL) AS [GSM]" : "[GSM]")}
-,[IsGSMVisible]
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsGSMVisible]" : "[IsGSMVisible]")} 
 ,{(!ownerUserIdentityId.HasValue ? "IIF([IsCountVisible]=1,[Count],NULL) AS [Count]" : "[Count]")}
-,[IsCountVisible]
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsCountVisible]" : "[IsCountVisible]")} 
 ,{(!ownerUserIdentityId.HasValue ? "IIF([IsWeaveVisible]=1,[Weave],NULL) AS [Weave]" : "[Weave]")}
-,[IsWeaveVisible]
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsWeaveVisible]" : "[IsWeaveVisible]")} 
 ,{(!ownerUserIdentityId.HasValue ? "IIF([IsPatternVisible]=1,[Pattern],NULL) AS [Pattern]" : "[Pattern]")}
-,[IsPatternVisible]
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsPatternVisible]" : "[IsPatternVisible]")} 
 FROM [Fabrics]  
 LEFT JOIN [Paginated_Fabrics_CTE] ON [Paginated_Fabrics_CTE].Id = [Fabrics].Id  
 WHERE [Fabrics].IsDeleted = 0  
@@ -250,7 +250,7 @@ WHERE [Id] = @Id",
             return GetById(fabricEntity.Id);
         }
 
-        public List<FilterItem> GetFilters() {
+        public List<FilterItem> GetFilters(long? ownerUserIdenetity) {
             List<FilterItem> filters = new List<FilterItem> {
                 new FilterItem("Color"),
                 new FilterItem("Mill"),
@@ -290,8 +290,12 @@ WHERE [Id] = @Id",
             };
 
             string columnReplacer = "{COLUMN_NAME}";
-            string rangeQuery = "SELECT TOP(1) '{COLUMN_NAME}' AS [Name], MAX({COLUMN_NAME}) AS [Max], MIN({COLUMN_NAME}) AS [Min] FROM [Fabrics] WHERE [Fabrics].IsDeleted = 0 ";
-            string columnQuery = "SELECT '{COLUMN_NAME}' AS [Name], {COLUMN_NAME} AS [Value] FROM [Fabrics] WHERE [Fabrics].IsDeleted = 0 AND {COLUMN_NAME} IS NOT NULL GROUP BY {COLUMN_NAME} ";
+            string rangeQuery = "SELECT TOP(1) '{COLUMN_NAME}' AS [Name], MAX({COLUMN_NAME}) AS [Max], MIN({COLUMN_NAME}) AS [Min] FROM [Fabrics] " +
+                "WHERE [Fabrics].IsDeleted = 0 AND {COLUMN_NAME} IS NOT NULL " +
+                (ownerUserIdenetity.HasValue ? string.Empty : " AND [Is{COLUMN_NAME}Visible] = 1");
+            string columnQuery = "SELECT '{COLUMN_NAME}' AS [Name], {COLUMN_NAME} AS [Value] FROM [Fabrics] WHERE [Fabrics].IsDeleted = 0 AND {COLUMN_NAME} IS NOT NULL "+
+                (ownerUserIdenetity.HasValue ? string.Empty : " AND [Is{COLUMN_NAME}Visible] = 1") +
+                " GROUP BY {COLUMN_NAME} "; 
 
             StringBuilder builder = new StringBuilder();
 

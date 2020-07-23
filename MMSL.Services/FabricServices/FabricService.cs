@@ -122,13 +122,13 @@ namespace MMSL.Services.FabricServices
                 }
             });
 
-        public Task<List<FilterItem>> GetFabricFilters() =>
+        public Task<List<FilterItem>> GetFabricFilters(long? ownerUserIdenetity) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection())
                 {
                     return _fabricRepositoriesFactory
                         .NewFabricRepository(connection)
-                        .GetFilters();
+                        .GetFilters(ownerUserIdenetity);
                 }
             });
 

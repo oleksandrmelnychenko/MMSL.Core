@@ -96,7 +96,11 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
         [AssignActionRoute(FabricSegments.GET_FILTERS)]
         public async Task<IActionResult> GetFilters() {
             try {
-                return Ok(SuccessResponseBody(await _fabricService.GetFabricFilters(), Localizer["Successful"]));
+                long? manufacturerUserIdentity = ClaimHelper.GetUserRoles(User).All(x => x != RoleType.Dealer.ToString())
+                    ? (long?)ClaimHelper.GetUserId(User)
+                    : null;
+
+                return Ok(SuccessResponseBody(await _fabricService.GetFabricFilters(manufacturerUserIdentity), Localizer["Successful"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));

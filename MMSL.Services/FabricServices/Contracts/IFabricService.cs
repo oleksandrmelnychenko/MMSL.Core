@@ -13,7 +13,7 @@ namespace MMSL.Services.FabricServices.Contracts {
         Task<Fabric> DeleteFabric(long fabricId);
         Task UpdateFabricVisibilities(FabricVisibilitiesDataContract fabric, long userIdentityId);
         Task<PaginatingResult<Fabric>> GetFabrics(int pageNumber, int limit, string searchPhrase, FilterItem[] filters, long? ownerUserIdentityId);
-        Task<List<FilterItem>> GetFabricFilters();
+        Task<List<FilterItem>> GetFabricFilters(long? ownerUserIdenetity);
         Task<FabricVisibilitiesDataContract> GetFabricVisibilities(long userIdentityId);
         Task<string> PrepareFabricsPdf(string searchPhrase, FilterItem[] filters);
     }
