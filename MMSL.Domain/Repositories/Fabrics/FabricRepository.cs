@@ -272,8 +272,8 @@ WHERE [Id] = @Id",
             };
 
             string columnReplacer = "{COLUMN_NAME}";
-            string rangeQuery = "SELECT TOP(1) '{COLUMN_NAME}' AS [Name], MAX({COLUMN_NAME}) AS [Max], MIN({COLUMN_NAME}) AS [Min] FROM [Fabrics] ";
-            string columnQuery = "SELECT '{COLUMN_NAME}' AS [Name], {COLUMN_NAME} AS [Value] FROM [Fabrics] WHERE {COLUMN_NAME} IS NOT NULL GROUP BY {COLUMN_NAME} ";
+            string rangeQuery = "SELECT TOP(1) '{COLUMN_NAME}' AS [Name], MAX({COLUMN_NAME}) AS [Max], MIN({COLUMN_NAME}) AS [Min] FROM [Fabrics] WHERE [Fabrics].IsDeleted = 0 ";
+            string columnQuery = "SELECT '{COLUMN_NAME}' AS [Name], {COLUMN_NAME} AS [Value] FROM [Fabrics] WHERE [Fabrics].IsDeleted = 0 AND {COLUMN_NAME} IS NOT NULL GROUP BY {COLUMN_NAME} ";
 
             StringBuilder builder = new StringBuilder();
 

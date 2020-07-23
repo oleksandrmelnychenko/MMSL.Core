@@ -44,3 +44,9 @@
 {"Timestamp":"2020-06-01T14:42:36.2968440+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'AssignDeliveryTimelineDataContract')"}
 {"Timestamp":"2020-06-01T14:42:53.8384766+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'AssignDeliveryTimelineDataContract')"}
 {"Timestamp":"2020-06-29T11:00:23.6517277+03:00","Level":"Error","MessageTemplate":"value not found"}
+{"Timestamp":"2020-07-23T12:43:09.9807447+03:00","Level":"Error","MessageTemplate":"Unexpected character encountered while parsing value: %. Path '', line 1, position 1."}
+{"Timestamp":"2020-07-23T12:43:26.5244982+03:00","Level":"Error","MessageTemplate":"Error converting value \"[%7B\" to type 'MMSL.Domain.DataContracts.Filters.FilterItem[]'. Path '', line 1, position 6."}
+{"Timestamp":"2020-07-23T12:43:34.7276822+03:00","Level":"Error","MessageTemplate":"Error converting value \"[\" to type 'MMSL.Domain.DataContracts.Filters.FilterItem[]'. Path '', line 1, position 3."}
+{"Timestamp":"2020-07-23T12:43:44.4772646+03:00","Level":"Error","MessageTemplate":"Error converting value \"name\" to type 'MMSL.Domain.DataContracts.Filters.FilterItem'. Path '[0]', line 1, position 7."}
+{"Timestamp":"2020-07-23T12:44:24.6313739+03:00","Level":"Error","MessageTemplate":"Error converting value \"name\" to type 'MMSL.Domain.DataContracts.Filters.FilterItem'. Path '[0]', line 1, position 7."}
+{"Timestamp":"2020-07-23T12:45:01.7680171+03:00","Level":"Error","MessageTemplate":"Error converting value \"name\" to type 'MMSL.Domain.DataContracts.Filters.FilterItem'. Path '[0]', line 1, position 7."}
