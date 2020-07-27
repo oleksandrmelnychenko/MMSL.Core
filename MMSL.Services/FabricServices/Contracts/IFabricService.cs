@@ -15,7 +15,7 @@ namespace MMSL.Services.FabricServices.Contracts {
         Task<PaginatingResult<Fabric>> GetFabrics(int pageNumber, int limit, string searchPhrase, FilterItem[] filters, long? ownerUserIdentityId);
         Task<List<FilterItem>> GetFabricFilters(long? ownerUserIdenetity);
         Task<FabricVisibilitiesDataContract> GetFabricVisibilities(long userIdentityId);
-        Task<string> PrepareFabricsPdf(string searchPhrase, FilterItem[] filters);
+        Task<string> PrepareFabricsPdf(string searchPhrase, FilterItem[] filters, long? ownerUserIdentityId);
         Task<IEnumerable<Fabric>> AddFabrics(IEnumerable<Fabric> fabrics, long identityId);
     }
 }

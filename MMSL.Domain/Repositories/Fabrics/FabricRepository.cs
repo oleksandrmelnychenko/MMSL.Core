@@ -74,7 +74,7 @@ SELECT [Paginated_Fabrics_CTE].RowNumber
 ,{(ownerUserIdentityId.HasValue ? "1 AS [IsWeaveVisible]" : "[IsWeaveVisible]")} 
 ,{(!ownerUserIdentityId.HasValue ? "IIF([IsPatternVisible]=1,[Pattern],NULL) AS [Pattern]" : "[Pattern]")}
 ,{(ownerUserIdentityId.HasValue ? "1 AS [IsPatternVisible]" : "[IsPatternVisible]")} 
-FROM [Fabrics]  
+FROM [Fabrics] 
 LEFT JOIN [Paginated_Fabrics_CTE] ON [Paginated_Fabrics_CTE].Id = [Fabrics].Id  
 WHERE [Fabrics].IsDeleted = 0  
 AND [Paginated_Fabrics_CTE].RowNumber > @Offset  
@@ -140,8 +140,8 @@ AND [Paginated_Fabrics_CTE].RowNumber <= @Offset + @Limit
             return result;
         }
 
-        public IEnumerable<Fabric> GetAllFabrics(string searchPhrase, FilterItem[] filters) {
-            
+        public IEnumerable<Fabric> GetAllFabrics(string searchPhrase, FilterItem[] filters, long? ownerUserIdentityId) {
+
             string query =
 $@"SELECT [Fabrics].[Id]
 ,[IsDeleted]
@@ -151,50 +151,66 @@ $@"SELECT [Fabrics].[Id]
 ,[Description]
 ,[ImageUrl]
 ,[Status]
-,IIF([IsMetresVisible]=1,[Metres],NULL) AS [Metres]
-,[IsMetresVisible]
-,IIF([IsMillVisible]=1,[Mill],NULL) AS [Mill]
-,[IsMillVisible]
-,IIF([IsColorVisible]=1,[Color],NULL) AS [Color]
-,[IsColorVisible]
-,IIF([IsCompositionVisible]=1,[Composition],NULL) AS [Composition]
-,[IsCompositionVisible]
-,IIF([IsGSMVisible]=1,[GSM],NULL) AS [GSM]
-,[IsGSMVisible]
-,IIF([IsCountVisible]=1,[Count],NULL) AS [Count]
-,[IsCountVisible]
-,IIF([IsWeaveVisible]=1,[Weave],NULL) AS [Weave]
-,[IsWeaveVisible]
-,IIF([IsPatternVisible]=1,[Pattern],NULL) AS [Pattern]
-,[IsPatternVisible]
-FROM [Fabrics]  
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsMetresVisible]=1,[Metres],NULL) AS [Metres]" : "[Metres]")}
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsMetresVisible]" : "[IsMetresVisible]")} 
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsMillVisible]=1,[Mill],NULL) AS [Mill]" : "[Mill]")}
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsMillVisible]" : "[IsMillVisible]")} 
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsColorVisible]=1,[Color],NULL) AS [Color]" : "[Color]")}
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsColorVisible]" : "[IsColorVisible]")} 
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsCompositionVisible]=1,[Composition],NULL) AS [Composition]" : "[Composition]")}
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsCompositionVisible]" : "[IsCompositionVisible]")} 
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsGSMVisible]=1,[GSM],NULL) AS [GSM]" : "[GSM]")}
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsGSMVisible]" : "[IsGSMVisible]")} 
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsCountVisible]=1,[Count],NULL) AS [Count]" : "[Count]")}
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsCountVisible]" : "[IsCountVisible]")} 
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsWeaveVisible]=1,[Weave],NULL) AS [Weave]" : "[Weave]")}
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsWeaveVisible]" : "[IsWeaveVisible]")} 
+,{(!ownerUserIdentityId.HasValue ? "IIF([IsPatternVisible]=1,[Pattern],NULL) AS [Pattern]" : "[Pattern]")}
+,{(ownerUserIdentityId.HasValue ? "1 AS [IsPatternVisible]" : "[IsPatternVisible]")} 
+FROM [Fabrics] 
 WHERE [Fabrics].IsDeleted = 0 
 {(!string.IsNullOrEmpty(searchPhrase) 
 ? @"AND (
 PATINDEX('%' + @SearchTerm + '%', [Fabrics].[FabricCode]) > 0 
 OR PATINDEX('%' + @SearchTerm + '%', [Fabrics].[Description]) > 0 
 )" 
-: string.Empty)}";
+: string.Empty)}
+{(ownerUserIdentityId.HasValue ? " AND [UserIdentityId] = @OwnerUserIdentityId " : string.Empty)}";
+
+            string filtersQuery = string.Empty;
 
             if (filters != null) {
                 foreach (FilterItem filter in filters) {
                     if (filter.IsRange) {
-                        string filterRangeQueryPart = $" AND CONVERT(float, {filter.Name}) <= CONVERT(float, '{filter.Max.ToString(System.Globalization.CultureInfo.InvariantCulture)}') AND CONVERT(float, {filter.Name}) >= CONVERT(float, '{filter.Min.ToString(System.Globalization.CultureInfo.InvariantCulture)}') ";
+                        string filterRangeQueryPart = $" CONVERT(float, {filter.Name}) <= CONVERT(float, '{filter.Max.ToString(System.Globalization.CultureInfo.InvariantCulture)}') AND CONVERT(float, {filter.Name}) >= CONVERT(float, '{filter.Min.ToString(System.Globalization.CultureInfo.InvariantCulture)}') ";
 
-                        query += filterRangeQueryPart;
-                    } else if (filter.Values != null && filter.Values.Count > 0) {
+                        if (string.IsNullOrEmpty(filtersQuery))
+                            filtersQuery = filterRangeQueryPart;
+                        else
+                            filtersQuery += " OR " + filterRangeQueryPart;
+                    } 
+                    else if (filter.Values != null && filter.Values.Count > 0) {
                         foreach (FabricFilterValue filterValue in filter.Values.Where(x => x.Applied)) {
-                            string filterValueTemplate = $" AND {filter.Name} = '{filterValue.Value}' ";
+                            string filterValueTemplate = $" {filter.Name} = '{filterValue.Value}' ";
 
-                            query += filterValueTemplate;
+                            if (string.IsNullOrEmpty(filtersQuery))
+                                filtersQuery = filterValueTemplate;
+                            else
+                                filtersQuery += " OR " + filterValueTemplate;
                         }
                     }
                 }
             }
 
+            if (!string.IsNullOrEmpty(filtersQuery))
+            {
+                query += $"AND ({filtersQuery})";
+            }
+
             return _connection.Query<Fabric>(query,
-                new { 
-                    SearchTerm = searchPhrase
+                new {
+                    SearchTerm = searchPhrase,
+                    OwnerUserIdentityId = ownerUserIdentityId
                 });
         }
 

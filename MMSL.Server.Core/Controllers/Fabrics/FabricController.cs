@@ -82,7 +82,11 @@ namespace MMSL.Server.Core.Controllers.Fabrics
                     ? JsonConvert.DeserializeObject<FilterItem[]>(filterBuilder)
                     : null;
 
-                string downloadPath = await _fabricService.PrepareFabricsPdf(searchPhrase, filters);
+                long? manufacturerUserIdentity = ClaimHelper.GetUserRoles(User).All(x => x != RoleType.Dealer.ToString())
+                    ? (long?)ClaimHelper.GetUserId(User)
+                    : null;
+
+                string downloadPath = await _fabricService.PrepareFabricsPdf(searchPhrase, filters, manufacturerUserIdentity);
                 return Ok(SuccessResponseBody(FileUploadingHelper.FullPathToWebPath($"{Request.Scheme}://{Request.Host}", downloadPath), Localizer["Download link"]));
             }
             catch (Exception exc)

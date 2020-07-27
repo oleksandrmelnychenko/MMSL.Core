@@ -147,13 +147,13 @@ namespace MMSL.Services.FabricServices
                 }
             });
 
-        public Task<string> PrepareFabricsPdf(string searchPhrase, FilterItem[] filters) =>
+        public Task<string> PrepareFabricsPdf(string searchPhrase, FilterItem[] filters, long? ownerUserIdentityId) =>
             Task.Run(() => {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection())
                 {
                     IEnumerable<Fabric> fabrics = _fabricRepositoriesFactory
                         .NewFabricRepository(connection)
-                        .GetAllFabrics(searchPhrase, filters);
+                        .GetAllFabrics(searchPhrase, filters, ownerUserIdentityId);
 
                     string fullFilePath = Path.Combine(ConfigurationManager.UploadsPath, $"Fabrics_{DateTime.Now.Ticks}.pdf");
 
