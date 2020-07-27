@@ -258,8 +258,8 @@ WHERE [Id] = @Id",
                 new FilterItem("GSM"),
                 new FilterItem("Weave"),
                 new FilterItem("Pattern"),
-                new FilterItem("Metres"),
-                new FilterItem("Count", true)
+                new FilterItem("Metres", true),
+                new FilterItem("Count")
             };
 
             Type[] columnQueryTypes = new Type[] { typeof(FilterQueryResult) };
@@ -314,8 +314,8 @@ WHERE [Id] = @Id",
                 reader.Read(columnQueryTypes, columnQueryMapper);
                 reader.Read(columnQueryTypes, columnQueryMapper);
                 reader.Read(columnQueryTypes, columnQueryMapper);
-                reader.Read(columnQueryTypes, columnQueryMapper);
                 reader.Read(rangeQueryTypes, rangeQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
             }
 
             return filters;
