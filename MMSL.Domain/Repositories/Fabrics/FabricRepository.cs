@@ -252,13 +252,13 @@ WHERE [Id] = @Id",
 
         public List<FilterItem> GetFilters(long? ownerUserIdenetity) {
             List<FilterItem> filters = new List<FilterItem> {
+                new FilterItem("Metres", true),
                 new FilterItem("Color"),
                 new FilterItem("Mill"),
                 new FilterItem("Composition"),
                 new FilterItem("GSM"),
                 new FilterItem("Weave"),
                 new FilterItem("Pattern"),
-                new FilterItem("Metres", true),
                 new FilterItem("Count")
             };
 
@@ -308,13 +308,13 @@ WHERE [Id] = @Id",
             }
 
             using (SqlMapper.GridReader reader = _connection.QueryMultiple(builder.ToString())) {
-                reader.Read(columnQueryTypes, columnQueryMapper);
-                reader.Read(columnQueryTypes, columnQueryMapper);
-                reader.Read(columnQueryTypes, columnQueryMapper);
-                reader.Read(columnQueryTypes, columnQueryMapper);
-                reader.Read(columnQueryTypes, columnQueryMapper);
-                reader.Read(columnQueryTypes, columnQueryMapper);
                 reader.Read(rangeQueryTypes, rangeQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
+                reader.Read(columnQueryTypes, columnQueryMapper);
                 reader.Read(columnQueryTypes, columnQueryMapper);
             }
 
