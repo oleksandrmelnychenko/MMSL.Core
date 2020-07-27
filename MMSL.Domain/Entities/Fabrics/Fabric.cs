@@ -23,7 +23,7 @@ namespace MMSL.Domain.Entities.Fabrics {
         public string GSM { get; set; }
         public bool IsGSMVisible { get; set; } = true;
 
-        public int Count { get; set; }
+        public string Count { get; set; }
         public bool IsCountVisible { get; set; } = true;
 
         public string Weave { get; set; }

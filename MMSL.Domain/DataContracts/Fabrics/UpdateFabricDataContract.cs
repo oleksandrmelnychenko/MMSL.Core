@@ -11,12 +11,12 @@ namespace MMSL.Domain.DataContracts.Fabrics {
 
         public string Composition { get; set; }
         public string Pattern { get; set; }
-        public string Metres { get; set; }
+        public float Metres { get; set; }
         public string Weave { get; set; }
         public string Color { get; set; }
         public string Mill { get; set; }
         public string GSM { get; set; }
-        public int Count { get; set; }
+        public string Count { get; set; }
 
         public override Fabric GetEntity() {
             return new Fabric() {
@@ -29,7 +29,7 @@ namespace MMSL.Domain.DataContracts.Fabrics {
                 Color = Color,
                 Count = Count,
                 GSM = GSM,
-                Metres = Metres,
+                Metres = Metres.ToString(),
                 Mill = Mill,
                 Weave = Weave,
                 ImageUrl = ImageUrl
