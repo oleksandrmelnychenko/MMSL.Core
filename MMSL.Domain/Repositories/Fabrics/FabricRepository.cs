@@ -219,7 +219,7 @@ WHERE Id = @Id",
             long id = _connection.QuerySingleOrDefault<long>(
 @"INSERT INTO [Fabrics]([IsDeleted],[IsMetresVisible],[IsMillVisible],[IsColorVisible],[IsCompositionVisible],[IsGSMVisible],[IsCountVisible],[IsWeaveVisible],[IsPatternVisible]
 ,[FabricCode],[Description],[ImageUrl],[Status],[Metres],[Mill],[Color],[Composition],[GSM],[Count],[Weave],[Pattern],[UserIdentityId])
-VALUES (0,1,1,1,1,1,1,1,1
+VALUES (0,@IsMetresVisible,@IsMillVisible,@IsColorVisible,@IsCompositionVisible,@IsGSMVisible,@IsCountVisible,@IsWeaveVisible,@IsPatternVisible
 ,@FabricCode,@Description,@ImageUrl,@Status,@Metres,@Mill,@Color,@Composition,@GSM,@Count,@Weave,@Pattern,@UserIdentityId);
 SELECT SCOPE_IDENTITY()",
                 fabricEntity

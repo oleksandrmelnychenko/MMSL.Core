@@ -50,6 +50,20 @@ namespace MMSL.Services.FabricServices
                     if (!string.IsNullOrEmpty(imageUrl))
                         fabricEntity.ImageUrl = imageUrl;
 
+                    FabricVisibilitiesDataContract visibilities = repository.GetFabricsVisibilities(userIdentityId);
+
+                    if (visibilities != null)
+                    {
+                        fabricEntity.IsColorVisible = visibilities.IsColorVisible;
+                        fabricEntity.IsCompositionVisible = visibilities.IsCompositionVisible;
+                        fabricEntity.IsCountVisible = visibilities.IsCountVisible;
+                        fabricEntity.IsGSMVisible = visibilities.IsGSMVisible;
+                        fabricEntity.IsMetresVisible = visibilities.IsMetresVisible;
+                        fabricEntity.IsMillVisible = visibilities.IsMillVisible;
+                        fabricEntity.IsPatternVisible = visibilities.IsPatternVisible;
+                        fabricEntity.IsWeaveVisible = visibilities.IsWeaveVisible;
+                    }
+
                     return repository.AddFabric(fabricEntity);
                 }
             });

@@ -9,28 +9,28 @@ namespace MMSL.Domain.Entities.Fabrics {
         public FabricStatuses Status { get; set; }
 
         public string Metres { get; set; }
-        public bool IsMetresVisible { get; set; }
+        public bool IsMetresVisible { get; set; } = true;
 
         public string Mill { get; set; }
-        public bool IsMillVisible { get; set; }
-        
+        public bool IsMillVisible { get; set; } = true;
+
         public string Color { get; set; }
-        public bool IsColorVisible { get; set; }
-        
+        public bool IsColorVisible { get; set; } = true;
+
         public string Composition { get; set; }
-        public bool IsCompositionVisible { get; set; }
-        
+        public bool IsCompositionVisible { get; set; } = true;
+
         public string GSM { get; set; }
-        public bool IsGSMVisible { get; set; }
-        
+        public bool IsGSMVisible { get; set; } = true;
+
         public int Count { get; set; }
-        public bool IsCountVisible { get; set; }
-        
+        public bool IsCountVisible { get; set; } = true;
+
         public string Weave { get; set; }
-        public bool IsWeaveVisible { get; set; }
-        
+        public bool IsWeaveVisible { get; set; } = true;
+
         public string Pattern { get; set; }
-        public bool IsPatternVisible { get; set; }
+        public bool IsPatternVisible { get; set; } = true;
 
         public long UserIdentityId { get; set; }
         public UserIdentity UserIdentity { get; set; }
