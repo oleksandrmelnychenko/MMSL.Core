@@ -169,18 +169,20 @@ namespace MMSL.Services.FabricServices
                     //TODO: create pdf
                     Document doc1 = new Document(PageSize.A4);
 
-                    foreach (Fabric fabric in fabrics)
-                    {
-                        //TODO: check if path correct
-                        string serverImagePath = Path.Combine(ConfigurationManager.UploadsPath, fabric.ImageUrl);
-                    }
+                    //foreach (Fabric fabric in fabrics)
+                    //{
+                    //    //TODO: check if path correct
+                    //    string serverImagePath = Path.Combine(ConfigurationManager.UploadsPath, fabric.ImageUrl);
+                    //}
 
                     using (FileStream fs = new FileStream(fullFilePath, FileMode.Create))
                     {
                         PdfWriter.GetInstance(doc1, fs);
+                        DrawPDF(doc1, fabrics);
                     }
 
                     return fullFilePath;
+
                 }
             });
 
@@ -201,5 +203,92 @@ namespace MMSL.Services.FabricServices
                     return fabrics;
                 }
             });
+
+        private void DrawPDF(Document doc, IEnumerable<Fabric> fabrics)
+        {
+            try
+            {
+                doc.Open();
+
+                foreach (Fabric fabric in fabrics)
+                {
+                    DrawFabric(doc, fabric);
+                }
+
+                doc.Close();
+            }
+            catch (Exception exc)
+            {
+                Debugger.Break();
+            }
+        }
+
+        private void DrawFabric(Document doc, Fabric fabric)
+        {
+            DrawFabricHeader(doc, fabric);
+            DrawFabricInfo(doc, fabric);
+
+            try
+            {
+                string serverImagePath = Path.Combine(ConfigurationManager.UploadsPath, fabric.ImageUrl);
+            }
+            catch (Exception exc)
+            {
+
+            }
+
+
+        }
+
+        private void DrawFabricHeader(Document doc, Fabric fabric)
+        {
+
+            Paragraph heading = new Paragraph(fabric.FabricCode, new Font(Font.HELVETICA, 22f, Font.BOLD));
+            heading.SpacingAfter = .3f;
+
+            Paragraph description = null;
+
+            if (!string.IsNullOrEmpty(fabric.Description))
+            {
+                description = new Paragraph(fabric.Description, new Font(Font.HELVETICA, 16f, Font.NORMAL, BaseColor.Gray));
+                description.SpacingAfter = 18f;
+            }
+
+            doc.Add(heading);
+
+            if (description != null)
+            {
+                doc.Add(description);
+            }
+        }
+
+        private void DrawFabricInfo(Document doc, Fabric fabric)
+        {
+            void draw(string title, string value)
+            {
+                Chunk meters = new Chunk(title, new Font(Font.HELVETICA, 16f, Font.NORMAL, BaseColor.Gray));
+                Chunk metersValue = new Chunk(value, new Font(Font.HELVETICA, 16f, Font.NORMAL, BaseColor.Black));
+
+                Phrase metersPhrase = new Phrase();
+                metersPhrase.Add(meters);
+                metersPhrase.Add(metersValue);
+
+                Paragraph paragraph = new Paragraph();
+                //paragraph.Alignment = Element.ALIGN_JUSTIFIED;
+                paragraph.Add(metersPhrase);
+                paragraph.SpacingAfter = .3f;
+
+                doc.Add(paragraph);
+            }
+
+            draw("Meters:", $"{fabric.Metres}");
+            draw("Mill:", $"{fabric.Mill}");
+            draw("Color:", $"{fabric.Color}");
+            draw("Composition:", $"{fabric.Composition}");
+            draw("GSM:", $"{fabric.GSM}");
+            draw("Count:", $"{fabric.Count}");
+            draw("Weave:", $"{fabric.Weave}");
+            draw("Pattern:", $"{fabric.Pattern}");
+        }
     }
 }
