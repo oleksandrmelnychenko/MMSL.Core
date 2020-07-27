@@ -9,6 +9,14 @@ namespace MMSL.Server.Core.Helpers {
 
         private const char urlSeparator = '/';
 
+        public static string FullPathToWebPath(string baseUrl, string fullPath) {
+            string relatedPath = fullPath
+                .Replace(ConfigurationManager.ContentRootPath, baseUrl)
+                .Replace(Path.DirectorySeparatorChar, urlSeparator);
+
+            return new Uri(relatedPath).AbsoluteUri;
+        }
+
         public static async Task<string> UploadFile(string baseUrl, IFormFile formFile) {
             string fullFilePath = Path.Combine(ConfigurationManager.UploadsPath, $"{DateTime.Now.Ticks}{Path.GetExtension(formFile.FileName)}");
 
@@ -21,6 +29,18 @@ namespace MMSL.Server.Core.Helpers {
                 .Replace(Path.DirectorySeparatorChar, urlSeparator);
 
             return new Uri(relatedPath).AbsoluteUri;
+        }
+
+        public static async Task<string> UploadTempFile(IFormFile formFile)
+        {
+            string fullFilePath = Path.Combine(ConfigurationManager.UploadsPath, $"Temp_{DateTime.Now.Ticks}{Path.GetExtension(formFile.FileName)}");
+
+            using (FileStream stream = File.Create(fullFilePath))
+            {
+                await formFile.CopyToAsync(stream);
+            }
+
+            return fullFilePath;
         }
 
         public static void DeleteFile(string baseUrl, string filePath) {

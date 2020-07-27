@@ -5,6 +5,7 @@
         public const string GET_PDF = "get/pdf";
         public const string ADD_FABRIC = "add";
         public const string UPDATE_FABRIC = "update";
+        public const string IMPORT_FABRICS = "import";
         public const string UPDATE_FABRIC_VISIBILITIES = "update/visibilities";
         public const string GET_FABRIC_VISIBILITIES = "get/visibilities";
         public const string DELETE_FABRIC = "delete";

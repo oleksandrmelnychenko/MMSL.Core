@@ -11,7 +11,8 @@ using System.Data;
 using System.Threading.Tasks;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-
+using System.IO;
+using MMSL.Common;
 
 namespace MMSL.Services.FabricServices
 {
@@ -154,17 +155,23 @@ namespace MMSL.Services.FabricServices
                         .NewFabricRepository(connection)
                         .GetAllFabrics(searchPhrase, filters);
 
+                    string fullFilePath = Path.Combine(ConfigurationManager.UploadsPath, $"Fabrics_{DateTime.Now.Ticks}.pdf");
+
                     //TODO: create pdf
                     Document doc1 = new Document(PageSize.A4);
 
-                    //string path = Server.MapPath("PDFs");
+                    foreach (Fabric fabric in fabrics)
+                    {
+                        //TODO: check if path correct
+                        string serverImagePath = Path.Combine(ConfigurationManager.UploadsPath, fabric.ImageUrl);
+                    }
 
-                    //PdfWriter.GetInstance(doc1, new FileStream(path + "/Doc1.pdf", FileMode.Create));
+                    using (FileStream fs = new FileStream(fullFilePath, FileMode.Create))
+                    {
+                        PdfWriter.GetInstance(doc1, fs);
+                    }
 
-
-
-
-                    return "";
+                    return fullFilePath;
                 }
             });
     }

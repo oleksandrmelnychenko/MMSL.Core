@@ -71,8 +71,8 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
                     ? JsonConvert.DeserializeObject<FilterItem[]>(filterBuilder)
                     : null;
 
-                string downloadUrl = await _fabricService.PrepareFabricsPdf(searchPhrase, filters);
-                return Ok(SuccessResponseBody(downloadUrl, Localizer["Download link"]));
+                string downloadPath = await _fabricService.PrepareFabricsPdf(searchPhrase, filters);
+                return Ok(SuccessResponseBody(FileUploadingHelper.FullPathToWebPath($"{Request.Scheme}://{Request.Host}", downloadPath), Localizer["Download link"]));
             } catch (Exception exc) {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
@@ -122,6 +122,39 @@ namespace MMSL.Server.Core.Controllers.Fabrics {
 
                 return Ok(SuccessResponseBody(await _fabricService.AddFabric(fabric, identityId, imageUrl), Localizer["Successful"]));
             } catch (Exception exc) {
+                Log.Error(exc.Message);
+                return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
+            }
+        }
+
+
+        [Authorize(Roles = "Administrator,Manufacturer")]
+        [HttpPost]
+        [AssignActionRoute(FabricSegments.IMPORT_FABRICS)]
+        public async Task<IActionResult> Import([FromForm] FileFormData import)
+        {
+            try
+            {
+                long identityId = ClaimHelper.GetUserId(User);
+
+                string tempPath = string.Empty;
+
+                if (import.File != null)
+                {
+                    tempPath = await FileUploadingHelper.UploadTempFile(import.File);
+                }
+
+                //TODO: import here
+
+                if (!string.IsNullOrEmpty(tempPath) && System.IO.File.Exists(tempPath))
+                {
+                    System.IO.File.Delete(tempPath);
+                }
+
+                return Ok(SuccessResponseBody(null, Localizer["Successful"]));
+            }
+            catch (Exception exc)
+            {
                 Log.Error(exc.Message);
                 return BadRequest(ErrorResponseBody(exc.Message, HttpStatusCode.BadRequest));
             }
