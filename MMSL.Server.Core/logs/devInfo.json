@@ -50,3 +50,4 @@
 {"Timestamp":"2020-07-23T12:43:44.4772646+03:00","Level":"Error","MessageTemplate":"Error converting value \"name\" to type 'MMSL.Domain.DataContracts.Filters.FilterItem'. Path '[0]', line 1, position 7."}
 {"Timestamp":"2020-07-23T12:44:24.6313739+03:00","Level":"Error","MessageTemplate":"Error converting value \"name\" to type 'MMSL.Domain.DataContracts.Filters.FilterItem'. Path '[0]', line 1, position 7."}
 {"Timestamp":"2020-07-23T12:45:01.7680171+03:00","Level":"Error","MessageTemplate":"Error converting value \"name\" to type 'MMSL.Domain.DataContracts.Filters.FilterItem'. Path '[0]', line 1, position 7."}
+{"Timestamp":"2020-07-27T19:09:37.6292687+03:00","Level":"Error","MessageTemplate":"Value cannot be null. (Parameter 'path2')"}
