@@ -8,7 +8,7 @@ namespace MMSL.Domain.Entities.Fabrics {
 
         public FabricStatuses Status { get; set; }
 
-        public string Metres { get; set; }
+        public float? Metres { get; set; }
         public bool IsMetresVisible { get; set; } = true;
 
         public string Mill { get; set; }

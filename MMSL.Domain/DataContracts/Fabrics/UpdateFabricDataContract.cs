@@ -29,7 +29,7 @@ namespace MMSL.Domain.DataContracts.Fabrics {
                 Color = Color,
                 Count = Count,
                 GSM = GSM,
-                Metres = Metres.ToString(),
+                Metres = Metres,
                 Mill = Mill,
                 Weave = Weave,
                 ImageUrl = ImageUrl
