@@ -174,5 +174,23 @@ namespace MMSL.Services.FabricServices
                     return fullFilePath;
                 }
             });
+
+        public Task<IEnumerable<Fabric>> AddFabrics(IEnumerable<Fabric> fabrics, long identityId) =>
+            Task.Run(() => {
+                using (IDbConnection connection = _connectionFactory.NewSqlConnection())
+                {
+                    IFabricRepository repository = _fabricRepositoriesFactory.NewFabricRepository(connection);
+
+                    foreach (Fabric fabric in fabrics)
+                    {
+                        fabric.UserIdentityId = identityId;
+
+                        Fabric created = repository.AddFabric(fabric);
+                        fabric.Id = created.Id;
+                    }
+
+                    return fabrics;
+                }
+            });
     }
 }

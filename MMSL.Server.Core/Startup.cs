@@ -50,6 +50,7 @@ using MMSL.Domain.Repositories.Stores;
 using MMSL.Domain.Repositories.Stores.Contracts;
 using MMSL.Domain.Repositories.Types;
 using MMSL.Domain.Repositories.Types.Contracts;
+using MMSL.Server.Core.Import;
 using MMSL.Server.Core.Localization;
 using MMSL.Services.BankDetailsServices;
 using MMSL.Services.DealerServices;
@@ -230,6 +231,7 @@ namespace MMSL.Server.Core {
             builder.RegisterType<SqlContextFactory>().As<ISqlContextFactory>();
             builder.RegisterType<DbConnectionFactory>().As<IDbConnectionFactory>();
 
+            builder.RegisterType<ExcelParser>();
             builder.RegisterType<MasterActor>();
 
             ApplicationContainer = builder.Build();

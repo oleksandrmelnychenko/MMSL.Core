@@ -16,5 +16,6 @@ namespace MMSL.Services.FabricServices.Contracts {
         Task<List<FilterItem>> GetFabricFilters(long? ownerUserIdenetity);
         Task<FabricVisibilitiesDataContract> GetFabricVisibilities(long userIdentityId);
         Task<string> PrepareFabricsPdf(string searchPhrase, FilterItem[] filters);
+        Task<IEnumerable<Fabric>> AddFabrics(IEnumerable<Fabric> fabrics, long identityId);
     }
 }
