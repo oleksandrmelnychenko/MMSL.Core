@@ -157,7 +157,8 @@ namespace MMSL.Services.FabricServices
             });
 
         public Task<string> PrepareFabricsPdf(string searchPhrase, FilterItem[] filters, long? ownerUserIdentityId) =>
-            Task.Run(() => {
+            Task.Run(() =>
+            {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection())
                 {
                     IEnumerable<Fabric> fabrics = _fabricRepositoriesFactory
@@ -187,7 +188,8 @@ namespace MMSL.Services.FabricServices
             });
 
         public Task<IEnumerable<Fabric>> AddFabrics(IEnumerable<Fabric> fabrics, long identityId) =>
-            Task.Run(() => {
+            Task.Run(() =>
+            {
                 using (IDbConnection connection = _connectionFactory.NewSqlConnection())
                 {
                     IFabricRepository repository = _fabricRepositoriesFactory.NewFabricRepository(connection);
@@ -225,70 +227,116 @@ namespace MMSL.Services.FabricServices
 
         private void DrawFabric(Document doc, Fabric fabric)
         {
-            DrawFabricHeader(doc, fabric);
-            DrawFabricInfo(doc, fabric);
+
+
+            Foo(doc, fabric);
+        }
+
+        private void Foo(Document doc, Fabric fabric)
+        {
+
+            PdfPTable table = new PdfPTable(2);
+            table.TotalWidth = 500f;
+            table.LockedWidth = true;
+
+            PdfPCell header = new PdfPCell(new Phrase(fabric.FabricCode, new Font(Font.HELVETICA, 14f, Font.BOLD, BaseColor.Black)));
+            header.Colspan = 2;
+            header.BorderWidth = 0;
+            table.AddCell(header);
+
+            PdfPCell description = new PdfPCell(new Phrase(fabric.Description));
+            description.Colspan = 2;
+            description.PaddingTop = 6f;
+            description.BorderWidth = 0;
+            table.AddCell(description);
+
+            PdfPTable nested = new PdfPTable(1);
+            if (fabric.IsMetresVisible)
+                nested.AddCell(buildInfo("Metters", $"{fabric.Metres}"));
+
+            if (fabric.IsMillVisible)
+                nested.AddCell(buildInfo("Mill", $"{fabric.Mill}"));
+
+            if (fabric.IsColorVisible)
+                nested.AddCell(buildInfo("Color", $"{fabric.Color}"));
+
+            if (fabric.IsCompositionVisible)
+                nested.AddCell(buildInfo("Composition", $"{fabric.Composition}"));
+
+            if (fabric.IsGSMVisible)
+                nested.AddCell(buildInfo("GSM", $"{fabric.GSM}"));
+
+            if (fabric.IsCountVisible)
+                nested.AddCell(buildInfo("Count", $"{fabric.Count}"));
+
+            if (fabric.IsWeaveVisible)
+                nested.AddCell(buildInfo("Weave", $"{fabric.Weave}"));
+
+            if (fabric.IsPatternVisible)
+                nested.AddCell(buildInfo("Pattern", $"{fabric.Pattern}"));
+
+            PdfPCell nesthousing = new PdfPCell(nested);
+            nesthousing.PaddingTop = 12f;
+            nesthousing.BorderWidth = 0;
+            table.AddCell(nesthousing);
+
+
+            PdfPCell imageCell = buildImageCell(fabric);
+            table.AddCell(imageCell);
+
+
+            PdfPCell bottomLine = new PdfPCell();
+            bottomLine.Colspan = 2;
+            bottomLine.BorderWidth = 0;
+            bottomLine.BorderWidthBottom = .5f;
+            bottomLine.PaddingTop = 18f;
+            table.AddCell(bottomLine);
+
+            table.SpacingAfter = 18f;
+            doc.Add(table);
+        }
+
+        PdfPCell buildInfo(string title, string info)
+        {
+            Phrase phrase = new Phrase();
+            Chunk titleChunk = new Chunk($"{title}: ", new Font(Font.HELVETICA, 12f, Font.NORMAL, BaseColor.Gray));
+            Chunk infoChunk = new Chunk($" {info}", new Font(Font.HELVETICA, 12f, Font.NORMAL, BaseColor.Black));
+            phrase.Add(titleChunk);
+            phrase.Add(infoChunk);
+
+            PdfPCell result = new PdfPCell(phrase);
+            result.PaddingTop = 4f;
+            result.PaddingRight = 6f;
+            result.BorderWidth = 0;
+
+            return result;
+        }
+
+        PdfPCell buildImageCell(Fabric fabric)
+        {
+            PdfPCell result = null;
 
             try
             {
-                string serverImagePath = Path.Combine(ConfigurationManager.UploadsPath, fabric.ImageUrl);
+                string serverImagePath = Path.Combine(ConfigurationManager.UploadsPath, Path.GetFileName(fabric.ImageUrl));
+
+                Image jpg = Image.GetInstance(serverImagePath);
+                jpg.ScaleToFit(250f, 250f);
+
+                result = new PdfPCell(jpg);
+                result.BorderWidth = 0;
+                result.PaddingTop = 16f;
+                result.Colspan = 2;
             }
             catch (Exception exc)
             {
-
+                result = new PdfPCell();
+                result.BorderWidth = 0;
+                result.PaddingTop = 16f;
+                result.Colspan = 2;
             }
 
-
-        }
-
-        private void DrawFabricHeader(Document doc, Fabric fabric)
-        {
-
-            Paragraph heading = new Paragraph(fabric.FabricCode, new Font(Font.HELVETICA, 22f, Font.BOLD));
-            heading.SpacingAfter = .3f;
-
-            Paragraph description = null;
-
-            if (!string.IsNullOrEmpty(fabric.Description))
-            {
-                description = new Paragraph(fabric.Description, new Font(Font.HELVETICA, 16f, Font.NORMAL, BaseColor.Gray));
-                description.SpacingAfter = 18f;
-            }
-
-            doc.Add(heading);
-
-            if (description != null)
-            {
-                doc.Add(description);
-            }
-        }
-
-        private void DrawFabricInfo(Document doc, Fabric fabric)
-        {
-            void draw(string title, string value)
-            {
-                Chunk meters = new Chunk(title, new Font(Font.HELVETICA, 16f, Font.NORMAL, BaseColor.Gray));
-                Chunk metersValue = new Chunk(value, new Font(Font.HELVETICA, 16f, Font.NORMAL, BaseColor.Black));
-
-                Phrase metersPhrase = new Phrase();
-                metersPhrase.Add(meters);
-                metersPhrase.Add(metersValue);
-
-                Paragraph paragraph = new Paragraph();
-                //paragraph.Alignment = Element.ALIGN_JUSTIFIED;
-                paragraph.Add(metersPhrase);
-                paragraph.SpacingAfter = .3f;
-
-                doc.Add(paragraph);
-            }
-
-            draw("Meters:", $"{fabric.Metres}");
-            draw("Mill:", $"{fabric.Mill}");
-            draw("Color:", $"{fabric.Color}");
-            draw("Composition:", $"{fabric.Composition}");
-            draw("GSM:", $"{fabric.GSM}");
-            draw("Count:", $"{fabric.Count}");
-            draw("Weave:", $"{fabric.Weave}");
-            draw("Pattern:", $"{fabric.Pattern}");
+            return result;
         }
     }
 }
